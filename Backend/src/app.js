@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/auth.route');
 const auditRoutes = require('./routes/audit.route');
+const complaintRoutes=require('./routes/complaint.route');
 const { errorHandler } = require('./middlewares/error.middleware');
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/complaints',complaintRoutes);
 
 // Health check / test endpoint
 app.get('/api/test', (req, res) => {

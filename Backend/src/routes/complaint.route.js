@@ -1,0 +1,20 @@
+const express=require('express');
+const router=express.Router();
+const complaintController=require('../controllers/complaint.controller');
+const {authenticateToken}=require('../middlewares/auth.middleware');
+const {requireRoles}=require('../middlewares/rbac.middleware');
+const upload=require('../middlewares/upload.middleware');
+
+router.get('/track/:trackingId',complaintController.trackComplaint);
+
+router.use(authenticateToken);
+router.use(requireRoles('CITIZEN'));
+
+router.post('/',complaintController.createComplaint);
+router.get('/my',complaintController.getMyComplaints);
+router.get('/:id'.complaintController.getComplaintDetails);
+router.post('/:id/submit',complaintController.submitDraft);
+router.post('/:id/attachments',upload.single('file'),complaintController.uploadAttachment);
+router.post('/:id/respond',complaintController.respondToInfo);
+
+module.exports=router;
