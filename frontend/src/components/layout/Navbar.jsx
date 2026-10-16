@@ -1,227 +1,295 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Shield, ArrowRight, LogOut, User as UserIcon, LayoutDashboard } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import Button from '../ui/Button';
+import ComplaintModal from '../ui/ComplaintModal';
 
-export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
+export function Navbar({ onOpenFileComplaint }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [lang, setLang] = useState('English');
+  const [complaintModalOpen, setComplaintModalOpen] = useState(false);
+  const [modalCategory, setModalCategory] = useState('Theft / Property Loss (CrPC 379)');
 
+  const { user, isAuthenticated, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Listen to custom event so any card or button across any page can open the complaint modal
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 15);
+    const handleCustomOpen = (e) => {
+      if (e?.detail?.category) {
+        setModalCategory(e.detail.category);
+      }
+      setComplaintModalOpen(true);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    window.addEventListener('open-complaint-modal', handleCustomOpen);
+    return () => window.removeEventListener('open-complaint-modal', handleCustomOpen);
   }, []);
 
-  // Close mobile menu on route change or escape
+  // Close mobile drawer on route transition
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && mobileMenuOpen) {
-        setMobileMenuOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mobileMenuOpen]);
-
-  const navLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'How It Works', path: '/how-it-works' },
-    { label: 'Services', path: '/services' },
-  ];
+  const handleFileComplaintClick = () => {
+    if (onOpenFileComplaint) {
+      onOpenFileComplaint();
+    } else {
+      navigate('/file-complaint');
+    }
+  };
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
-        isScrolled
-          ? 'bg-ivory/95 backdrop-blur-md border-b border-borderSoft shadow-subtle py-3'
-          : 'bg-ivory/80 backdrop-blur-sm border-b border-borderSoft/60 py-4'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          
-          {/* Brand Mark */}
-          <Link
-            to="/"
-            className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-navy rounded-lg p-1"
-            aria-label="CaseSync Homepage"
-          >
-            <div className="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-saffron shadow-subtle group-hover:scale-105 transition-transform duration-200">
-              <Shield className="w-4 h-4 fill-saffron/20 stroke-saffron" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-display font-bold text-base sm:text-lg text-navy tracking-tight group-hover:text-ink transition-colors leading-tight">
-                CaseSync
-              </span>
-              <span className="text-[9px] sm:text-[10px] tracking-wider uppercase font-semibold text-slate-muted">
-                Citizen FIR & Case Portal
-              </span>
-            </div>
-          </Link>
-
-          {/* Desktop Multi-Page Navigation */}
-          <nav className="hidden md:flex items-center gap-1 sm:gap-2" aria-label="Main Navigation">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                className={({ isActive }) =>
-                  `text-sm font-medium px-3.5 py-1.5 rounded-lg transition-colors ${
-                    isActive
-                      ? 'text-navy font-semibold bg-white border border-borderSoft shadow-subtle'
-                      : 'text-slate hover:text-navy hover:bg-black/5'
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-          </nav>
-
-          {/* Desktop Right CTAs */}
-          <div className="hidden md:flex items-center gap-3">
-            {isAuthenticated ? (
-              <div className="flex items-center gap-2.5">
-                <Link
-                  to="/dashboard"
-                  className="flex items-center gap-2 bg-white border border-borderSoft hover:border-navy/30 rounded-lg px-3 py-1.5 shadow-subtle transition-colors group"
-                >
-                  <div className="w-6 h-6 rounded-full bg-navy/10 text-navy flex items-center justify-center font-bold text-xs">
-                    <UserIcon className="w-3.5 h-3.5" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-xs font-semibold text-ink leading-tight truncate max-w-[130px]">
-                      {user?.fullName || user?.email?.split('@')[0]}
-                    </p>
-                    <span className="inline-block text-[9px] font-bold text-slate-muted uppercase tracking-wider">
-                      {user?.role || 'CITIZEN'}
-                    </span>
-                  </div>
-                  <LayoutDashboard className="w-3.5 h-3.5 text-slate-muted group-hover:text-navy ml-1" />
-                </Link>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    logout();
-                    navigate('/');
-                  }}
-                  title="Sign out of your session"
-                  className="text-slate hover:text-civicRed"
-                >
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              </div>
-            ) : (
-              <>
-                <Link to="/login">
-                  <Button variant="ghost" size="sm">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link to="/signup">
-                  <Button variant="primary" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
-                    Submit a Complaint
-                  </Button>
-                </Link>
-              </>
-            )}
+    <>
+      {/* ========================================================================= */}
+      {/* 1. TOP STATUTORY & EMERGENCY HELPLINE BANNER                              */}
+      {/* ========================================================================= */}
+      <div className="bg-primary text-surface-container-lowest text-xs py-1 px-6 lg:px-12 flex justify-between items-center border-b border-primary-container z-40">
+        <div className="flex items-center space-x-4">
+          <span className="inline-flex items-center font-medium tracking-wide gap-1">
+            <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
+            PUBLIC CIVIC DEMONSTRATION PLATFORM • STATUTORY GOVERNANCE CRUISE
+          </span>
+          <span className="hidden sm:inline text-outline-variant">|</span>
+          <span className="hidden sm:inline text-surface-variant font-normal">Official CaseSync First Information Subsystem</span>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-1.5 text-tertiary-fixed font-semibold tracking-wider">
+            <span className="material-symbols-outlined text-[15px] leading-none">emergency</span>
+            <span>POLICE HELPLINE: 112</span>
           </div>
-
-          {/* Mobile Menu Trigger */}
-          <div className="flex md:hidden">
-            <button
+          <div className="hidden md:flex items-center gap-1 text-surface-variant pl-2 border-l border-outline">
+            <button 
               type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate hover:text-navy focus:outline-none focus-visible:ring-2 focus-visible:ring-navy rounded-lg"
-              aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
-              aria-expanded={mobileMenuOpen}
+              onClick={() => setLang('English')}
+              className={`hover:text-surface-container-lowest px-1 transition-colors cursor-pointer ${lang === 'English' ? 'text-white font-semibold' : ''}`}
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              English
+            </button>
+            <span>/</span>
+            <button 
+              type="button"
+              onClick={() => setLang('Hindi')}
+              className={`hover:text-surface-container-lowest px-1 transition-colors cursor-pointer ${lang === 'Hindi' ? 'text-white font-semibold' : ''}`}
+            >
+              हिंदी
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-ivory border-b border-borderSoft px-4 pt-2 pb-5 shadow-card animate-fadeIn">
-          <div className="flex flex-col space-y-1.5 pt-2">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  `text-sm font-medium py-2 px-3 rounded-lg transition-colors ${
-                    isActive
-                      ? 'text-navy font-semibold bg-white border border-borderSoft shadow-subtle'
-                      : 'text-slate hover:text-navy hover:bg-black/5'
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-
-            <div className="pt-3 border-t border-borderSoft flex flex-col gap-2">
-              {isAuthenticated ? (
-                <>
-                  <Link
-                    to="/dashboard"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 p-2.5 bg-white rounded-lg border border-borderSoft"
-                  >
-                    <UserIcon className="w-4 h-4 text-navy" />
-                    <div>
-                      <p className="text-sm font-semibold text-ink">{user?.fullName || user?.email}</p>
-                      <p className="text-xs text-slate-muted">{user?.role || 'CITIZEN'} &bull; View Dashboard</p>
-                    </div>
-                  </Link>
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    onClick={() => {
-                      logout();
-                      setMobileMenuOpen(false);
-                      navigate('/');
-                    }}
-                    leftIcon={<LogOut className="w-4 h-4" />}
-                  >
-                    Sign Out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="secondary" size="md" className="w-full">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="primary" size="md" className="w-full">
-                      Submit a Complaint
-                    </Button>
-                  </Link>
-                </>
-              )}
+      {/* ========================================================================= */}
+      {/* 2. STICKY MAIN NAVBAR                                                     */}
+      {/* ========================================================================= */}
+      <header className="docked full-width top-0 sticky z-50 bg-surface-container-lowest border-b border-outline-variant shadow-sm transition-all duration-200">
+        <div className="w-full px-6 lg:px-12 py-3.5 flex items-center justify-between mx-auto">
+          
+          {/* Brand Anchor */}
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-9 h-9 rounded bg-primary-container flex items-center justify-center text-surface-container-lowest shadow-sm border border-outline">
+              <span className="material-symbols-outlined text-xl">shield</span>
             </div>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <span className="font-headline-sm text-headline-sm font-bold tracking-tight text-primary">CaseSync</span>
+                <span className="text-[10px] font-semibold uppercase bg-surface-container text-secondary px-1.5 py-0.5 rounded border border-outline-variant tracking-wider">Gov.IN</span>
+              </div>
+              <span className="font-label-sm text-label-sm text-secondary tracking-widest uppercase">Citizen Police Services</span>
+            </div>
+          </Link>
+
+          {/* Desktop Multi-Page Navigation Routes */}
+          <nav className="hidden lg:flex items-center space-x-7">
+            <Link 
+              to="/" 
+              className={`font-body-md text-body-md transition-colors ${
+                location.pathname === '/' 
+                  ? 'text-primary font-semibold border-b-2 border-primary pb-1' 
+                  : 'text-secondary hover:text-primary'
+              }`}
+            >
+              Home
+            </Link>
+            <Link 
+              to="/how-it-works" 
+              className={`font-body-md text-body-md transition-colors ${
+                location.pathname === '/how-it-works' 
+                  ? 'text-primary font-semibold border-b-2 border-primary pb-1' 
+                  : 'text-secondary hover:text-primary'
+              }`}
+            >
+              FIR Journey
+            </Link>
+            <Link 
+              to="/services" 
+              className={`font-body-md text-body-md transition-colors ${
+                location.pathname === '/services' 
+                  ? 'text-primary font-semibold border-b-2 border-primary pb-1' 
+                  : 'text-secondary hover:text-primary'
+              }`}
+            >
+              Services
+            </Link>
+            <a 
+              href="/#faq" 
+              className="text-secondary hover:text-primary transition-colors font-body-md text-body-md"
+            >
+              FAQ
+            </a>
+            <a 
+              href="/#helpline" 
+              className="text-secondary hover:text-primary transition-colors font-body-md text-body-md"
+            >
+              Helpline
+            </a>
+          </nav>
+
+          {/* Trailing Action Controls */}
+          <div className="flex items-center gap-3">
+            
+            {/* Track Case Quick Link */}
+            <Link 
+              to="/services" 
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded bg-surface-container-lowest border border-outline-variant text-primary font-label-lg text-label-lg hover:bg-surface-container-low transition-all"
+            >
+              <span className="material-symbols-outlined text-lg">search</span>
+              Track Case
+            </Link>
+
+            {/* Auth State Conditional Buttons */}
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <Link 
+                  to="/dashboard"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container text-primary font-label-md text-label-md hover:bg-surface-variant font-medium"
+                >
+                  <span className="material-symbols-outlined text-base">account_circle</span>
+                  <span>{user?.fullName?.split(' ')[0] || user?.email?.split('@')[0] || 'Dashboard'}</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    navigate('/');
+                  }}
+                  title="Sign Out"
+                  className="p-1.5 text-secondary hover:text-error hover:bg-surface-container-low rounded transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-lg">logout</span>
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link 
+                  to="/login"
+                  className={`hidden sm:inline-flex items-center px-3 py-2 text-primary hover:text-primary-container font-title-md text-body-md font-medium transition-colors ${
+                    location.pathname === '/login' ? 'font-semibold text-primary underline underline-offset-4' : ''
+                  }`}
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  to="/signup"
+                  className={`hidden sm:inline-flex items-center px-3.5 py-1.5 text-primary bg-surface-container-lowest border border-outline-variant rounded hover:bg-surface-container-low transition-colors duration-150 font-title-md text-body-md font-medium shadow-sm ${
+                    location.pathname === '/signup' ? 'ring-2 ring-primary/20' : ''
+                  }`}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+
+            {/* File Complaint Primary CTA */}
+            <button 
+              type="button"
+              onClick={handleFileComplaintClick}
+              className="inline-flex items-center px-4 py-2 bg-primary-container text-surface-container-lowest rounded hover:bg-primary transition-colors duration-150 font-title-md text-body-md font-medium shadow-sm active:scale-[0.99] border-l-2 border-tertiary-fixed-dim cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-base mr-1.5 text-tertiary-fixed-dim">edit_document</span>
+              File Complaint
+            </button>
+
+            {/* Language Selector Toggle */}
+            <button 
+              type="button"
+              onClick={() => setLang(lang === 'English' ? 'Hindi' : 'English')}
+              className="p-2 text-secondary hover:text-primary hover:bg-surface-container-low rounded transition-colors cursor-pointer" 
+              title="Change Language"
+            >
+              <span className="material-symbols-outlined text-xl">language</span>
+            </button>
+
+            {/* SOS Emergency Helpline */}
+            <a 
+              className="p-2 text-error hover:bg-error-container/20 rounded transition-colors" 
+              href="tel:112" 
+              title="Emergency 112"
+            >
+              <span className="material-symbols-outlined text-xl">emergency</span>
+            </a>
+
+            {/* Mobile Menu Hamburger */}
+            <button 
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 text-primary hover:bg-surface-container-low rounded cursor-pointer" 
+              id="mobile-menu-btn"
+            >
+              <span className="material-symbols-outlined text-2xl">{mobileMenuOpen ? 'close' : 'menu'}</span>
+            </button>
+
           </div>
         </div>
-      )}
-    </header>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden px-6 py-4 bg-surface-container-lowest border-t border-outline-variant space-y-3">
+            <Link onClick={() => setMobileMenuOpen(false)} className="block font-title-md text-primary py-1" to="/">Home</Link>
+            <Link onClick={() => setMobileMenuOpen(false)} className="block font-title-md text-primary py-1" to="/how-it-works">FIR Journey</Link>
+            <Link onClick={() => setMobileMenuOpen(false)} className="block font-title-md text-primary py-1" to="/services">Services</Link>
+            <a onClick={() => setMobileMenuOpen(false)} className="block font-body-md text-secondary py-1" href="/#faq">FAQ</a>
+            <a onClick={() => setMobileMenuOpen(false)} className="block font-body-md text-secondary py-1" href="/#helpline">Helpline</a>
+            
+            <div className="pt-3 border-t border-outline-variant flex flex-col gap-2">
+              <div className="grid grid-cols-2 gap-2">
+                {isAuthenticated ? (
+                  <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="text-center py-2 text-primary border border-outline-variant rounded font-medium text-xs">
+                    Dashboard
+                  </Link>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="text-center py-2 text-primary border border-outline-variant rounded font-medium text-xs">
+                      Sign In
+                    </Link>
+                    <Link to="/signup" onClick={() => setMobileMenuOpen(false)} className="text-center py-2 bg-surface-container text-primary rounded font-medium text-xs">
+                      Sign Up
+                    </Link>
+                  </>
+                )}
+              </div>
+              <button 
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleFileComplaintClick();
+                }}
+                className="w-full py-2 bg-primary-container text-surface-container-lowest rounded font-medium text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-sm text-tertiary-fixed-dim">edit_document</span> 
+                File Complaint
+              </button>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Global Complaint Modal (when triggered from navbar on any page) */}
+      <ComplaintModal 
+        isOpen={complaintModalOpen}
+        onClose={() => setComplaintModalOpen(false)}
+        initialCategory={modalCategory}
+      />
+    </>
   );
 }
 
