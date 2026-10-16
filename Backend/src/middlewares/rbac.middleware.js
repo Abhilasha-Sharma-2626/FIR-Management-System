@@ -5,7 +5,8 @@ const { logAuditEvent } = require('../services/audit.service');
  * 1. Role-based guard (PROJECT_CONTEXT.md §4.1)
  * Restricts access to specific role codes
  */
-function requireRole(allowedRoles = []) {
+function requireRole(roles = []) {
+  const allowedRoles = Array.isArray(roles) ? roles : [roles];
   return async (req, res, next) => {
     if (!req.user || !allowedRoles.includes(req.user.role)) {
       const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
@@ -30,6 +31,11 @@ function requireRole(allowedRoles = []) {
     }
     next();
   };
+}
+
+function requireRoles(...roles) {
+  const allowed = Array.isArray(roles[0]) ? roles[0] : roles;
+  return requireRole(allowed);
 }
 
 /**
@@ -185,6 +191,7 @@ function requireCitizenOwnership(complainantIdKey = 'complainantId') {
 
 module.exports = {
   requireRole,
+  requireRoles,
   requirePermission,
   requireStationScope,
   requireCitizenOwnership
