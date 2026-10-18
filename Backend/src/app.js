@@ -6,6 +6,7 @@ const complaintRoutes=require('./routes/complaint.route');
 const { errorHandler } = require('./middlewares/error.middleware');
 const firRoutes=require('./routes/fir.route');
 const stationRoutes=require('./routes/station.route');
+const caseRoutes = require('./routes/case.route');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use('/api/audit', auditRoutes);
 app.use('/api/complaints',complaintRoutes);
 app.use('/api/firs', firRoutes);
 app.use('/api/station', stationRoutes);
+app.use('/api/cases', caseRoutes);
 
 // Health check / test endpoint
 app.get('/api/test', (req, res) => {

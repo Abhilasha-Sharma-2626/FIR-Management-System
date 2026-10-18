@@ -1,190 +1,242 @@
-const pool=require('../config/db');
-const {logAuditEvent}=require('./audit.service');
+const pool = require('../config/db');
+const { logAuditEvent } = require('./audit.service');
 
-async function getStationIoWorkload(stationId){
-  const query=`
-  SELECT o.officer_id, o.badge_no, o.full_name, o.rank, COUNT(c.case_id) FILTER (WHERE f.status NOT IN ('CLOSED', 'REJECTED')) AS active_firs FROM officers o JOIN users u ON o.user_id=u.user_id LEFT JOIN cases c ON o.officer_id=c.current_io_id LEFT JOIN fir f ON c.fir_id=f.fir_id WHERE o.station_id=$1 AND u.is_active=TRUE GROUP BY o.officer_id, o.badge_no, o.full_name, o.rank ORDER BY active_cases_count ASC, o.full_name ASC;`;
-  const result=await pool.query(query, [stationId]);
+/**
+ * 1. Fetch IO Workload per police station (FR-M1)
+ * Used by SHO to see how many active cases each officer is currently handling
+ */
+async function getStationIoWorkload(stationId) {
+  const query = `
+    SELECT o.officer_id, o.badge_no, o.full_name, o.rank,
+           COUNT(c.case_id) FILTER (WHERE f.status NOT IN ('CLOSED', 'REJECTED')) AS active_cases_count,
+           ARRAY_AGG(f.fir_number) FILTER (WHERE f.status NOT IN ('CLOSED', 'REJECTED')) AS active_firs
+    FROM officers o
+    JOIN users u ON o.user_id = u.user_id
+    LEFT JOIN cases c ON o.officer_id = c.current_io_id
+    LEFT JOIN fir f ON c.fir_id = f.fir_id
+    WHERE o.station_id = $1 AND u.is_active = TRUE
+    GROUP BY o.officer_id, o.badge_no, o.full_name, o.rank
+    ORDER BY active_cases_count ASC, o.full_name ASC;
+  `;
+  const result = await pool.query(query, [stationId]);
   return result.rows;
 }
 
-
-async function assignedCaseIo({firId, officerId, assignedUserId, stationId, reason, ipAddress}){
-  const client=await pool.connect();
-  try{
+/**
+ * 2. Assign / Reassign IO to Case (SHO only, ACID transaction)
+ * Moves FIR: REGISTERED -> ASSIGNED (or reassigns during active investigation)
+ */
+async function assignCaseIo({ firId, officerId, assignerUserId, stationId, reason, ipAddress }) {
+  const client = await pool.connect();
+  try {
     await client.query('BEGIN');
-    const firRes=await client.query(
-      `SELECT fir_id, station_id, status, fir_number, complainant_id FROM fir WHERE fir_id=$1 FOR UPDATE`,
+
+    // 1. Lock FIR row
+    const firRes = await client.query(
+      `SELECT fir_id, station_id, status, fir_number, complainant_id FROM fir WHERE fir_id = $1 FOR UPDATE`,
       [firId]
     );
-    if(firRes.rows.length===0){
-      const err=new Error('FIR record not found.');
-      err.statusCode=404;
+    if (firRes.rows.length === 0) {
+      const err = new Error('FIR record not found.');
+      err.statusCode = 404;
       throw err;
     }
-    const fir=firRes.rows[0];
+    const fir = firRes.rows[0];
 
-    if(fir.station_id!==stationId){
-      const err=new Error('You do not have jurisdiction to assign cases for another station.');
-      err.statusCode=403;
-      throw err;
-    }
-
-    const allowedStatuses=['REGISTERED', 'ASSIGNED', 'UNDER_INVESTIGATION', 'REOPENED'];
-    if(!allowedStatuses.includes(fir.status)){
-      const err=new Error(`Cannot assign IO to case in status: ${fir.status}`);
-      err.statusCode=400;
+    // Station check
+    if (fir.station_id !== stationId) {
+      const err = new Error('You do not have jurisdiction to assign cases for another station.');
+      err.statusCode = 403;
       throw err;
     }
 
-    const ioRes=await client.query(
-      `SELECT o.officer_id, o.full_name, o.user_id, r.code AS role_code FROM officers o JOIN users u ON o.user_id=u.user_id JOIN roles r ON u.role_id=r.role_id WHERE o.officer_id=$1 AND o.station_id=$2 AND u.is_active=TRUE`,
+    // Allowed status check
+    const allowedStatuses = ['REGISTERED', 'ASSIGNED', 'UNDER_INVESTIGATION', 'REOPENED'];
+    if (!allowedStatuses.includes(fir.status)) {
+      const err = new Error(`Cannot assign IO to case in status: ${fir.status}`);
+      err.statusCode = 400;
+      throw err;
+    }
+
+    // 2. Verify IO belongs to station and is active
+    const ioRes = await client.query(
+      `SELECT o.officer_id, o.full_name, o.user_id, r.code AS role_code
+       FROM officers o
+       JOIN users u ON o.user_id = u.user_id
+       JOIN roles r ON u.role_id = r.role_id
+       WHERE o.officer_id = $1 AND o.station_id = $2 AND u.is_active = TRUE`,
       [officerId, stationId]
     );
-    if(ioRes.rows.length===0){
-      const err=new Error('Designated officer is not an active officer at this police station.');
-      err.statusCode=400;
+    if (ioRes.rows.length === 0) {
+      const err = new Error('Designated officer is not an active officer at this police station.');
+      err.statusCode = 400;
       throw err;
     }
-    const targetIo=ioRes.rows[0];
+    const targetIo = ioRes.rows[0];
 
-    const caseRes=await client.query(`
-      SELECT case_id, current_io_id FROM cases WHERE fir_id=$1` [firId]
-    );
-    if(caseRes.rows.length===0){
-      const err=new Error('Case file not initialized for this FIR.');
-      err.statusCode=500;
+    // 3. Fetch Case row
+    const caseRes = await client.query(`SELECT case_id, current_io_id FROM cases WHERE fir_id = $1`, [firId]);
+    if (caseRes.rows.length === 0) {
+      const err = new Error('Case file not initialized for this FIR.');
+      err.statusCode = 500;
       throw err;
     }
-    const currentCase=caseRes.rows[0];
+    const currentCase = caseRes.rows[0];
 
-    if(currentCase.current_io_id){
+    // 4. If reassigning, close previous assignment
+    if (currentCase.current_io_id) {
       await client.query(
-        `UPDATE case_assignments SET to_ts=now(), reason=COALESCE($1, 'Reassigned by SHO') WHERE case_id=$2 AND to_ts IS NULL`,
-        [reason || 'Officer reasigned', currentCase.case_id]
+        `UPDATE case_assignments
+         SET to_ts = now(), reason = COALESCE($1, 'Reassigned by SHO')
+         WHERE case_id = $2 AND to_ts IS NULL`,
+        [reason || 'Officer reassigned', currentCase.case_id]
       );
     }
 
+    // 5. Insert new assignment
     await client.query(
-      `INSERT INTO case_assignments (case_id, officer_id, assigned_by, reason) VALUES ($1,$2,$3,$4)`,
-      [currentCase.case_id, officerId,assignedUserId, reason || 'Initial assignment']
+      `INSERT INTO case_assignments (case_id, officer_id, assigned_by, reason)
+       VALUES ($1, $2, $3, $4)`,
+      [currentCase.case_id, officerId, assignerUserId, reason || 'Initial assignment']
     );
 
-    await client.query(`UPDATE cases SET current_io_id=$1 WHERE case_id=$2` [officerId, currentCase.case_id]);
+    // 6. Update cases current_io_id
+    await client.query(`UPDATE cases SET current_io_id = $1 WHERE case_id = $2`, [officerId, currentCase.case_id]);
 
-    const fromStatus=fir.status;
-    let toStatus=fir.status;
-    if(fir.status==='REGISTERED'){
-      toStatus='ASSIGNED';
+    // 7. Transition FIR status if REGISTERED -> ASSIGNED
+    const fromStatus = fir.status;
+    let toStatus = fir.status;
+    if (fir.status === 'REGISTERED') {
+      toStatus = 'ASSIGNED';
       await client.query(
-        `UPDATE fir SET status='ASSIGNED', version=version+1, updated_at=now() WHERE fir_id=$1`,
+        `UPDATE fir SET status = 'ASSIGNED', version = version + 1, updated_at = now() WHERE fir_id = $1`,
         [firId]
       );
 
       await client.query(
-        `INSERT INTO case_status_history (fir_id, from_state, to_state, actor_id, note) VALUES ($1, 'REGISTERED', 'ASSIGNED', $2, $3)`,
-        [firId, assignedUserId, `Assigned to IO ${targetIo.full_name}`]
+        `INSERT INTO case_status_history (fir_id, from_state, to_state, actor_id, note)
+         VALUES ($1, 'REGISTERED', 'ASSIGNED', $2, $3)`,
+        [firId, assignerUserId, `Assigned to IO ${targetIo.full_name}`]
       );
     }
 
+    // 8. Notifications
     await client.query(
-      `INSERT INTO notifications (user_id, fir_id, message) VALUES ($1,$2,$3)`,
+      `INSERT INTO notifications (user_id, fir_id, message)
+       VALUES ($1, $2, $3)`,
       [targetIo.user_id, firId, `You have been assigned as the Investigating Officer for FIR ${fir.fir_number}.`]
     );
 
+    // 9. Audit Log
     await logAuditEvent({
-      actorId:assignedUserId,
-      actorRole:'SHO',
-      action:currentCase.current_io_id?'IO_REASSIGNED':'IO_ASSIGNED',
-      entityType:'case',
-      entityId:currentCase.case_id,
-      oldData:{current_io_id:currentCase.current_io_id, status:fromStatus},
-      newData:{current_io_id:officerId, status:toStatus, assigned_to:targetIo.full_name},
+      actorId: assignerUserId,
+      actorRole: 'SHO',
+      action: currentCase.current_io_id ? 'IO_REASSIGNED' : 'IO_ASSIGNED',
+      entityType: 'case',
+      entityId: currentCase.case_id,
+      oldData: { current_io_id: currentCase.current_io_id, status: fromStatus },
+      newData: { current_io_id: officerId, status: toStatus, assigned_to: targetIo.full_name },
       ipAddress
     });
 
     await client.query('COMMIT');
     return {
-      caseId:currentCase.case_id,
+      caseId: currentCase.case_id,
       firId,
-      assignedIo:targetIo.full_name,
-      status:toStatus
+      assignedIo: targetIo.full_name,
+      status: toStatus
     };
-  }catch(error){
+  } catch (error) {
     await client.query('ROLLBACK');
     throw error;
-  }finally{
+  } finally {
     client.release();
   }
 }
 
-
-async function acceptInvestigation({firId, officerId, userId, ipAddress}){
-  const client=await pool.connect();
-  try{
+/**
+ * 3. IO Accepts Assignment & Commences Investigation
+ * Moves FIR: ASSIGNED -> UNDER_INVESTIGATION
+ */
+async function acceptInvestigation({ firId, officerId, userId, ipAddress }) {
+  const client = await pool.connect();
+  try {
     await client.query('BEGIN');
-    const checkRes=await client.query(
-      `SELECT c.case_id, c.current_io_id, f.status, f.fir_number FROM cases c JOIN fir f ON c.fir_id=f.fir_id WHERE f.fir_id=$1 FOR UPDATE`,
+
+    const checkRes = await client.query(
+      `SELECT c.case_id, c.current_io_id, f.status, f.fir_number
+       FROM cases c
+       JOIN fir f ON c.fir_id = f.fir_id
+       WHERE f.fir_id = $1 FOR UPDATE`,
       [firId]
     );
 
-    if(checkRes.rows.length===0){
-      const err=new Error('Case not found.');
-      err.statusCode=404;
+    if (checkRes.rows.length === 0) {
+      const err = new Error('Case not found.');
+      err.statusCode = 404;
       throw err;
     }
 
-    const caseData=checkRes.rows[0];
+    const caseData = checkRes.rows[0];
 
-    if(caseData.current_io_id!==officerId){
-      const err=new Error('Only the assigned Investigating Officer can accept this case.');
-      err.statusCode=403;
+    if (caseData.current_io_id !== officerId) {
+      const err = new Error('Only the assigned Investigating Officer can accept this case.');
+      err.statusCode = 403;
       throw err;
     }
 
-    if(caseData.status!=='ASSIGNED' && caseData.status!=='REOPENED'){
-      const err=new Error(`Cannot start investigation from status: ${caseData.status}`);
-      err.statusCode=400;
+    if (caseData.status !== 'ASSIGNED' && caseData.status !== 'REOPENED') {
+      const err = new Error(`Cannot start investigation from status: ${caseData.status}`);
+      err.statusCode = 400;
       throw err;
     }
 
+    // Update FIR status
     await client.query(
-      `UPDATE fir SET status='UNDER_INVESTIGATION', version=version+1, updated_at=now() WHERE fir_id=$1`,
+      `UPDATE fir
+       SET status = 'UNDER_INVESTIGATION', version = version + 1, updated_at = now()
+       WHERE fir_id = $1`,
       [firId]
     );
 
+    // Update case investigation started timestamp
     await client.query(
-      `UPDATE cases SET investigation_started_at=COALESCE(investigation_started_at, now()) WHERE case_id=$1`,
+      `UPDATE cases SET investigation_started_at = COALESCE(investigation_started_at, now()) WHERE case_id = $1`,
       [caseData.case_id]
     );
 
+    // Record history
     await client.query(
-      `INSERT INTO case_status_history (fir_id, from_state, to_state, actor_id, note) VALUES ($1,$2, 'UNDER_INVESTIGATION', $3, 'IO accepted case and commenced investigation)`,
+      `INSERT INTO case_status_history (fir_id, from_state, to_state, actor_id, note)
+       VALUES ($1, $2, 'UNDER_INVESTIGATION', $3, 'IO accepted case and commenced investigation')`,
       [firId, caseData.status, userId]
     );
 
+    // Audit log
     await logAuditEvent({
-      actorId:userId,
-      actorRole:'IO',
-      action:'STATUS_CHANGED',
-      entityType:'fir',
-      entityId:firId,
-      oldData:{status:caseData.status},
-      newData:{status:'UNDER_INVESTIGATION'},
+      actorId: userId,
+      actorRole: 'IO',
+      action: 'STATUS_CHANGED',
+      entityType: 'fir',
+      entityId: firId,
+      oldData: { status: caseData.status },
+      newData: { status: 'UNDER_INVESTIGATION' },
       ipAddress
     });
 
     await client.query('COMMIT');
-    return {firId, status:'UNDER_INVESTIGATION'};
-  }catch(error){
+    return { firId, status: 'UNDER_INVESTIGATION' };
+  } catch (error) {
     await client.query('ROLLBACK');
     throw error;
-  }finally{
+  } finally {
     client.release();
   }
 }
 
-
+/**
+ * 4. Add Case Progress Diary Update (FR-M2)
+ */
 async function addCaseUpdate({ firId, officerId, userId, updateType, body, visibleToCitizen, ipAddress }) {
   const client = await pool.connect();
   try {

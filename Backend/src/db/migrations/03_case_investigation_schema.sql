@@ -13,7 +13,7 @@ CREATE INDEX IF NOT EXISTS idx_case_assignments_officer ON case_assignments(offi
 
 CREATE TABLE IF NOT EXISTS case_updates (
   update_id BIGSERIAL PRIMARY KEY,
-  case_id BIGINT NOT NULL REFERENCES cases(case_id) IN DELETE CASCADE,
+  case_id BIGINT NOT NULL REFERENCES cases(case_id) ON DELETE CASCADE,
   officer_id BIGINT NOT NULL REFERENCES officers(officer_id) ON DELETE RESTRICT,
   update_type VARCHAR(20) NOT NULL CHECK(
     update_type IN ('STATEMENT', 'SITE_VISIT', 'ARREST', 'SEARCH', 'FORENSIC', 'GENERAL')
