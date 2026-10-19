@@ -10,7 +10,8 @@
     "seed": "node src/db/seed.js",
     "test:auth": "node src/test-auth-apis.js",
     "test:fir": "node src/test-fir-registration-apis.js",
-    "test:case": "node src/test-case-investigation-apis.js"
+    "test:case": "node src/test-case-investigation-apis.js",
+    "test:evidence": "node src/test-evidence-apis.js"
   },
   "keywords": [],
   "author": "",

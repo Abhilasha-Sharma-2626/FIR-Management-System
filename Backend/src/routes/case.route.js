@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const caseController = require('../controllers/case.controller');
+const evidenceController = require('../controllers/evidence.controller');
 const { authenticateToken } = require('../middlewares/auth.middleware');
 const { requireRoles } = require('../middlewares/rbac.middleware');
+const upload = require('../middlewares/upload.middleware');
 
 router.use(authenticateToken);
 
@@ -24,7 +26,17 @@ router.post('/:id/review-report', requireRoles('SHO'), caseController.reviewRepo
 // 5. Reopening Closed Cases (SHO & SUPERVISOR)
 router.post('/:id/reopen', requireRoles('SHO', 'SUPERVISOR'), caseController.reopenCase);
 
-// 6. View Full Case Details (All authenticated roles within scope)
+// 6. Evidence Logging & Querying for Case (IO / SHO)
+router.post(
+  '/:caseId/evidence',
+  requireRoles('IO', 'SHO', 'ADMIN'),
+  upload.single('file'),
+  evidenceController.addEvidence
+);
+router.get('/:caseId/evidence', evidenceController.getCaseEvidence);
+
+// 7. View Full Case Details (All authenticated roles within scope)
 router.get('/:id', caseController.getCaseDetails);
 
 module.exports = router;
+
