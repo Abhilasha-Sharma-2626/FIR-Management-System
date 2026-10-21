@@ -7,11 +7,12 @@ const testSuites = [
   { name: 'Case Assignment & Investigation (Feature 3)', file: 'test-case-investigation-apis.js' },
   { name: 'Evidence Management & Chain of Custody (Feature 4)', file: 'test-evidence-apis.js' },
   { name: 'Citizen Tracking & Notifications (Feature 5)', file: 'test-tracking-notifications-apis.js' },
-  { name: 'Audit Trail & Analytics Reporting (Feature 6)', file: 'test-audit-reporting-apis.js' }
+  { name: 'Audit Trail & Analytics Reporting (Feature 6)', file: 'test-audit-reporting-apis.js' },
+  { name: 'System Administration & Master Data (Feature 7)', file: 'test-admin-apis.js' }
 ];
 
 console.log('=================================================================');
-console.log('     Executing All System Test Suites (Features 0 to 6)          ');
+console.log('     Executing All System Test Suites (Features 0 to 7)          ');
 console.log('=================================================================\n');
 
 let totalPassed = 0;

@@ -11,6 +11,7 @@ const evidenceRoutes = require('./routes/evidence.route');
 const trackingRoutes = require('./routes/tracking.route');
 const notificationRoutes = require('./routes/notification.route');
 const reportRoutes = require('./routes/report.route');
+const adminRoutes = require('./routes/admin.route');
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/track', (req, res, next) => {
 });
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/admin', adminRoutes);
 
 
 // Health check / test endpoint

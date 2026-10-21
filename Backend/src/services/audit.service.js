@@ -9,6 +9,7 @@ const GENESIS_HASH = '0'.repeat(64);
  */
 function canonicalJson(obj) {
   if (obj === null || obj === undefined) return '';
+  if (obj instanceof Date) return JSON.stringify(obj.toISOString());
   if (typeof obj !== 'object') return JSON.stringify(obj);
   if (Array.isArray(obj)) {
     return '[' + obj.map(canonicalJson).join(',') + ']';
