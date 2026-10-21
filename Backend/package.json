@@ -14,7 +14,8 @@
     "test:case": "node test/test-case-investigation-apis.js",
     "test:evidence": "node test/test-evidence-apis.js",
     "test:tracking": "node test/test-tracking-notifications-apis.js",
-    "test:audit": "node test/test-audit-reporting-apis.js"
+    "test:audit": "node test/test-audit-reporting-apis.js",
+    "test:admin": "node test/test-admin-apis.js"
   },
   "keywords": [],
   "author": "",
