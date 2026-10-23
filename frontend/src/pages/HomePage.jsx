@@ -11,6 +11,7 @@ export function HomePage() {
   const [trackingInput, setTrackingInput] = useState('');
   const [backendStatus, setBackendStatus] = useState('checking'); // 'online' | 'offline' | 'checking'
   const [activeWorkflowStep, setActiveWorkflowStep] = useState(0);
+  const [isPipelinePaused, setIsPipelinePaused] = useState(false);
 
   useEffect(() => {
     authApi.checkBackendHealth()
@@ -30,35 +31,60 @@ export function HomePage() {
       title: 'Online Complaint Lodgment',
       badge: 'Section 154 BNSS',
       desc: 'Submit incident particulars, timestamps, location coordinates, and digital evidentiary exhibits online with zero paperwork.',
-      icon: 'edit_note'
+      icon: 'edit_note',
+      sla: 'Instant Digital Receipt',
+      statute: 'BNSS Section 154(1)',
+      trigger: 'TG_COMPLAINT_INTAKE_GEN_ID',
+      actionLink: '/file-complaint',
+      actionLabel: 'Lodge e-FIR'
     },
     {
       num: '02',
       title: 'Desk Officer Preliminary Triage',
       badge: '24-Hour SLA',
       desc: 'Station desk personnel examine cognizable criteria, verify duplicate records, tag penal sections, or request clarification.',
-      icon: 'fact_check'
+      icon: 'fact_check',
+      sla: 'Strict 24h Inquiry Limit',
+      statute: 'BNSS Sec. 173 Preliminary Enquiry',
+      trigger: 'TG_TRIAGE_DUPLICATE_CHECK',
+      actionLink: '/live-tracking',
+      actionLabel: 'Track Triage Status'
     },
     {
       num: '03',
       title: 'SHO FIR Approval & Locking',
       badge: 'Atomic Sequence',
       desc: 'Station House Officer approves registration. Unique FIR number is generated with database-level sequence locks.',
-      icon: 'local_police'
+      icon: 'local_police',
+      sla: 'Statutory Immediate Lock',
+      statute: 'BNS 2023 Penal Cognizance',
+      trigger: 'TG_SHO_FIR_SEQUENCE_LOCK',
+      actionLink: '/services',
+      actionLabel: 'Explore Services'
     },
     {
       num: '04',
       title: 'Investigation & Case Diaries',
       badge: 'Evidence Vault',
       desc: 'Assigned IO logs field diary entries, profiles accused/witnesses, and submits exhibits with SHA-256 custody tracking.',
-      icon: 'manage_search'
+      icon: 'manage_search',
+      sla: 'Continuous Malkhana Logging',
+      statute: 'BNSS Sec. 105 Digital Exhibits',
+      trigger: 'TG_EVIDENCE_SHA256_HASH',
+      actionLink: '/dashboard/evidence',
+      actionLabel: 'Evidence Vault'
     },
     {
       num: '05',
       title: 'Judicial Closure & Transparency',
       badge: 'Magistrate Filing',
       desc: 'Final chargesheet or closure report filed before court. Complainant receives full chronological timeline and feedback rights.',
-      icon: 'gavel'
+      icon: 'gavel',
+      sla: '60/90 Days Statutory Mandate',
+      statute: 'BNSS Sec. 193 Final Report',
+      trigger: 'TG_CHARGESHEET_MAGISTRATE_DISPATCH',
+      actionLink: '/live-tracking',
+      actionLabel: 'Inspect Timeline'
     }
   ];
 
@@ -208,55 +234,193 @@ export function HomePage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* STATUTORY 5-STAGE WORKFLOW LIFECYCLE                                     */}
+        {/* STATUTORY 5-STAGE WORKFLOW LIFECYCLE (SCROLLING PIPELINE ANIMATION)       */}
         {/* ========================================================================= */}
-        <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 space-y-8">
-          <div className="space-y-1.5 text-center max-w-2xl mx-auto">
-            <div className="text-[11px] font-mono uppercase font-bold text-secondary tracking-widest">
-              State Transition Life-Cycle
+        <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-outline-variant/60 pb-4">
+            <div className="space-y-1.5 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-mono uppercase font-bold tracking-widest">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Active State Machine Pipeline</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight">
+                Strictly Enforced Criminal Investigation Pipeline
+              </h2>
+              <p className="text-xs sm:text-sm text-secondary">
+                Complaints progress through an immutable state machine guarded by database-level procedural triggers.
+              </p>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight">
-              Strictly Enforced Criminal Investigation Pipeline
-            </h2>
-            <p className="text-xs sm:text-sm text-secondary">
-              Complaints progress through an immutable state machine guarded by database-level procedural triggers.
-            </p>
+
+            {/* Animation Controls & Stage Switchers */}
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsPipelinePaused(!isPipelinePaused)}
+                className="interactive-btn px-3 py-1.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-primary text-xs font-semibold hover:bg-surface-container-low flex items-center gap-1.5 shadow-xs cursor-pointer"
+                title={isPipelinePaused ? 'Resume auto-scroll' : 'Pause auto-scroll'}
+              >
+                <span className="material-symbols-outlined text-base">
+                  {isPipelinePaused ? 'play_arrow' : 'pause'}
+                </span>
+                <span className="hidden sm:inline">{isPipelinePaused ? 'Resume Scroll' : 'Pause Scroll'}</span>
+              </button>
+
+              <div className="flex items-center gap-1 bg-surface-container-low p-1 rounded-xl border border-outline-variant/60">
+                <button
+                  type="button"
+                  onClick={() => setActiveWorkflowStep((prev) => (prev === 0 ? workflowSteps.length - 1 : prev - 1))}
+                  className="interactive-btn p-1 rounded-lg text-secondary hover:text-primary hover:bg-surface-container cursor-pointer"
+                  title="Previous stage"
+                >
+                  <span className="material-symbols-outlined text-base">arrow_back</span>
+                </button>
+                <span className="text-[11px] font-mono font-bold text-primary px-1.5">
+                  0{activeWorkflowStep + 1} / 0{workflowSteps.length}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setActiveWorkflowStep((prev) => (prev === workflowSteps.length - 1 ? 0 : prev + 1))}
+                  className="interactive-btn p-1 rounded-lg text-secondary hover:text-primary hover:bg-surface-container cursor-pointer"
+                  title="Next stage"
+                >
+                  <span className="material-symbols-outlined text-base">arrow_forward</span>
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-            {workflowSteps.map((step, idx) => (
-              <motion.div
-                key={step.num}
-                whileHover={{ y: -5, scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                transition={{ duration: 0.2 }}
-                onClick={() => setActiveWorkflowStep(idx)}
-                className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-3.5 interactive-card ${
+          {/* Quick-Jump Stage Pills */}
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            {workflowSteps.map((s, idx) => (
+              <button
+                key={s.num}
+                type="button"
+                onClick={() => {
+                  setActiveWorkflowStep(idx);
+                  setIsPipelinePaused(true);
+                }}
+                className={`interactive-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                   activeWorkflowStep === idx
-                    ? 'bg-surface-container-lowest border-primary shadow-md ring-2 ring-primary/20'
-                    : 'bg-surface-container-lowest border-outline-variant/70 hover:border-primary/50'
+                    ? 'bg-primary text-white shadow-xs font-bold'
+                    : 'bg-surface-container-lowest border border-outline-variant/70 text-secondary hover:text-primary hover:bg-surface-container-low'
                 }`}
               >
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold text-secondary">{step.num}</span>
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-surface-container text-primary">
-                      {step.badge}
-                    </span>
-                  </div>
-                  <div className="w-9 h-9 rounded-xl bg-surface-container-low text-primary flex items-center justify-center">
-                    <span className="material-symbols-outlined text-xl">{step.icon}</span>
-                  </div>
-                  <h3 className="text-xs sm:text-sm font-bold text-primary tracking-tight leading-snug">
-                    {step.title}
-                  </h3>
-                </div>
-                <p className="text-[11px] text-secondary leading-relaxed font-normal">
-                  {step.desc}
-                </p>
-              </motion.div>
+                <span className="font-mono text-[10px] opacity-75">{s.num}</span>
+                <span>{s.title.split(' ')[0]}</span>
+              </button>
             ))}
           </div>
+
+          {/* Scrolling Marquee Container with Gradient Edge Fades */}
+          <div className="relative overflow-hidden py-3">
+            {/* Ambient Edge Gradient Masks */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-20 bg-gradient-to-r from-background via-background/80 to-transparent z-10"></div>
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-20 bg-gradient-to-l from-background via-background/80 to-transparent z-10"></div>
+
+            {/* Continuous Marquee Track */}
+            <div
+              className={`animate-marquee flex items-stretch gap-4 ${
+                isPipelinePaused ? 'animate-marquee-paused' : ''
+              }`}
+              onMouseEnter={() => setIsPipelinePaused(true)}
+              onMouseLeave={() => setIsPipelinePaused(false)}
+            >
+              {[...workflowSteps, ...workflowSteps].map((step, idx) => {
+                const actualStepIndex = idx % workflowSteps.length;
+                const isSelected = activeWorkflowStep === actualStepIndex;
+                return (
+                  <motion.div
+                    key={`${step.num}-${idx}`}
+                    whileHover={{ y: -6, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveWorkflowStep(actualStepIndex)}
+                    className={`w-[290px] sm:w-[325px] shrink-0 p-5 rounded-3xl border transition-all cursor-pointer flex flex-col justify-between space-y-4 interactive-card shadow-xs ${
+                      isSelected
+                        ? 'bg-surface-container-lowest border-primary ring-2 ring-primary/25 shadow-md'
+                        : 'bg-surface-container-lowest border-outline-variant/70 hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                          <span className="font-mono text-xs font-bold text-primary">Stage {step.num}</span>
+                        </div>
+                        <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-surface-container text-primary uppercase">
+                          {step.badge}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-surface-container text-primary flex items-center justify-center shrink-0 shadow-2xs">
+                          <span className="material-symbols-outlined text-xl">{step.icon}</span>
+                        </div>
+                        <h3 className="text-sm font-bold text-primary tracking-tight leading-snug">
+                          {step.title}
+                        </h3>
+                      </div>
+
+                      <p className="text-[11px] text-secondary leading-relaxed font-normal line-clamp-3">
+                        {step.desc}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-outline-variant/60 flex items-center justify-between text-[10px] font-mono text-secondary">
+                      <span className="font-semibold text-primary">{step.sla}</span>
+                      <span className="text-secondary opacity-75">{step.statute}</span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Active Step Deep Inspection Panel */}
+          {workflowSteps[activeWorkflowStep] && (
+            <motion.div
+              key={activeWorkflowStep}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="p-5 sm:p-6 rounded-3xl bg-surface-container-low border border-outline-variant/80 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <span className="material-symbols-outlined text-2xl">
+                    {workflowSteps[activeWorkflowStep].icon}
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-primary font-mono uppercase">
+                      Stage {workflowSteps[activeWorkflowStep].num}: {workflowSteps[activeWorkflowStep].title}
+                    </span>
+                    <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-outline-variant/60 font-semibold text-primary">
+                      {workflowSteps[activeWorkflowStep].statute}
+                    </span>
+                  </div>
+                  <p className="text-xs text-secondary leading-relaxed max-w-2xl">
+                    {workflowSteps[activeWorkflowStep].desc}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-secondary font-mono">
+                    <span>SLA: <strong className="text-primary">{workflowSteps[activeWorkflowStep].sla}</strong></span>
+                    <span>•</span>
+                    <span>Audit Trigger: <strong className="text-primary font-mono text-[10px]">{workflowSteps[activeWorkflowStep].trigger}</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="shrink-0 w-full md:w-auto">
+                <Link
+                  to={workflowSteps[activeWorkflowStep].actionLink}
+                  className="interactive-btn w-full md:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container transition-all shadow-xs"
+                >
+                  <span>{workflowSteps[activeWorkflowStep].actionLabel}</span>
+                  <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                </Link>
+              </motion.div>
+            </motion.div>
+          )}
         </section>
 
         {/* ========================================================================= */}

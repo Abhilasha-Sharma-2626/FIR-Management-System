@@ -117,6 +117,27 @@
   .glow-on-hover:hover::after {
     opacity: 1;
   }
+
+  /* Smooth Infinite Pipeline Marquee Animation */
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 35s linear infinite;
+    will-change: transform;
+  }
+
+  .animate-marquee-paused {
+    animation-play-state: paused !important;
+  }
 }
 
 /* Reduced Motion Support */

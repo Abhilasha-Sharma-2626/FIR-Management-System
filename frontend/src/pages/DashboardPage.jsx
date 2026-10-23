@@ -214,32 +214,45 @@ export function DashboardPage() {
         {/* Workspace Canvas */}
         <main className="flex-grow w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
           
-          {/* Greeting Banner */}
-          <section className="p-6 rounded-3xl bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-bold text-primary tracking-tight">
-                  Welcome, {user?.fullName || user?.email?.split('@')[0] || 'Citizen'}
+          {/* Role-Aware Greeting Banner */}
+          <section className="p-6 sm:p-8 rounded-3xl bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-xl sm:text-2xl font-black text-primary tracking-tight">
+                  {isCitizen ? 'Citizen Justice Workspace' : `${role} Departmental Console`}
                 </h1>
                 <span className="px-3 py-0.5 rounded-full text-xs font-mono font-bold bg-primary text-white uppercase shadow-xs">
                   {role}
                 </span>
+                {isCitizen && (
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800">
+                    Citizen Verified
+                  </span>
+                )}
               </div>
-              <p className="text-xs text-secondary leading-relaxed">
+              <p className="text-xs sm:text-sm text-secondary leading-relaxed max-w-2xl">
                 {isCitizen
-                  ? 'Access your registered dockets, investigation milestones, and official receipts.'
-                  : `Station Personnel Console: Review inbox, case diaries, and statutory filings.`}
+                  ? `Welcome, ${user?.fullName || user?.email?.split('@')[0] || 'Citizen'}. Access your registered dockets, investigation milestones, and official acknowledgements under BNSS 2023.`
+                  : `Authenticated as ${user?.fullName || user?.email?.split('@')[0]} (${role}). Accessing jurisdictional station triage queue, evidence custody logs, and case diaries.`}
               </p>
             </div>
 
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Link
-                to="/file-complaint"
-                className="interactive-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container transition-all shadow-sm shrink-0"
-              >
-                <span className="material-symbols-outlined text-base text-tertiary-fixed-dim">add</span>
-                <span>+ Lodge New e-FIR</span>
-              </Link>
+              {isCitizen ? (
+                <Link
+                  to="/file-complaint"
+                  className="interactive-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container transition-all shadow-sm shrink-0"
+                >
+                  <span className="material-symbols-outlined text-base text-tertiary-fixed-dim">edit_document</span>
+                  <span>+ Lodge New e-FIR</span>
+                </Link>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-mono text-secondary bg-surface-container-low px-3 py-1.5 rounded-xl border border-outline-variant/60 font-semibold">
+                    Station Code: {user?.stationCode || 'CPS-01'}
+                  </span>
+                </div>
+              )}
             </motion.div>
           </section>
 

@@ -52,25 +52,7 @@ export function Navbar({ onOpenFileComplaint }) {
 
   return (
     <>
-      {/* 1. TOP STATUTORY & EMERGENCY HELPLINE BANNER */}
-      <div className="bg-primary text-surface-container-lowest text-[11px] py-1 px-6 lg:px-12 flex justify-between items-center border-b border-primary-container z-40">
-        <div className="flex items-center space-x-3">
-          <span className="inline-flex items-center font-medium gap-1.5">
-            <span className={`w-2 h-2 rounded-full ${backendOnline ? 'bg-emerald-400' : 'bg-amber-400'} animate-pulse`}></span>
-            <span>POLICE DIGITAL LEDGER</span>
-          </span>
-          <span className="text-outline-variant">|</span>
-          <span className="hidden sm:inline text-surface-variant/80 font-normal">BNSS (2023) &amp; IT Act Compliant</span>
-        </div>
-        <div className="flex items-center space-x-4">
-          <a href="tel:112" className="flex items-center gap-1 text-tertiary-fixed font-semibold tracking-wider hover:underline">
-            <span className="material-symbols-outlined text-[14px]">emergency</span>
-            <span>EMERGENCY: 112</span>
-          </a>
-        </div>
-      </div>
-
-      {/* 2. STICKY MAIN NAVBAR */}
+      {/* STICKY MAIN NAVBAR */}
       <header className="top-0 sticky z-50 bg-surface-container-lowest/95 backdrop-blur-md border-b border-outline-variant/60 shadow-xs transition-all duration-200">
         <div className="w-full px-6 lg:px-12 py-3 flex items-center justify-between mx-auto max-w-7xl">
           
@@ -88,8 +70,8 @@ export function Navbar({ onOpenFileComplaint }) {
             </div>
           </Link>
 
-          {/* Desktop Multi-Page Navigation Routes */}
-          <nav className="hidden lg:flex items-center space-x-6 text-xs font-medium">
+          {/* Desktop Navigation Routes */}
+          <nav className="hidden lg:flex items-center space-x-7 text-xs font-medium">
             <Link 
               to="/" 
               className={`transition-colors py-1 ${
@@ -99,16 +81,6 @@ export function Navbar({ onOpenFileComplaint }) {
               }`}
             >
               Home
-            </Link>
-            <Link 
-              to="/fir-journey" 
-              className={`transition-colors py-1 ${
-                location.pathname === '/fir-journey' || location.pathname === '/how-it-works'
-                  ? 'text-primary font-bold border-b-2 border-primary' 
-                  : 'text-secondary hover:text-primary'
-              }`}
-            >
-              FIR Journey
             </Link>
             <Link 
               to="/services" 
@@ -129,16 +101,6 @@ export function Navbar({ onOpenFileComplaint }) {
               }`}
             >
               Track Docket
-            </Link>
-            <Link 
-              to="/privacy-policy" 
-              className={`transition-colors py-1 ${
-                location.pathname === '/privacy-policy' 
-                  ? 'text-primary font-bold border-b-2 border-primary' 
-                  : 'text-secondary hover:text-primary'
-              }`}
-            >
-              Privacy Policy
             </Link>
           </nav>
 
@@ -222,10 +184,8 @@ export function Navbar({ onOpenFileComplaint }) {
               className="lg:hidden px-6 py-4 bg-surface-container-lowest border-t border-outline-variant space-y-2 text-xs"
             >
               <Link onClick={() => setMobileMenuOpen(false)} className="block py-1.5 font-semibold text-primary" to="/">Home</Link>
-              <Link onClick={() => setMobileMenuOpen(false)} className="block py-1.5 font-semibold text-primary" to="/fir-journey">FIR Journey</Link>
               <Link onClick={() => setMobileMenuOpen(false)} className="block py-1.5 font-semibold text-primary" to="/services">Services</Link>
               <Link onClick={() => setMobileMenuOpen(false)} className="block py-1.5 font-semibold text-primary" to="/live-tracking">Track Docket</Link>
-              <Link onClick={() => setMobileMenuOpen(false)} className="block py-1.5 font-semibold text-primary" to="/privacy-policy">Privacy Policy</Link>
               
               <div className="pt-3 border-t border-outline-variant flex flex-col gap-2">
                 {isAuthenticated ? (
