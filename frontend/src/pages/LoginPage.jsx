@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import { useAuth } from '../context/AuthContext';
 import loginRegistryImg from '../assets/images/stitch_login_registry.jpg';
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
   // Form states
@@ -73,8 +74,9 @@ export function LoginPage() {
 
       const res = await login(loginEmail, passcode);
       setServerSuccess(`Identity Verified! Welcome, ${res.user?.fullName || res.user?.email}`);
+      const returnPath = location.state?.from?.pathname || '/dashboard';
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate(returnPath, { replace: true });
       }, 700);
     } catch (err) {
       setServerError(err.message || 'Authentication failed. Please verify credentials.');

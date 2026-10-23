@@ -2,8 +2,9 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import PageLoader from './components/ui/PageLoader';
+import { ProtectedRoute, PublicOnlyRoute } from './components/auth/ProtectedRoute';
 
-// Lazy-loaded pages for fast code-splitting and minimal initial bundle size
+// Lazy-loaded pages for code-splitting & performance
 const HomePage = lazy(() => import('./pages/HomePage'));
 const FirJourneyPage = lazy(() => import('./pages/FirJourneyPage'));
 const ServicesPage = lazy(() => import('./pages/ServicesPage'));
@@ -27,32 +28,165 @@ export function App() {
       <Router>
         <Suspense fallback={<PageLoader text="Loading CaseSync Platform..." />}>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/how-it-works" element={<FirJourneyPage />} />
             <Route path="/fir-journey" element={<FirJourneyPage />} />
             <Route path="/services" element={<ServicesPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/file-complaint" element={<FileComplaintPage />} />
-            <Route path="/file-fir" element={<FileComplaintPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/dashboard/live-tracking" element={<LiveTrackingPage />} />
             <Route path="/live-tracking" element={<LiveTrackingPage />} />
             <Route path="/track" element={<LiveTrackingPage />} />
-            <Route path="/dashboard/jurisdiction" element={<JurisdictionPage />} />
-            <Route path="/jurisdiction" element={<JurisdictionPage />} />
-            <Route path="/dashboard/profile" element={<ProfilePage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/dashboard/evidence" element={<EvidenceVaultPage />} />
-            <Route path="/evidence" element={<EvidenceVaultPage />} />
-            <Route path="/dashboard/court-notices" element={<CourtNoticesPage />} />
-            <Route path="/court-notices" element={<CourtNoticesPage />} />
-            <Route path="/dashboard/summons" element={<CourtNoticesPage />} />
-            <Route path="/dashboard/appointments" element={<DeskAppointmentsPage />} />
-            <Route path="/appointments" element={<DeskAppointmentsPage />} />
-            <Route path="/dashboard/grievance" element={<SupervisoryGrievancePage />} />
-            <Route path="/grievance" element={<SupervisoryGrievancePage />} />
+            <Route path="/dashboard/live-tracking" element={<LiveTrackingPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+
+            {/* Guest-Only Authentication Routes (Redirect to /dashboard if logged in) */}
+            <Route
+              path="/login"
+              element={
+                <PublicOnlyRoute>
+                  <LoginPage />
+                </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <PublicOnlyRoute>
+                  <SignupPage />
+                </PublicOnlyRoute>
+              }
+            />
+
+            {/* Protected Routes (Restricted with Sign In / Sign Up) */}
+            <Route
+              path="/file-complaint"
+              element={
+                <ProtectedRoute>
+                  <FileComplaintPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/file-fir"
+              element={
+                <ProtectedRoute>
+                  <FileComplaintPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/jurisdiction"
+              element={
+                <ProtectedRoute>
+                  <JurisdictionPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/jurisdiction"
+              element={
+                <ProtectedRoute>
+                  <JurisdictionPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/evidence"
+              element={
+                <ProtectedRoute>
+                  <EvidenceVaultPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/evidence"
+              element={
+                <ProtectedRoute>
+                  <EvidenceVaultPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/court-notices"
+              element={
+                <ProtectedRoute>
+                  <CourtNoticesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/court-notices"
+              element={
+                <ProtectedRoute>
+                  <CourtNoticesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/summons"
+              element={
+                <ProtectedRoute>
+                  <CourtNoticesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/appointments"
+              element={
+                <ProtectedRoute>
+                  <DeskAppointmentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/appointments"
+              element={
+                <ProtectedRoute>
+                  <DeskAppointmentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/grievance"
+              element={
+                <ProtectedRoute>
+                  <SupervisoryGrievancePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/grievance"
+              element={
+                <ProtectedRoute>
+                  <SupervisoryGrievancePage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Catch-All 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

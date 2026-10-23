@@ -78,6 +78,45 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #94A3B8;
   }
+
+  /* Premium Microinteractions & Hover Transitions */
+  .interactive-btn {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .interactive-btn:hover {
+    transform: translateY(-1.5px);
+  }
+  .interactive-btn:active {
+    transform: scale(0.98);
+  }
+
+  .interactive-card {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .interactive-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px -5px rgba(20, 33, 61, 0.08), 0 8px 10px -6px rgba(20, 33, 61, 0.04);
+  }
+
+  .glow-on-hover {
+    position: relative;
+    overflow: hidden;
+  }
+  .glow-on-hover::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .glow-on-hover:hover::after {
+    opacity: 1;
+  }
 }
 
 /* Reduced Motion Support */

@@ -212,49 +212,51 @@ export function DashboardPage() {
         </header>
 
         {/* Workspace Canvas */}
-        <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-6 space-y-6">
+        <main className="flex-grow w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
           
           {/* Greeting Banner */}
-          <section className="p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <section className="p-6 rounded-3xl bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-bold text-primary tracking-tight">
                   Welcome, {user?.fullName || user?.email?.split('@')[0] || 'Citizen'}
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-primary text-white uppercase">
+                <span className="px-3 py-0.5 rounded-full text-xs font-mono font-bold bg-primary text-white uppercase shadow-xs">
                   {role}
                 </span>
               </div>
-              <p className="text-xs text-secondary">
+              <p className="text-xs text-secondary leading-relaxed">
                 {isCitizen
                   ? 'Access your registered dockets, investigation milestones, and official receipts.'
                   : `Station Personnel Console: Review inbox, case diaries, and statutory filings.`}
               </p>
             </div>
 
-            <Link
-              to="/file-complaint"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container transition-all shadow-xs shrink-0"
-            >
-              <span className="material-symbols-outlined text-base text-tertiary-fixed-dim">add</span>
-              <span>+ Lodge New e-FIR</span>
-            </Link>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                to="/file-complaint"
+                className="interactive-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container transition-all shadow-sm shrink-0"
+              >
+                <span className="material-symbols-outlined text-base text-tertiary-fixed-dim">add</span>
+                <span>+ Lodge New e-FIR</span>
+              </Link>
+            </motion.div>
           </section>
 
           {/* Metric KPI Cards */}
-          <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <section className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
             {[
-              { label: 'Total Dossiers', value: totalDockets, icon: 'folder_open' },
-              { label: 'Active Inquiries', value: activeCount, icon: 'pending_actions' },
-              { label: 'Registered FIRs', value: registeredCount, icon: 'local_police' },
-              { label: 'Disposed / Closed', value: closedCount, icon: 'task_alt' }
+              { label: 'Total Dossiers', value: totalDockets, icon: 'folder_open', color: 'text-primary' },
+              { label: 'Active Inquiries', value: activeCount, icon: 'pending_actions', color: 'text-amber-600' },
+              { label: 'Registered FIRs', value: registeredCount, icon: 'local_police', color: 'text-emerald-600' },
+              { label: 'Disposed / Closed', value: closedCount, icon: 'task_alt', color: 'text-secondary' }
             ].map((kpi, idx) => (
-              <div key={idx} className="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant shadow-xs space-y-1">
+              <div key={idx} className="interactive-card p-4 sm:p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant shadow-xs space-y-1">
                 <div className="flex items-center justify-between text-secondary">
-                  <span className="text-[11px] font-semibold uppercase">{kpi.label}</span>
-                  <span className="material-symbols-outlined text-base">{kpi.icon}</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider">{kpi.label}</span>
+                  <span className={`material-symbols-outlined text-lg ${kpi.color}`}>{kpi.icon}</span>
                 </div>
-                <div className="text-2xl font-extrabold text-primary font-mono">{kpi.value}</div>
+                <div className="text-2xl sm:text-3xl font-extrabold text-primary font-mono">{kpi.value}</div>
               </div>
             ))}
           </section>
@@ -266,10 +268,10 @@ export function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTab('active')}
-                  className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  className={`interactive-btn px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     activeTab === 'active'
                       ? 'bg-primary text-white shadow-xs'
-                      : 'bg-surface-container-lowest border border-outline-variant text-secondary hover:text-primary'
+                      : 'bg-surface-container-lowest border border-outline-variant text-secondary hover:text-primary hover:bg-surface-container-low'
                   }`}
                 >
                   Active Cases ({activeCount})
@@ -277,10 +279,10 @@ export function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTab('closed')}
-                  className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  className={`interactive-btn px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     activeTab === 'closed'
                       ? 'bg-primary text-white shadow-xs'
-                      : 'bg-surface-container-lowest border border-outline-variant text-secondary hover:text-primary'
+                      : 'bg-surface-container-lowest border border-outline-variant text-secondary hover:text-primary hover:bg-surface-container-low'
                   }`}
                 >
                   Disposed / Closed ({closedCount})
@@ -288,14 +290,14 @@ export function DashboardPage() {
               </div>
 
               {/* Search input */}
-              <div className="relative w-full sm:w-64">
-                <span className="material-symbols-outlined absolute left-3 top-2 text-secondary text-base">search</span>
+              <div className="relative w-full sm:w-72">
+                <span className="material-symbols-outlined absolute left-3.5 top-2.5 text-secondary text-base">search</span>
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Filter dockets..."
-                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-outline-variant bg-surface-container-lowest outline-none focus:border-primary"
+                  placeholder="Filter by ID, place, facts..."
+                  className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl border border-outline-variant bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs"
                 />
               </div>
             </div>
@@ -327,18 +329,18 @@ export function DashboardPage() {
                       key={docket.fir_id || docket.tracking_id}
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-primary/40 transition-all shadow-xs space-y-3"
+                      className="interactive-card p-5 sm:p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-primary/40 transition-all shadow-xs space-y-3"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-outline-variant/60 pb-2.5">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-mono font-bold text-primary">
                             {docket.fir_number || docket.tracking_id}
                           </span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-surface-container text-primary">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-surface-container text-primary">
                             {docket.status}
                           </span>
                           {isClarificationNeeded && (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 animate-pulse">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 animate-pulse">
                               Action Required: Clarification Requested
                             </span>
                           )}
@@ -361,7 +363,7 @@ export function DashboardPage() {
                       </div>
 
                       {/* Action Bar */}
-                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-outline-variant/60 text-xs">
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-outline-variant/60 text-xs">
                         <div className="text-secondary text-[11px]">
                           Station: <strong className="text-primary">{docket.station_name || 'Station Jurisdiction'}</strong>
                         </div>
@@ -371,16 +373,17 @@ export function DashboardPage() {
                             <button
                               type="button"
                               onClick={() => setRespondingDocket(docket)}
-                              className="px-3 py-1.5 rounded-lg bg-amber-600 text-white font-semibold hover:bg-amber-700 transition-colors"
+                              className="interactive-btn px-3.5 py-1.5 rounded-xl bg-amber-600 text-white font-semibold hover:bg-amber-700 transition-colors cursor-pointer"
                             >
                               Submit Clarification
                             </button>
                           )}
                           <Link
                             to={`/live-tracking?id=${encodeURIComponent(idToTrack)}`}
-                            className="px-3 py-1.5 rounded-lg bg-surface-container text-primary font-semibold hover:bg-surface-variant transition-colors"
+                            className="interactive-btn px-3.5 py-1.5 rounded-xl bg-surface-container text-primary font-semibold hover:bg-surface-variant transition-colors flex items-center gap-1 shadow-2xs"
                           >
-                            Live Tracking
+                            <span className="material-symbols-outlined text-sm">radar</span>
+                            <span>Live Tracking</span>
                           </Link>
                         </div>
                       </div>

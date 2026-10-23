@@ -532,7 +532,7 @@ export function FirJourneyPage() {
         {/* STATUTORY INQUIRIES & FAQ ACCORDION                                       */}
         {/* ========================================================================= */}
         <section className="py-16 bg-surface-container-lowest border-b border-outline-variant" id="faq">
-          <div className="max-w-4xl mx-auto px-6 lg:px-12">
+          <div className="max-w-5xl mx-auto px-6 lg:px-12">
             <div className="text-center mb-12">
               <span className="text-xs uppercase font-label-md tracking-wider font-semibold text-secondary">
                 Frequently Asked Legal Questions

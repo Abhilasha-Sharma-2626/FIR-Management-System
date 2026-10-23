@@ -42,7 +42,7 @@ export function PrivacyPolicyPage() {
     <div className="min-h-screen flex flex-col bg-background text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-fixed">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl mx-auto px-6 py-12 w-full space-y-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-6 lg:px-12 py-12 space-y-10">
         {/* Header Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-secondary font-medium">
           <Link to="/" className="hover:text-primary transition-colors flex items-center gap-1">
@@ -72,19 +72,19 @@ export function PrivacyPolicyPage() {
           </p>
         </motion.div>
 
-        {/* Policy Sections */}
-        <div className="space-y-4">
+        {/* Policy Sections Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {sections.map((sec, idx) => (
             <motion.div
               key={sec.id}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.08, duration: 0.3 }}
-              className="p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/70 shadow-sm hover:border-primary/40 transition-all group"
+              className="interactive-card p-6 sm:p-7 rounded-3xl bg-surface-container-lowest border border-outline-variant/70 shadow-sm hover:border-primary/40 transition-all group flex flex-col justify-between"
             >
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-surface-container-low text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
-                  <span className="material-symbols-outlined text-xl">{sec.icon}</span>
+              <div className="space-y-3">
+                <div className="w-11 h-11 rounded-2xl bg-surface-container-low text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors shadow-xs">
+                  <span className="material-symbols-outlined text-2xl">{sec.icon}</span>
                 </div>
                 <div className="space-y-2">
                   <h2 className="text-base sm:text-lg font-bold text-primary tracking-tight">
@@ -104,13 +104,13 @@ export function PrivacyPolicyPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="p-6 rounded-2xl bg-surface-container-low border border-outline-variant text-xs text-secondary space-y-2"
+          className="p-6 sm:p-8 rounded-3xl bg-surface-container-low border border-outline-variant text-xs text-secondary space-y-2 shadow-xs"
         >
-          <div className="flex items-center gap-2 text-primary font-bold">
-            <span className="material-symbols-outlined text-base">verified</span>
+          <div className="flex items-center gap-2 text-primary font-bold text-sm">
+            <span className="material-symbols-outlined text-base text-emerald-700">verified</span>
             Vigilance &amp; Data Protection Officer Contact
           </div>
-          <p className="leading-relaxed">
+          <p className="leading-relaxed text-xs">
             For statutory inquiries regarding evidentiary records, chain of custody logs, or correction of citizen profile details, citizens may petition the jurisdictional Station House Officer or contact the State Crime Records Bureau (SCRB) Data Privacy Cell at <strong className="text-primary font-mono">dpo@casesync.police.gov.in</strong>.
           </p>
         </motion.div>
