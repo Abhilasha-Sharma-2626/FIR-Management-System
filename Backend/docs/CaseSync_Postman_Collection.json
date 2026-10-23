@@ -1,0 +1,1777 @@
+{
+  "info": {
+    "_postman_id": "casesync-api-v1-collection-postman-2026",
+    "name": "CaseSync - Police FIR & Case Management API Collection",
+    "description": "Complete Postman v2.1.0 collection for CaseSync covering end-to-end workflows: Authentication, Citizen Filing, Station Inbox Review, Legal Section Mapping, FIR Registration, Case Management, Evidence Vault & Custody Transfer, Rejection Appeals, Zero FIR Transfers, Court Outcomes, SLA Breaches, and Cryptographic Audit Verification.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "citizenToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "deskToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ioToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "shoToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "supervisorToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "auditorToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "complaintId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "trackingId",
+      "value": "TRK-2026-PS01-00001",
+      "type": "string"
+    },
+    {
+      "key": "firId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "caseId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "evidenceId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication & Profiles",
+      "item": [
+        {
+          "name": "Register Citizen",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Aaditya Narayan\",\n  \"email\": \"aaditya.narayan@example.com\",\n  \"password\": \"SecurePass@123\",\n  \"phone\": \"9876543210\",\n  \"address\": \"42 Indiranagar, Bengaluru\",\n  \"id_proof_type\": \"AADHAAR\",\n  \"id_proof_number\": \"XXXX-XXXX-9941\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login Citizen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "  pm.collectionVariables.set('citizenToken', jsonData.token);",
+                  "  pm.collectionVariables.set('token', jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"aaditya.narayan@example.com\",\n  \"password\": \"SecurePass@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login Desk Officer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "  pm.collectionVariables.set('deskToken', jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"desk.central@police.gov.in\",\n  \"password\": \"OfficerPass@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login SHO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "  pm.collectionVariables.set('shoToken', jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sho.central@police.gov.in\",\n  \"password\": \"OfficerPass@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login IO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "  pm.collectionVariables.set('ioToken', jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"io.patil@police.gov.in\",\n  \"password\": \"OfficerPass@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "  pm.collectionVariables.set('adminToken', jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@casesync.police.gov.in\",\n  \"password\": \"AdminPass@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Current Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Complaint Filing & Citizen Portal",
+      "item": [
+        {
+          "name": "File New Complaint (Submitted)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.fir_id) {",
+                  "  pm.collectionVariables.set('complaintId', res.data.fir_id);",
+                  "  pm.collectionVariables.set('firId', res.data.fir_id);",
+                  "  pm.collectionVariables.set('trackingId', res.data.tracking_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{citizenToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"station_id\": 1,\n  \"category_id\": 2,\n  \"incident_date\": \"2026-10-23T09:15:00Z\",\n  \"incident_place\": \"Brigade Road, Bengaluru\",\n  \"incident_description\": \"Two men on a red pulsar snatched a handbag containing laptop and wallet.\",\n  \"is_draft\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/complaints",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Save Complaint as Draft",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{citizenToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"station_id\": 1,\n  \"category_id\": 2,\n  \"incident_date\": \"2026-10-23T09:15:00Z\",\n  \"incident_place\": \"MG Road Metro Station\",\n  \"incident_description\": \"Lost gold chain while exiting the train.\",\n  \"is_draft\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/complaints",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Check Duplicate Complaints",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{citizenToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"station_id\": 1,\n  \"category_id\": 2,\n  \"incident_date\": \"2026-10-23T09:15:00Z\",\n  \"incident_place\": \"Brigade Road\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/complaints/check-duplicate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "check-duplicate"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get My Complaints",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{citizenToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/complaints/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "my"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Complaint Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{citizenToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/complaints/{{complaintId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "{{complaintId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Download Acknowledgement Slip",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{citizenToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/complaints/{{complaintId}}/acknowledgement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "complaints",
+                "{{complaintId}}",
+                "acknowledgement"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Police Station Triage & FIR Registration",
+      "item": [
+        {
+          "name": "Get Station Inbox (Desk Officer / SHO)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{deskToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/station/inbox?status=SUBMITTED",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "station",
+                "inbox"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "SUBMITTED"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Start Complaint Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{deskToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/firs/{{firId}}/review",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "firs",
+                "{{firId}}",
+                "review"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Tag Legal Penal Sections",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{deskToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"section_ids\": [\n    1,\n    2\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/firs/{{firId}}/sections",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "firs",
+                "{{firId}}",
+                "sections"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Formal FIR Registration (SHO Approval)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Cognizable complaint verified and sections approved.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/firs/{{firId}}/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "firs",
+                "{{firId}}",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Registered FIR Slip",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/firs/{{firId}}/slip",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "firs",
+                "{{firId}}",
+                "slip"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Investigation & Case Management",
+      "item": [
+        {
+          "name": "Check IO Caseload Workload",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cases/workload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "workload"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Assign Investigating Officer (SHO)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"io_id\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "assign"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Accept Investigation Case (IO)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ioToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/accept",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "accept"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Case Diary Entry (IO)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ioToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entry_date\": \"2026-10-23T14:30:00Z\",\n  \"activity_details\": \"Inspected robbery scene and interrogated local shopkeepers. Obtained security footage.\",\n  \"location\": \"Brigade Road Junction\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/updates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "updates"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Suspect / Accused (IO)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ioToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"person_type\": \"SUSPECT\",\n  \"name\": \"Ramesh alias Kali\",\n  \"contact_number\": \"9812345678\",\n  \"address\": \"Shivajinagar, Bengaluru\",\n  \"statement\": \"Seen fleeing scene on black pulsar.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/persons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "persons"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Chargesheet (IO)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ioToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"report_type\": \"CHARGESHEET\",\n  \"summary\": \"Investigation completed. Stolen property recovered and identified by victim.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/submit-report",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "submit-report"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Review & Approve Chargesheet (SHO)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"approved\": true,\n  \"review_notes\": \"Approved for filing before Chief Metropolitan Magistrate.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/review-report",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "review-report"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Full Case Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Evidence Management & Chain of Custody",
+      "item": [
+        {
+          "name": "List Case Evidence",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ioToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/evidence",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "evidence"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Evidence Details & Custody Log",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ioToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/evidence/{{evidenceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "evidence",
+                "{{evidenceId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verify Cryptographic SHA-256 Hash",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ioToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/evidence/{{evidenceId}}/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "evidence",
+                "{{evidenceId}}",
+                "verify"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Log Custody Transfer to FSL Lab",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ioToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to_officer_id\": 5,\n  \"to_location\": \"State Forensic Science Laboratory (FSL) Madiwala\",\n  \"purpose\": \"Chemical and ballistic examination\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/evidence/{{evidenceId}}/transfer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "evidence",
+                "{{evidenceId}}",
+                "transfer"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Rejection Appeals & Transfers",
+      "item": [
+        {
+          "name": "Citizen Files Rejection Appeal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{citizenToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appeal_reason\": \"CCTV footage proves assault occurred within station limits.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/firs/{{firId}}/appeal",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "firs",
+                "{{firId}}",
+                "appeal"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Station Appeals Queue (SHO / Supervisor)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/station/appeals",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "station",
+                "appeals"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Review Appeal Decision (SHO / Supervisor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"OVERTURNED\",\n  \"decision_notes\": \"Cognizable threshold satisfied upon re-review. Order registration.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/firs/{{firId}}/review-appeal",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "firs",
+                "{{firId}}",
+                "review-appeal"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Initiate Zero FIR Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to_station_id\": 2,\n  \"transfer_reason\": \"Zero FIR transfer to jurisdictional police station.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/transfer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "transfer"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Incoming Station Transfers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/station/transfers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "station",
+                "transfers"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Accept Case Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/accept-transfer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "accept-transfer"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Court Outcomes & Case Reopening",
+      "item": [
+        {
+          "name": "Record Court Trial Outcome (Conviction)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"court_name\": \"Chief Metropolitan Magistrate Court - 3\",\n  \"judge_name\": \"Hon. Justice V. Ramaswamy\",\n  \"verdict_date\": \"2026-10-23\",\n  \"verdict_type\": \"CONVICTION\",\n  \"sentence_details\": \"3 years rigorous imprisonment and INR 25,000 fine.\",\n  \"disposal_nature\": \"JUDICIAL_CONVICTION\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/court-outcome",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "court-outcome"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Court Trial Outcome",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/court-outcome",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "court-outcome"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reopen Case on New Material Evidence",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{shoToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reopen_reason\": \"New ballistic ballistics match linking secondary accomplice.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cases/{{firId}}/reopen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cases",
+                "{{firId}}",
+                "reopen"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Public Tracking & Timeline",
+      "item": [
+        {
+          "name": "Public Status Lookup (No Auth)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/tracking/track/{{trackingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tracking",
+                "track",
+                "{{trackingId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Chronological Case Progression Timeline",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{citizenToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tracking/firs/{{firId}}/timeline",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tracking",
+                "firs",
+                "{{firId}}",
+                "timeline"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Citizen Feedback on Closed Case",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{citizenToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comments\": \"Exceptional promptness and transparent updates from the station.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tracking/firs/{{firId}}/feedback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tracking",
+                "firs",
+                "{{firId}}",
+                "feedback"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Notifications",
+      "item": [
+        {
+          "name": "Get All Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Unread Notifications Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/unread-count",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notifications",
+                "unread-count"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mark All Notifications as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/read-all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notifications",
+                "read-all"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Audit Trail & Cryptographic Verification",
+      "item": [
+        {
+          "name": "Query Audit Log Explorer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/audit?limit=25",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "audit"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "25"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verify Cryptographic SHA-256 Forward Hash Chain",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/audit/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "audit",
+                "verify"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Reports & Analytical Intelligence",
+      "item": [
+        {
+          "name": "Disposal Rate Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reports/disposal-rate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "disposal-rate"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Pending FIRs Aging Analysis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reports/pending-firs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "pending-firs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crime Hotspots Analysis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reports/crime-hotspots",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "crime-hotspots"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IO Performance Matrix",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reports/io-performance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "io-performance"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crime Category Breakdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reports/category-breakdown",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "category-breakdown"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Active SLA Breaches Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reports/sla-breaches",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "sla-breaches"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Disposal Report as CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reports/disposal-rate/export",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "disposal-rate",
+                "export"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. System Administration",
+      "item": [
+        {
+          "name": "List Police Stations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/stations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "stations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Police Station",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"station_code\": \"PS-06\",\n  \"name\": \"Whitefield Tech Police Station\",\n  \"division\": \"East Division\",\n  \"district\": \"Bengaluru City\",\n  \"contact_phone\": \"080-22942599\",\n  \"address\": \"ITPL Main Road, Whitefield\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/stations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "stations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List All Users & Officers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Crime Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Legal Penal Sections",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/legal-sections",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "legal-sections"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get SLA Configurations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/sla",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "sla"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update SLA Configuration Threshold",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"duration_hours\": 48,\n  \"description\": \"Desk officer initial review window\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/sla/DESK_REVIEW_HOURS",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "sla",
+                "DESK_REVIEW_HOURS"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
