@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authApi } from '../lib/api';
 
 const AuthContext = createContext(null);
@@ -15,19 +15,31 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('casesync_token') || null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const logout = useCallback(async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      // ignore
+    }
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('casesync_token');
+    localStorage.removeItem('casesync_user');
+  }, []);
+
   useEffect(() => {
     async function verifyAuth() {
       if (token) {
         try {
-          const profile = await authApi.getMe();
-          if (profile?.data) {
-            setUser(profile.data);
-            localStorage.setItem('casesync_user', JSON.stringify(profile.data));
+          const profileRes = await authApi.getMe();
+          const userData = profileRes?.data || profileRes?.user;
+          if (userData) {
+            setUser(userData);
+            localStorage.setItem('casesync_user', JSON.stringify(userData));
           }
         } catch (err) {
-          console.warn('Session expired or backend unavailable:', err.message);
-          // If 401 or invalid token, clean up
-          if (err.message?.includes('token') || err.message?.includes('expired') || err.message?.includes('401')) {
+          console.warn('Session verification error:', err.message);
+          if (err.message?.includes('token') || err.message?.includes('expired') || err.message?.includes('401') || err.message?.includes('Forbidden')) {
             logout();
           }
         }
@@ -36,12 +48,14 @@ export function AuthProvider({ children }) {
     }
 
     verifyAuth();
-  }, [token]);
+  }, [token, logout]);
 
   const login = async (email, password) => {
     const response = await authApi.login(email, password);
-    if (response?.success && response.data?.token) {
-      const { token: newToken, user: userData } = response.data;
+    const payload = response?.data || response;
+    if (payload?.token) {
+      const newToken = payload.token;
+      const userData = payload.user;
       setToken(newToken);
       setUser(userData);
       localStorage.setItem('casesync_token', newToken);
@@ -56,21 +70,33 @@ export function AuthProvider({ children }) {
     return response;
   };
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('casesync_token');
-    localStorage.removeItem('casesync_user');
-  };
+  const role = user?.role || 'CITIZEN';
+  const isCitizen = role === 'CITIZEN';
+  const isDeskOfficer = role === 'DESK_OFFICER';
+  const isIo = role === 'IO';
+  const isSho = role === 'SHO';
+  const isSupervisor = role === 'SUPERVISOR';
+  const isAuditor = role === 'AUDITOR';
+  const isAdmin = role === 'ADMIN';
+  const isPolicePersonnel = ['DESK_OFFICER', 'IO', 'SHO', 'SUPERVISOR', 'AUDITOR', 'ADMIN'].includes(role);
 
   const value = {
     user,
     token,
+    role,
     isAuthenticated: !!token,
     isLoading,
     login,
     register,
     logout,
+    isCitizen,
+    isDeskOfficer,
+    isIo,
+    isSho,
+    isSupervisor,
+    isAuditor,
+    isAdmin,
+    isPolicePersonnel
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

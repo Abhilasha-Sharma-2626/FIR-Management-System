@@ -94,8 +94,8 @@ export function SignupPage() {
       return;
     }
 
-    if (!formData.password || formData.password.length < 6) {
-      setServerError('Password must be at least 6 characters.');
+    if (!formData.password || formData.password.length < 8) {
+      setServerError('Password must be at least 8 characters long per security standards.');
       return;
     }
 

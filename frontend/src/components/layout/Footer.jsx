@@ -3,36 +3,37 @@ import { Link } from 'react-router-dom';
 
 export function Footer() {
   return (
-    <footer className="docked full-width bottom-0 bg-primary border-t border-primary-container flat text-primary-fixed mt-auto">
-      <div className="w-full px-6 lg:px-12 py-12 flex flex-col md:flex-row justify-between items-center gap-6 mx-auto max-w-7xl">
+    <footer className="w-full bg-primary border-t border-primary-container text-primary-fixed mt-auto">
+      <div className="w-full px-6 lg:px-12 py-10 flex flex-col md:flex-row justify-between items-center gap-6 mx-auto max-w-7xl">
         {/* Brand & Purpose */}
         <div className="space-y-2 text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-2">
             <span className="material-symbols-outlined text-tertiary-fixed-dim">local_police</span>
-            <span className="font-headline-sm text-headline-sm font-bold text-surface-container-lowest">CaseSync</span>
-            <span className="text-xs text-on-primary-container px-2 py-0.5 rounded border border-outline">v2.5 Gov-Sim</span>
+            <span className="font-bold text-surface-container-lowest text-lg tracking-tight">CaseSync</span>
+            <span className="text-[11px] text-on-primary-container px-2 py-0.5 rounded border border-outline/50 font-mono">v1.0 Production</span>
           </div>
-          <p className="font-body-sm text-body-sm text-on-primary-container max-w-xl">
-            © 2025 CaseSync • National Police Service &amp; Law Enforcement Technical Directorate. Academic Demonstration Prototype under Statutory Governance Framework.
+          <p className="text-xs text-on-primary-container max-w-xl leading-relaxed">
+            CaseSync Police FIR &amp; Criminal Investigation Management System. Built in compliance with Bharatiya Nagarik Suraksha Sanhita (BNSS) 2023 and IT Act 2000.
           </p>
         </div>
 
         {/* Statutory Links */}
         <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 text-xs">
-          <Link className="text-on-primary-container hover:text-surface-container-lowest transition-colors duration-150 underline decoration-tertiary-fixed-dim decoration-2 underline-offset-4" to="/how-it-works">
+          <Link className="text-on-primary-container hover:text-white transition-colors" to="/fir-journey">
             FIR Journey
           </Link>
-          <Link className="text-on-primary-container hover:text-surface-container-lowest transition-colors duration-150 underline decoration-tertiary-fixed-dim decoration-2 underline-offset-4" to="/services">
+          <Link className="text-on-primary-container hover:text-white transition-colors" to="/services">
             Citizen Services
           </Link>
-          <a className="text-on-primary-container hover:text-surface-container-lowest transition-colors duration-150 underline decoration-tertiary-fixed-dim decoration-2 underline-offset-4" href="/#transparency">
-            Public Disclosure Log
-          </a>
-          <a className="text-on-primary-container hover:text-surface-container-lowest transition-colors duration-150 underline decoration-tertiary-fixed-dim decoration-2 underline-offset-4" href="/#faq">
-            Citizen Privacy Charter
-          </a>
-          <a className="text-surface-container-lowest font-medium hover:text-tertiary-fixed transition-colors duration-150 underline decoration-tertiary-fixed-dim decoration-2 underline-offset-4" href="tel:112">
-            Emergency 112
+          <Link className="text-on-primary-container hover:text-white transition-colors" to="/live-tracking">
+            Track Docket
+          </Link>
+          <Link className="text-tertiary-fixed font-semibold hover:underline transition-colors" to="/privacy-policy">
+            Privacy Policy &amp; PII Charter
+          </Link>
+          <a className="text-white font-medium hover:text-tertiary-fixed transition-colors flex items-center gap-1" href="tel:112">
+            <span className="material-symbols-outlined text-sm text-tertiary-fixed-dim">emergency</span>
+            Helpline 112
           </a>
         </div>
       </div>
