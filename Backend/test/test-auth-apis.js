@@ -1,6 +1,6 @@
 require('dotenv').config();
 const http = require('http');
-const app = require('./app');
+const app = require('../src/app');
 
 const TEST_PORT = 5001;
 const BASE_URL = `http://localhost:${TEST_PORT}`;
