@@ -6,6 +6,7 @@ const {
   validateReviewReportInput,
   validateReopenInput
 } = require('../validators/case.validator');
+const { validateCourtOutcome } = require('../validators/court-outcome.validator');
 
 /**
  * GET /api/cases/workload
@@ -232,6 +233,59 @@ async function getCaseDetails(req, res, next) {
   }
 }
 
+/**
+ * POST /api/cases/:id/court-outcome
+ * SHO or SUPERVISOR records final trial outcome and closes the case
+ */
+async function recordCourtOutcome(req, res, next) {
+  try {
+    const { isValid, errors } = validateCourtOutcome(req.body);
+    if (!isValid) {
+      return res.status(400).json({ success: false, errors });
+    }
+
+    const result = await caseService.recordCourtOutcome({
+      caseIdentifier: req.params.id,
+      userRole: req.user.role,
+      userId: req.user.userId,
+      stationId: req.user.stationId,
+      courtName: req.body.courtName,
+      caseCourtNumber: req.body.caseCourtNumber,
+      verdict: req.body.verdict,
+      judgmentDate: req.body.judgmentDate,
+      judgeName: req.body.judgeName,
+      sentenceDetails: req.body.sentenceDetails,
+      fineAmount: req.body.fineAmount,
+      remarks: req.body.remarks,
+      ipAddress: req.ip
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Court verdict recorded successfully. Case formally closed.',
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * GET /api/cases/:id/court-outcome
+ * Retrieve court trial verdict and sentencing details
+ */
+async function getCourtOutcome(req, res, next) {
+  try {
+    const result = await caseService.getCourtOutcome(req.params.id, req.user);
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getIoWorkload,
   assignIo,
@@ -241,5 +295,7 @@ module.exports = {
   submitReport,
   reviewReport,
   reopenCase,
-  getCaseDetails
+  getCaseDetails,
+  recordCourtOutcome,
+  getCourtOutcome
 };
