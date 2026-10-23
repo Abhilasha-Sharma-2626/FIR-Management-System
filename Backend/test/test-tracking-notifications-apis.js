@@ -222,12 +222,30 @@ async function runTests() {
     }
 
     // 10. Test Citizen Feedback Submission on CLOSED Case
-    // Ensure case is CLOSED
-    await pool.query("UPDATE fir SET status = 'CLOSED' WHERE fir_id = $1", [testFir.fir_id]);
+    let feedbackFirId = testFir.fir_id;
+    const closedFirRes = await pool.query(
+      `SELECT fir_id FROM fir WHERE complainant_id = $1 AND status = 'CLOSED' LIMIT 1`,
+      [citizenId]
+    );
+    if (closedFirRes.rows.length > 0) {
+      feedbackFirId = closedFirRes.rows[0].fir_id;
+    } else {
+      const insRes = await pool.query(
+        `INSERT INTO fir (
+           tracking_id, fir_number, complainant_id, station_id, incident_dt,
+           location_text, description, status, priority, is_cognizable
+         ) VALUES (
+           $1, $2, $3, 1, NOW(),
+           'MG Road, Central', 'Theft of bicycle', 'CLOSED', 2, TRUE
+         ) RETURNING fir_id`,
+        [`CMP-2026-FDBK-${Date.now()}`, `FIR/CPS-01/2026/FDBK-${Date.now()}`, citizenId]
+      );
+      feedbackFirId = insRes.rows[0].fir_id;
+    }
     // Remove any existing feedback for clean test
-    await pool.query('DELETE FROM citizen_feedback WHERE fir_id = $1', [testFir.fir_id]);
+    await pool.query('DELETE FROM citizen_feedback WHERE fir_id = $1', [feedbackFirId]);
 
-    const feedbackRes = await fetch(`${BASE_URL}/api/tracking/firs/${testFir.fir_id}/feedback`, {
+    const feedbackRes = await fetch(`${BASE_URL}/api/tracking/firs/${feedbackFirId}/feedback`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -251,7 +269,7 @@ async function runTests() {
     }
 
     // 11. Test Duplicate Feedback Rejection (409 Conflict)
-    const dupFeedbackRes = await fetch(`${BASE_URL}/api/tracking/firs/${testFir.fir_id}/feedback`, {
+    const dupFeedbackRes = await fetch(`${BASE_URL}/api/tracking/firs/${feedbackFirId}/feedback`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -269,7 +287,7 @@ async function runTests() {
     }
 
     // 12. Test Feedback Retrieval
-    const getFeedbackRes = await fetch(`${BASE_URL}/api/tracking/firs/${testFir.fir_id}/feedback`, {
+    const getFeedbackRes = await fetch(`${BASE_URL}/api/tracking/firs/${feedbackFirId}/feedback`, {
       headers: { 'Authorization': `Bearer ${shoToken}` }
     });
     const getFeedbackData = await getFeedbackRes.json();

@@ -15,7 +15,13 @@
     "test:evidence": "node test/test-evidence-apis.js",
     "test:tracking": "node test/test-tracking-notifications-apis.js",
     "test:audit": "node test/test-audit-reporting-apis.js",
-    "test:admin": "node test/test-admin-apis.js"
+    "test:admin": "node test/test-admin-apis.js",
+    "test:appeal": "node test/test-rejection-appeal-apis.js",
+    "test:transfer": "node test/test-case-transfer-apis.js",
+    "test:court-outcome": "node test/test-court-outcome-apis.js",
+    "test:complaint-draft": "node test/test-complaint-draft-duplicate-apis.js",
+    "test:acknowledgement": "node test/test-acknowledgement-slip-apis.js",
+    "test:db-hardening": "node test/test-database-hardening.js"
   },
   "keywords": [],
   "author": "",

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const firController = require('../controllers/fir.controller');
+const appealController = require('../controllers/appeal.controller');
+const complaintController = require('../controllers/complaint.controller');
 const { authenticateToken } = require('../middlewares/auth.middleware');
 const { requireRoles } = require('../middlewares/rbac.middleware');
 
@@ -15,7 +17,15 @@ router.post('/:id/request-info', requireRoles('DESK_OFFICER', 'SHO'), firControl
 router.post('/:id/reject', requireRoles('DESK_OFFICER', 'SHO'), firController.rejectComplaint);
 router.post('/:id/sections', requireRoles('DESK_OFFICER', 'SHO'), firController.tagSections);
 
+// Rejection Appeals (FR-R4: Citizen submits appeal, SHO / SUPERVISOR reviews)
+router.post('/:id/appeal', requireRoles('CITIZEN'), appealController.submitAppeal);
+router.post('/:id/review-appeal', requireRoles('SHO', 'SUPERVISOR', 'ADMIN'), appealController.reviewAppeal);
+router.get('/:id/appeals', appealController.getFirAppeals);
+
 // Formal FIR Approval (SHO ONLY)
 router.post('/:id/register', requireRoles('SHO'), firController.registerFir);
 
-module.exports = router;
+// Official FIR Slip / Acknowledgement (Officers & Citizens)
+router.get('/:id/slip', complaintController.getAcknowledgementSlip);
+
+module.exports = router;

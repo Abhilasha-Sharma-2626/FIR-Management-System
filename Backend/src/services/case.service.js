@@ -589,6 +589,13 @@ async function reopenCase({ firId, stationId, userRole, userId, reason, ipAddres
     // Transition to REOPENED then UNDER_INVESTIGATION
     await client.query(
       `UPDATE fir
+       SET status = 'REOPENED', version = version + 1, updated_at = now()
+       WHERE fir_id = $1`,
+      [firId]
+    );
+
+    await client.query(
+      `UPDATE fir
        SET status = 'UNDER_INVESTIGATION', version = version + 1, updated_at = now()
        WHERE fir_id = $1`,
       [firId]
@@ -706,6 +713,240 @@ async function getCaseDetails(firId, user) {
   };
 }
 
+/**
+ * 10. Record Court Outcome & Final Case Closure (FR-M4, §6.4, §7.1 Step 11)
+ * Transition: CHARGESHEET_FILED -> CLOSED
+ */
+async function recordCourtOutcome({
+  caseIdentifier,
+  userRole,
+  userId,
+  stationId,
+  courtName,
+  caseCourtNumber,
+  verdict,
+  judgmentDate,
+  judgeName,
+  sentenceDetails,
+  fineAmount,
+  remarks,
+  ipAddress
+}) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // 1. Fetch and Lock Case & FIR rows (check fir_id first, then case_id to avoid ID space collision)
+    let lockRes = await client.query(
+      `SELECT c.case_id, c.current_io_id, c.report_type, c.closed_at,
+              f.fir_id, f.fir_number, f.status, f.station_id, f.version, f.complainant_id
+       FROM cases c
+       JOIN fir f ON c.fir_id = f.fir_id
+       WHERE f.fir_id = $1
+       FOR UPDATE OF f, c`,
+      [caseIdentifier]
+    );
+
+    if (lockRes.rows.length === 0) {
+      lockRes = await client.query(
+        `SELECT c.case_id, c.current_io_id, c.report_type, c.closed_at,
+                f.fir_id, f.fir_number, f.status, f.station_id, f.version, f.complainant_id
+         FROM cases c
+         JOIN fir f ON c.fir_id = f.fir_id
+         WHERE c.case_id = $1
+         FOR UPDATE OF f, c`,
+        [caseIdentifier]
+      );
+    }
+
+    if (lockRes.rows.length === 0) {
+      const err = new Error('Case not found.');
+      err.statusCode = 404;
+      throw err;
+    }
+
+    const c = lockRes.rows[0];
+
+    // 2. Jurisdiction Guard: SHO can only record for their own station; SUPERVISOR/ADMIN have cross-station authority
+    if (userRole === 'SHO' && c.station_id !== stationId) {
+      const err = new Error('SHO can only record court outcomes for cases within their own police station.');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    // 3. Duplicate Check: Single final judicial outcome per case
+    const dupRes = await client.query(
+      `SELECT outcome_id FROM court_outcomes WHERE case_id = $1 OR fir_id = $2`,
+      [c.case_id, c.fir_id]
+    );
+    if (dupRes.rows.length > 0) {
+      const err = new Error('A final court outcome has already been recorded for this case.');
+      err.statusCode = 409;
+      throw err;
+    }
+
+    // 4. Status Guard: Must be in CHARGESHEET_FILED state
+    if (c.status !== 'CHARGESHEET_FILED') {
+      const err = new Error(
+        `Cannot record court outcome for case in status: ${c.status}. A court outcome can only be recorded after a chargesheet has been filed in court (status: CHARGESHEET_FILED).`
+      );
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const cleanVerdict = verdict.toUpperCase().trim();
+    const parsedFine = fineAmount !== undefined && fineAmount !== null && fineAmount !== '' ? Number(fineAmount) : 0;
+
+    // 5. Insert Court Outcome Record
+    const insertRes = await client.query(
+      `INSERT INTO court_outcomes (
+         case_id, fir_id, court_name, case_court_number, verdict,
+         judgment_date, judge_name, sentence_details, fine_amount,
+         remarks, recorded_by
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       RETURNING *`,
+      [
+        c.case_id,
+        c.fir_id,
+        courtName.trim(),
+        caseCourtNumber ? caseCourtNumber.trim() : null,
+        cleanVerdict,
+        judgmentDate,
+        judgeName ? judgeName.trim() : null,
+        sentenceDetails ? sentenceDetails.trim() : null,
+        parsedFine,
+        remarks.trim(),
+        userId
+      ]
+    );
+    const recordedOutcome = insertRes.rows[0];
+
+    // 6. Update Case: record closure timestamp and outcome summary
+    const outcomeSummary = `${cleanVerdict} - Court: ${courtName.trim()}. Remarks: ${remarks.trim()}`;
+    await client.query(
+      `UPDATE cases
+       SET closed_at = now(),
+           outcome = $1
+       WHERE case_id = $2`,
+      [outcomeSummary, c.case_id]
+    );
+
+    // 7. Transition FIR: CHARGESHEET_FILED -> CLOSED
+    await client.query(
+      `UPDATE fir
+       SET status = 'CLOSED',
+           version = version + 1,
+           updated_at = now()
+       WHERE fir_id = $1`,
+      [c.fir_id]
+    );
+
+    // 8. Record in case_status_history
+    const historyNote = `Judicial Outcome Recorded: ${cleanVerdict} by ${courtName.trim()}. Case closed.`;
+    await client.query(
+      `INSERT INTO case_status_history (fir_id, from_state, to_state, actor_id, note)
+       VALUES ($1, 'CHARGESHEET_FILED', 'CLOSED', $2, $3)`,
+      [c.fir_id, userId, historyNote]
+    );
+
+    // 9. Send In-App Notification to Complainant Citizen
+    const citizenUser = await client.query(
+      `SELECT user_id FROM citizens WHERE citizen_id = $1`,
+      [c.complainant_id]
+    );
+    if (citizenUser.rows.length > 0) {
+      await client.query(
+        `INSERT INTO notifications (user_id, fir_id, message)
+         VALUES ($1, $2, $3)`,
+        [
+          citizenUser.rows[0].user_id,
+          c.fir_id,
+          `Court verdict recorded for FIR ${c.fir_number}: ${cleanVerdict} (${courtName.trim()}). The case has now reached final closure. You can provide feedback on your case resolution.`
+        ]
+      );
+    }
+
+    // 10. Append to Tamper-Evident SHA-256 Cryptographic Audit Log
+    await logAuditEvent({
+      actorId: userId,
+      actorRole: userRole,
+      action: 'COURT_OUTCOME_RECORDED',
+      entityType: 'case',
+      entityId: c.case_id,
+      oldData: { status: 'CHARGESHEET_FILED' },
+      newData: {
+        status: 'CLOSED',
+        outcome_id: recordedOutcome.outcome_id,
+        verdict: cleanVerdict,
+        court_name: recordedOutcome.court_name,
+        case_court_number: recordedOutcome.case_court_number,
+        judgment_date: recordedOutcome.judgment_date
+      },
+      ipAddress
+    });
+
+    await client.query('COMMIT');
+
+    return {
+      outcome_id: recordedOutcome.outcome_id,
+      case_id: c.case_id,
+      fir_id: c.fir_id,
+      verdict: cleanVerdict,
+      court_name: recordedOutcome.court_name,
+      case_court_number: recordedOutcome.case_court_number,
+      judgment_date: recordedOutcome.judgment_date,
+      judge_name: recordedOutcome.judge_name,
+      sentence_details: recordedOutcome.sentence_details,
+      fine_amount: recordedOutcome.fine_amount,
+      remarks: recordedOutcome.remarks,
+      fir_status: 'CLOSED',
+      closed_at: new Date()
+    };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+/**
+ * 11. Fetch Court Outcome Details for a Case
+ */
+async function getCourtOutcome(caseIdentifier, user) {
+  const baseQuery = `
+    SELECT co.*, u.email AS recorded_by_email,
+           f.fir_number, f.status AS fir_status, f.station_id, f.complainant_id,
+           cit.citizen_id, cit.full_name AS complainant_name
+    FROM court_outcomes co
+    JOIN cases c ON co.case_id = c.case_id
+    JOIN fir f ON co.fir_id = f.fir_id
+    JOIN users u ON co.recorded_by = u.user_id
+    LEFT JOIN citizens cit ON f.complainant_id = cit.citizen_id
+  `;
+  let res = await pool.query(`${baseQuery} WHERE co.fir_id = $1`, [caseIdentifier]);
+  if (res.rows.length === 0) {
+    res = await pool.query(`${baseQuery} WHERE co.case_id = $1`, [caseIdentifier]);
+  }
+
+  if (res.rows.length === 0) {
+    const err = new Error('No court outcome found for this case.');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const outcome = res.rows[0];
+
+  // Citizen scoping check: only the complainant can view court outcome
+  if (user.role === 'CITIZEN' && user.citizenId !== outcome.complainant_id) {
+    const err = new Error('Forbidden: You can only view court outcomes for your own cases.');
+    err.statusCode = 403;
+    throw err;
+  }
+
+  return outcome;
+}
+
 module.exports = {
   getStationIoWorkload,
   assignCaseIo,
@@ -715,5 +956,7 @@ module.exports = {
   submitFinalReport,
   reviewFinalReport,
   reopenCase,
-  getCaseDetails
+  getCaseDetails,
+  recordCourtOutcome,
+  getCourtOutcome
 };

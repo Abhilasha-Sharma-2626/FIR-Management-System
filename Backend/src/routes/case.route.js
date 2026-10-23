@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const caseController = require('../controllers/case.controller');
 const evidenceController = require('../controllers/evidence.controller');
+const transferController = require('../controllers/transfer.controller');
 const { authenticateToken } = require('../middlewares/auth.middleware');
 const { requireRoles } = require('../middlewares/rbac.middleware');
 const upload = require('../middlewares/upload.middleware');
@@ -35,8 +36,19 @@ router.post(
 );
 router.get('/:caseId/evidence', evidenceController.getCaseEvidence);
 
-// 7. View Full Case Details (All authenticated roles within scope)
+// 7. Inter-Station Case Transfer & Zero FIR Flow (SHO & SUPERVISOR)
+router.post('/:id/transfer', requireRoles('SHO', 'SUPERVISOR'), transferController.initiateTransfer);
+router.post('/:id/accept-transfer', requireRoles('SHO', 'SUPERVISOR'), transferController.acceptTransfer);
+router.post('/:id/reject-transfer', requireRoles('SHO', 'SUPERVISOR'), transferController.rejectTransfer);
+router.get('/:id/transfers', transferController.getCaseTransfers);
+
+// 8. Court Outcome Recording & Case Closure (SHO & SUPERVISOR)
+router.post('/:id/court-outcome', requireRoles('SHO', 'SUPERVISOR'), caseController.recordCourtOutcome);
+router.get('/:id/court-outcome', caseController.getCourtOutcome);
+
+// 9. View Full Case Details (All authenticated roles within scope)
 router.get('/:id', caseController.getCaseDetails);
 
 module.exports = router;
+
 
