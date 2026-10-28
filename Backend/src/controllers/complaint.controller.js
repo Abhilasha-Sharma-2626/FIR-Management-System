@@ -69,10 +69,15 @@ async function getMyComplaints(req, res, next) {
   try {
     const citizenId = req.user.citizenId;
     const result = await pool.query(
-      `SELECT f.*, cc.name AS category_name, ps.name AS station_name
+      `SELECT f.*, cc.name AS category_name, ps.name AS station_name,
+              c.case_id, o.full_name AS io_name, o.badge_no AS io_badge, o.rank AS io_rank,
+              (SELECT COUNT(*) FROM evidence e WHERE e.case_id = c.case_id) AS evidence_count,
+              (SELECT COUNT(*) FROM attachments a WHERE a.fir_id = f.fir_id) AS attachment_count
        FROM fir f
        LEFT JOIN crime_categories cc ON f.category_id = cc.category_id
        LEFT JOIN police_stations ps ON f.station_id = ps.station_id
+       LEFT JOIN cases c ON f.fir_id = c.fir_id
+       LEFT JOIN officers o ON c.current_io_id = o.officer_id
        WHERE f.complainant_id = $1
        ORDER BY f.created_at DESC`,
       [citizenId]
@@ -208,7 +213,7 @@ async function trackComplaint(req, res, next) {
 async function respondToInfo(req, res, next) {
   try {
     const firId = req.params.id;
-    const { responseText } = req.body;
+    const responseText = req.body.responseText || req.body.response_text;
 
     if (!responseText || responseText.trim().length === 0) {
       return res.status(400).json({

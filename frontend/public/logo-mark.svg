@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Outer Civic Shield Outline -->
+  <path d="M24 4L8 10V22C8 32.5 15 41.5 24 44C33 41.5 40 32.5 40 22V10L24 4Z" fill="#14213D" />
+  <!-- Center Balance / Pillar in Warm Saffron -->
+  <path d="M24 14V34" stroke="#FFB703" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Top Crossbeam -->
+  <path d="M16 19H32" stroke="#FFB703" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- Left Balance Pan -->
+  <path d="M14 26C14 28 16 29 18 29C20 29 22 28 22 26" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M16 19L14 26M16 19L18 26M16 19L22 26" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.6"/>
+  <!-- Right Balance Pan -->
+  <path d="M26 26C26 28 28 29 30 29C32 29 34 28 34 26" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M32 19L26 26M32 19L30 26M32 19L34 26" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.6"/>
+  <!-- Subtle Base -->
+  <path d="M20 34H28" stroke="#FFB703" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
