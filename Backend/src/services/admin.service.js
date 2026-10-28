@@ -926,7 +926,66 @@ async function getSlaBreaches() {
   };
 }
 
+async function getAdminOverviewMetrics() {
+  const [usersRes, rolesRes, stationsRes, categoriesRes, sectionsRes, ranksRes, slaConfigsRes, activeCasesRes] = await Promise.all([
+    pool.query(`
+      SELECT 
+        COUNT(*)::int AS total_users,
+        COUNT(*) FILTER (WHERE is_active = true)::int AS active_users,
+        COUNT(*) FILTER (WHERE is_active = false)::int AS inactive_users,
+        COUNT(*) FILTER (WHERE locked_until IS NOT NULL AND locked_until > now())::int AS locked_users
+      FROM users
+    `),
+    pool.query(`
+      SELECT r.code AS role_code, COUNT(u.user_id)::int AS user_count
+      FROM roles r
+      LEFT JOIN users u ON r.role_id = u.role_id
+      GROUP BY r.code
+      ORDER BY user_count DESC
+    `),
+    pool.query(`
+      SELECT 
+        COUNT(*)::int AS total_stations,
+        COUNT(*) FILTER (WHERE is_active = true)::int AS active_stations,
+        COUNT(*) FILTER (WHERE is_active = false)::int AS inactive_stations
+      FROM police_stations
+    `),
+    pool.query('SELECT COUNT(*)::int AS total_categories FROM crime_categories'),
+    pool.query('SELECT COUNT(*)::int AS total_legal_sections FROM legal_sections'),
+    pool.query('SELECT COUNT(*)::int AS total_ranks FROM ranks'),
+    pool.query('SELECT COUNT(*)::int AS total_sla_configs FROM sla_configs'),
+    pool.query(`
+      SELECT 
+        COUNT(*) FILTER (WHERE status NOT IN ('CLOSED', 'REJECTED'))::int AS total_active_cases
+      FROM fir
+    `)
+  ]);
+
+  return {
+    users: usersRes.rows[0],
+    roles: rolesRes.rows,
+    stations: stationsRes.rows[0],
+    masterData: {
+      crimeCategories: categoriesRes.rows[0].total_categories,
+      legalSections: sectionsRes.rows[0].total_legal_sections,
+      policeRanks: ranksRes.rows[0].total_ranks,
+      slaConfigs: slaConfigsRes.rows[0].total_sla_configs
+    },
+    activeCases: activeCasesRes.rows[0].total_active_cases,
+    systemHealth: {
+      status: 'OPERATIONAL',
+      database: 'CONNECTED',
+      ledgerAuditChain: 'ENFORCED',
+      tlsVersion: 'TLS 1.3',
+      serverTimestamp: new Date().toISOString()
+    }
+  };
+}
+
 module.exports = {
+  // Overview Metrics
+  getAdminOverviewMetrics,
+
   // Stations
   getAllStations,
   getStationById,

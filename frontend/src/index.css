@@ -9,6 +9,7 @@
     --color-ivory: #F8F7F3;
     --color-white: #FFFFFF;
     --color-slate: #53657D;
+    --color-slate-light: #CBD5E1;
     --color-border: #E5E7EB;
     --color-saffron: #FFB703;
     --color-orange: #FB8500;
@@ -62,7 +63,7 @@
 @layer utilities {
   /* Editorial subtle rule */
   .rule-soft {
-    border-color: #E5E7EB;
+    border-color: var(--color-border);
   }
 
   /* Custom subtle scrollbar */
@@ -71,19 +72,19 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #F8F7F3;
+    background: var(--color-ivory);
   }
   ::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
+    background: var(--color-slate-light);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #94A3B8;
+    background: var(--color-slate);
   }
 
   /* Premium Microinteractions & Hover Transitions */
   .interactive-btn {
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .interactive-btn:hover {
     transform: translateY(-1.5px);
@@ -93,7 +94,7 @@
   }
 
   .interactive-card {
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .interactive-card:hover {
     transform: translateY(-3px);

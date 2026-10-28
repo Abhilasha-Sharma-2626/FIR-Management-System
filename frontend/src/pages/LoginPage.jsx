@@ -41,6 +41,15 @@ export function LoginPage() {
     } else if (selectedRole === 'IO') {
       setIdentifier('io.central@casesync.gov.in');
       setPasscode('Officer@12345');
+    } else if (selectedRole === 'SUPERVISOR') {
+      setIdentifier('sp.district@casesync.gov.in');
+      setPasscode('Officer@12345');
+    } else if (selectedRole === 'ADMIN') {
+      setIdentifier('admin@casesync.gov.in');
+      setPasscode('Admin@12345');
+    } else if (selectedRole === 'AUDITOR') {
+      setIdentifier('auditor@casesync.gov.in');
+      setPasscode('Auditor@12345');
     }
   };
 
@@ -113,7 +122,7 @@ export function LoginPage() {
           </nav>
           <div className="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant">
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-            <span>Secure Core Node: DEL-CENTRAL-04 (Statutory Auth Gateway v4.8)</span>
+            <span>Official Law Enforcement &amp; Citizen Portal</span>
           </div>
         </div>
       </div>
@@ -243,6 +252,27 @@ export function LoginPage() {
                   >
                     IO Demo
                   </button>
+                  <button 
+                    type="button" 
+                    onClick={() => handleDemoFill('SUPERVISOR')}
+                    className="px-2 py-1 bg-purple-50 text-purple-900 border border-purple-300 rounded text-[11px] font-semibold hover:bg-purple-100 cursor-pointer"
+                  >
+                    Supervisor (SP)
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => handleDemoFill('ADMIN')}
+                    className="px-2 py-1 bg-rose-50 text-rose-900 border border-rose-300 rounded text-[11px] font-semibold hover:bg-rose-100 cursor-pointer"
+                  >
+                    Admin (Gov SSO)
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => handleDemoFill('AUDITOR')}
+                    className="px-2 py-1 bg-teal-50 text-teal-900 border border-teal-300 rounded text-[11px] font-semibold hover:bg-teal-100 cursor-pointer"
+                  >
+                    Auditor (Vigilance)
+                  </button>
                 </div>
               </div>
 
@@ -270,7 +300,7 @@ export function LoginPage() {
                   </label>
                   <div className="relative flex rounded">
                     <span className="inline-flex items-center px-3.5 rounded-l border border-r-0 border-outline-variant bg-surface-container-low text-secondary font-body-md text-body-md select-none">
-                      🇮🇳 +91
+                      +91
                     </span>
                     <input 
                       id="identifier"
@@ -278,7 +308,7 @@ export function LoginPage() {
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
                       placeholder={authProtocol === 'otp' ? '98765 43210' : 'citizen.priya@casesync.gov.in'}
-                      className="block w-full rounded-none rounded-r border border-outline-variant px-3.5 py-2.5 text-body-md font-body-md text-on-surface placeholder:text-secondary focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all bg-surface-container-lowest"
+                      className="block w-full rounded-none rounded-r border border-outline-variant px-3.5 py-2.5 text-body-md font-body-md text-on-surface placeholder:text-secondary focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-colors bg-surface-container-lowest"
                       required
                     />
                   </div>
@@ -345,7 +375,7 @@ export function LoginPage() {
                   <button 
                     type="submit"
                     disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded bg-primary-container text-surface-container-lowest font-title-md text-title-md hover:bg-[#1e3158] active:bg-[#0f172a] shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary-container focus:ring-offset-2 cursor-pointer disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded bg-primary-container text-surface-container-lowest font-title-md text-title-md hover:bg-navy-light active:bg-navy-dark shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container focus:ring-offset-2 cursor-pointer disabled:opacity-50"
                   >
                     {isLoading ? (
                       <span className="flex items-center gap-2">
@@ -448,7 +478,7 @@ export function LoginPage() {
 
               <div className="p-6">
                 <blockquote className="italic font-body-md text-body-md text-secondary border-l-2 border-primary-container pl-3.5 mb-5">
-                  “Empowering every citizen with transparent, timestamped access to justice and case milestones without physical police station friction.”
+                  “Providing every citizen with transparent, timestamped access to justice and case milestones without physical police station friction.”
                 </blockquote>
 
                 {/* Three Pillars of e-FIR Tracking */}
@@ -496,7 +526,7 @@ export function LoginPage() {
                     If you are currently experiencing an active crime, physical threat, or immediate danger to life or property, do not wait for portal authentication.
                   </p>
                   <div className="mt-3 flex items-center gap-3">
-                    <a className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-error text-surface-container-lowest text-label-md font-label-md hover:bg-[#991b1b] transition-colors shadow-sm" href="tel:112">
+                    <a className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-error text-surface-container-lowest text-label-md font-label-md hover:bg-error/90 transition-colors shadow-sm" href="tel:112">
                       <span className="material-symbols-outlined text-base">call</span>
                       Dial Emergency 112
                     </a>
@@ -532,7 +562,7 @@ export function LoginPage() {
           <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-on-primary-container">
             <Link to="/#fir-journey" className="hover:text-surface-container-lowest transition-colors">Statutory SOP</Link>
             <Link to="/#faq" className="hover:text-surface-container-lowest transition-colors">Privacy Charter</Link>
-            <Link to="/#transparency" className="hover:text-surface-container-lowest transition-colors">Audit Ledger</Link>
+            <Link to="/#transparency" className="hover:text-surface-container-lowest transition-colors">Case Audit Trail</Link>
             <a href="tel:112" className="text-tertiary-fixed-dim hover:underline font-semibold">Emergency SOS: 112</a>
           </div>
         </div>
@@ -540,7 +570,7 @@ export function LoginPage() {
 
       {/* Forgot Password Modal */}
       {showForgotModal && (
-        <div className="fixed inset-0 z-50 bg-[#14213D]/40 backdrop-blur-[2px] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-navy/40 backdrop-blur-[2px] flex items-center justify-center p-4">
           <div className="bg-surface-container-lowest w-full max-w-md rounded-lg border border-outline-variant shadow-xl p-6">
             <h3 className="font-headline-sm font-bold text-primary mb-2">Reset Passcode / PIN</h3>
             <p className="text-xs text-secondary mb-4">

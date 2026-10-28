@@ -2,6 +2,10 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
+/**
+ * CaseSync Professional Police Dashboard Sidebar
+ * Restrained, high-contrast, officer-friendly navigation shared across all 7 roles.
+ */
 export function DashboardSidebar({ activeNav = 'dockets' }) {
   const { user, role, logout } = useAuth();
   const navigate = useNavigate();
@@ -20,245 +24,268 @@ export function DashboardSidebar({ activeNav = 'dockets' }) {
     .map(n => n[0].toUpperCase())
     .join('') || 'CS';
 
+  const isAdmin = role === 'ADMIN';
+  const isAuditor = role === 'AUDITOR';
+  const isDeskOfficer = role === 'DESK_OFFICER';
+  const isSho = role === 'SHO';
+  const isIo = role === 'IO';
+  const isSupervisor = role === 'SUPERVISOR';
+  const isPoliceRole = isDeskOfficer || isSho || isIo || isSupervisor || isAdmin || isAuditor;
+
+  const officerBadgeNo = user?.badgeNo || (
+    isAdmin ? 'ADM-SYS-001' :
+    isAuditor ? 'AUD-VIG-001' :
+    isSupervisor ? 'SP-DIST-001' :
+    isSho ? 'SHO-CPS-001' :
+    isIo ? 'IO-CPS-101' : 'DO-CPS-201'
+  );
+
+  const officerRank = user?.rank || (
+    isAdmin ? 'System Administrator' :
+    isAuditor ? 'Statutory Auditor' :
+    isSupervisor ? 'Superintendent of Police' :
+    isSho ? 'Station House Officer' :
+    isIo ? 'Investigating Officer' : 'Desk Officer'
+  );
+
+  const stationName = user?.stationName || (
+    isAdmin ? 'State Police Command Center' :
+    isAuditor ? 'Statutory Audit Directorate' :
+    isSupervisor ? 'District Police Headquarters' :
+    'Central Police Station'
+  );
+
+  const roleBadgeLabel = (
+    isAdmin ? 'ADMIN' :
+    isAuditor ? 'AUDITOR' :
+    isSupervisor ? 'SUPERVISOR' :
+    isSho ? 'SHO' :
+    isIo ? 'IO' :
+    isDeskOfficer ? 'DESK OFFICER' :
+    'CITIZEN'
+  );
+
+  // Role Navigation Configuration
+  const getNavSections = () => {
+    if (isAdmin) {
+      return [
+        {
+          title: 'System Management',
+          items: [
+            { id: 'overview', label: 'System Overview', to: '/dashboard', icon: 'dashboard' },
+            { id: 'users', label: 'User Management', to: '/dashboard?tab=users', icon: 'manage_accounts' },
+            { id: 'stations', label: 'Police Stations', to: '/dashboard?tab=stations', icon: 'apartment' },
+          ]
+        },
+        {
+          title: 'Master Data & Policy',
+          items: [
+            { id: 'master-data', label: 'Crime & Law Master Data', to: '/dashboard?tab=master-data&subtab=categories', icon: 'database' },
+            { id: 'config', label: 'Service Rules & SLAs', to: '/dashboard?tab=config', icon: 'tune' },
+            { id: 'audit', label: 'System Audit Log', to: '/dashboard?tab=audit', icon: 'history' },
+          ]
+        }
+      ];
+    }
+
+    if (isSupervisor) {
+      return [
+        {
+          title: 'District Command',
+          items: [
+            { id: 'overview', label: 'District Overview', to: '/dashboard', icon: 'dashboard' },
+            { id: 'escalations', label: 'Station Escalations', to: '/dashboard?tab=escalations', icon: 'priority_high' },
+            { id: 'appeals', label: 'Citizen Appeals', to: '/dashboard?tab=appeals', icon: 'gavel' },
+            { id: 'overdue', label: 'Overdue Cases', to: '/dashboard?tab=overdue', icon: 'schedule' },
+          ]
+        },
+        {
+          title: 'Oversight & Audit',
+          items: [
+            { id: 'reports', label: 'Performance Reports', to: '/dashboard?tab=reports', icon: 'analytics' },
+            { id: 'audit', label: 'Activity Audit Trail', to: '/dashboard?tab=audit', icon: 'history' },
+          ]
+        }
+      ];
+    }
+
+    if (isSho) {
+      return [
+        {
+          title: 'Station Operations',
+          items: [
+            { id: 'dockets', label: 'Review Queue', to: '/dashboard', icon: 'inbox' },
+            { id: 'fir-registration', label: 'FIR Registration', to: '/dashboard?tab=fir-registration', icon: 'assignment_turned_in' },
+            { id: 'io-assignment', label: 'Assign Officer', to: '/dashboard?tab=io-assignment', icon: 'person_add' },
+            { id: 'approvals', label: 'Report Approvals', to: '/dashboard?tab=approvals', icon: 'fact_check' },
+            { id: 'transfers', label: 'Case Transfers', to: '/dashboard?tab=transfers', icon: 'swap_horiz' },
+          ]
+        },
+        {
+          title: 'Custody & Evidence',
+          items: [
+            { id: 'evidence', label: 'Malkhana & Evidence', to: '/dashboard/evidence', icon: 'inventory_2' },
+          ]
+        }
+      ];
+    }
+
+    if (isIo) {
+      return [
+        {
+          title: 'Investigation',
+          items: [
+            { id: 'cases', label: 'Assigned Cases', to: '/dashboard', icon: 'folder_open' },
+            { id: 'evidence', label: 'Case Exhibits', to: '/dashboard/evidence', icon: 'inventory_2' },
+          ]
+        }
+      ];
+    }
+
+    if (isDeskOfficer) {
+      return [
+        {
+          title: 'Station Counter',
+          items: [
+            { id: 'inbox', label: 'Station Inbox', to: '/dashboard', icon: 'inbox' },
+            { id: 'appointments', label: 'Desk Appointments', to: '/appointments', icon: 'event' },
+          ]
+        }
+      ];
+    }
+
+    if (isAuditor) {
+      return [
+        {
+          title: 'Audit & Compliance',
+          items: [
+            { id: 'overview', label: 'Audit Overview', to: '/dashboard', icon: 'dashboard' },
+            { id: 'explorer', label: 'Audit Log Explorer', to: '/dashboard?tab=explorer', icon: 'manage_search' },
+            { id: 'integrity', label: 'Record Integrity Check', to: '/dashboard?tab=integrity', icon: 'verified_user' },
+            { id: 'reports', label: 'Audit Reports & Export', to: '/dashboard?tab=reports', icon: 'description' },
+          ]
+        }
+      ];
+    }
+
+    // Default: Citizen
+    return [
+      {
+        title: 'Citizen Services',
+        items: [
+          { id: 'dockets', label: 'My Complaints', to: '/dashboard', icon: 'assignment' },
+          { id: 'file-fir', label: 'File Complaint / e-FIR', to: '/dashboard/file-fir', icon: 'edit_note' },
+          { id: 'live-tracking', label: 'Track Case Status', to: '/dashboard/live-tracking', icon: 'search' },
+          { id: 'appointments', label: 'Station Appointments', to: '/appointments', icon: 'event' },
+          { id: 'summons', label: 'Court Notices', to: '/court-notices', icon: 'gavel' },
+        ]
+      },
+      {
+        title: 'Account & Information',
+        items: [
+          { id: 'profile', label: 'My Profile', to: '/dashboard/profile', icon: 'person' },
+          { id: 'guidelines', label: 'Legal Guidelines', to: '/dashboard/guidelines', icon: 'menu_book' },
+          { id: 'privacy', label: 'Privacy Charter', to: '/dashboard/privacy', icon: 'policy' },
+        ]
+      }
+    ];
+  };
+
+  const navSections = getNavSections();
+
   return (
-    <aside className="w-64 bg-navy-dark text-slate-200 border-r border-navy-light/30 flex flex-col shrink-0 min-h-screen sticky top-0 h-screen z-40 hidden md:flex">
+    <aside className="w-64 bg-[#0B1323] text-slate-200 border-r border-slate-800 flex flex-col shrink-0 min-h-screen sticky top-0 h-screen z-40 hidden md:flex font-sans">
       
       {/* Brand Header */}
-      <div className="p-4 border-b border-navy-light/30 flex items-center gap-3">
-        <Link to="/" className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-container to-primary flex items-center justify-center text-white ring-1 ring-white/10 shadow-xs shrink-0 focus-visible:ring-2 focus-visible:ring-tertiary-fixed focus-visible:outline-none">
-          <span className="material-symbols-outlined text-xl text-tertiary-fixed">local_police</span>
+      <div className="px-4 py-3.5 border-b border-slate-800/80 flex items-center gap-3">
+        <Link 
+          to="/" 
+          className="w-8 h-8 rounded-lg bg-navy border border-slate-700/80 flex items-center justify-center text-amber-400 shrink-0 hover:border-amber-400/60 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-400"
+          title="CaseSync Home"
+        >
+          <span className="material-symbols-outlined text-lg">local_police</span>
         </Link>
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
-            <Link to="/" className="text-sm font-bold text-white tracking-tight leading-tight hover:text-amber-300 transition-colors focus-visible:ring-2 focus-visible:ring-tertiary-fixed focus-visible:outline-none">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-1">
+            <Link to="/" className="text-sm font-bold text-white tracking-tight hover:text-amber-300 transition-colors">
               CaseSync
             </Link>
-            <span className="bg-primary-container text-tertiary-fixed border border-amber-400/30 text-[9px] px-1.5 py-0.5 rounded font-bold">
-              GOV
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold border border-slate-700 tracking-wider">
+              {roleBadgeLabel}
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 truncate">
-            Police Investigation System
+          <p className="text-[10px] text-slate-400 truncate mt-0.5">
+            {stationName}
           </p>
         </div>
       </div>
 
-      {/* Authenticated User Badge Card */}
-      <div className="mx-3 my-3 p-3 rounded-xl bg-navy-deep border border-navy-light/30 shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-full bg-primary-container border border-amber-400/30 flex items-center justify-center font-bold text-amber-300 text-xs shrink-0">
-            {avatarInitials}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1">
-              <p className="text-xs font-bold text-white truncate">{displayName}</p>
-            </div>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-[9px] text-slate-400">{citizenId}</span>
-              <span className="text-[9px] px-1.5 py-0.5 rounded font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800">
-                {role || 'CITIZEN'}
-              </span>
-            </div>
-          </div>
+      {/* Authenticated Officer / User Summary */}
+      <div className="mx-3 my-2.5 px-3 py-2.5 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-amber-400 shrink-0">
+          {avatarInitials}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold text-white truncate leading-tight">
+            {displayName}
+          </p>
+          <p className="text-[10px] text-slate-400 truncate mt-0.5">
+            {isPoliceRole ? `${officerRank} • ${officerBadgeNo}` : citizenId}
+          </p>
         </div>
       </div>
 
-      {/* Navigation Groups */}
-      <div className="flex-1 overflow-y-auto px-3 space-y-4 text-xs font-medium py-2">
-        {/* Group 1: Dossier Services */}
-        <nav className="space-y-1">
-          <p className="px-3 text-[11px] font-semibold text-slate-400 mb-1">
-            Dossier Services
-          </p>
-
-          <Link 
-            to="/dashboard"
-            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'dockets'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-amber-300">folder_open</span>
-              <span>Dossiers &amp; Cases</span>
-            </span>
-          </Link>
-
-          <Link 
-            to="/dashboard/live-tracking"
-            className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'live-tracking'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-cyan-400">radar</span>
-              <span>Live Case Tracking</span>
-            </span>
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 whitespace-nowrap">
-              Live
-            </span>
-          </Link>
-
-          <Link 
-            to="/dashboard/evidence"
-            className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'evidence'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-amber-400">lock_person</span>
-              <span>Evidence Vault</span>
-            </span>
-          </Link>
-
-          <Link 
-            to="/dashboard/file-fir"
-            className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'file-fir'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-amber-300">edit_document</span>
-              <span>+ Lodge New e-FIR</span>
-            </span>
-          </Link>
-        </nav>
-
-        {/* Group 2: Statutory Citizen Services */}
-        <nav className="space-y-1">
-          <p className="px-3 text-[11px] font-semibold text-slate-400 mb-1">
-            Statutory Services
-          </p>
-
-          <Link 
-            to="/dashboard/court-notices" 
-            className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'summons' || activeNav === 'court-notices'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-indigo-400">gavel</span>
-              <span>Summons &amp; Notices</span>
-            </span>
-          </Link>
-
-          <Link 
-            to="/dashboard/appointments" 
-            className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'appointments'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-emerald-400">event_available</span>
-              <span>Desk Appointments</span>
-            </span>
-          </Link>
-
-          <Link 
-            to="/dashboard/grievance" 
-            className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'grievance'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-rose-400">campaign</span>
-              <span>Grievances &amp; Appeals</span>
-            </span>
-          </Link>
-
-          <Link 
-            to="/dashboard/jurisdiction" 
-            className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'jurisdiction'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-teal-400">location_searching</span>
-              <span>Station Locator</span>
-            </span>
-          </Link>
-        </nav>
-
-        {/* Group 3: Governance & Recourse */}
-        <nav className="space-y-1">
-          <p className="px-3 text-[11px] font-semibold text-slate-400 mb-1">
-            Governance &amp; Recourse
-          </p>
-
-          <Link 
-            to="/dashboard/profile" 
-            className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'profile'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-slate-300">account_circle</span>
-              <span>Citizen Profile &amp; PII</span>
-            </span>
-          </Link>
-
-          <Link 
-            to="/dashboard/privacy" 
-            className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'privacy'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-slate-400">policy</span>
-              <span>Privacy &amp; DPDP Act</span>
-            </span>
-          </Link>
-
-          <Link 
-            to="/dashboard/guidelines" 
-            className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              activeNav === 'guidelines'
-                ? 'bg-primary-container text-white border-l-2 border-amber-400 font-bold shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-navy-deep'
-            }`}
-          >
-            <span className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-base text-slate-400">menu_book</span>
-              <span>FIR Legal Guidelines</span>
-            </span>
-          </Link>
-        </nav>
+      {/* Navigation Links */}
+      <div className="flex-1 overflow-y-auto px-3 py-1 space-y-4 text-xs font-medium">
+        {navSections.map((section, sIdx) => (
+          <div key={sIdx} className="space-y-0.5">
+            <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              {section.title}
+            </p>
+            {section.items.map((item) => {
+              const isActive = activeNav === item.id;
+              return (
+                <Link
+                  key={item.id}
+                  to={item.to}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-400 ${
+                    isActive
+                      ? 'bg-slate-800 text-white font-semibold border-l-2 border-amber-400'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                  }`}
+                >
+                  <span className={`material-symbols-outlined text-[18px] shrink-0 ${
+                    isActive ? 'text-amber-400' : 'text-slate-400'
+                  }`}>
+                    {item.icon}
+                  </span>
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       {/* Sidebar Footer */}
-      <div className="p-3 border-t border-navy-light/30 space-y-2 bg-navy-dark">
-        <a className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-error hover:bg-error/90 text-white text-xs font-bold transition-colors shadow-xs active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none" href="tel:112">
-          <span className="material-symbols-outlined text-sm">emergency</span>
-          <span className="whitespace-nowrap">Emergency SOS: 112</span>
+      <div className="p-3 border-t border-slate-800 bg-[#0B1323] space-y-2">
+        <a 
+          href="tel:112"
+          className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-md bg-rose-950/80 hover:bg-rose-900 border border-rose-800 text-rose-200 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-400"
+        >
+          <span className="material-symbols-outlined text-sm text-rose-400">call</span>
+          <span>Emergency Police: 112</span>
         </a>
-        
-        <div className="flex items-center justify-between text-[10px] text-slate-400 px-1">
-          <span>TLS 1.3 Active</span>
-          <button 
+
+        <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
+          <span className="text-[10px] text-slate-400">CaseSync Police Portal</span>
+          <button
             type="button"
-            onClick={handleLogout} 
-            className="text-slate-400 hover:text-white flex items-center gap-0.5 cursor-pointer transition-colors active:scale-95 focus-visible:ring-1 focus-visible:ring-white focus-visible:outline-none" 
+            onClick={handleLogout}
+            className="flex items-center gap-1 text-slate-300 hover:text-white cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white rounded px-1.5 py-0.5"
+            title="Sign out of system"
           >
-            <span>Exit</span>
+            <span>Sign Out</span>
             <span className="material-symbols-outlined text-xs">logout</span>
           </button>
         </div>

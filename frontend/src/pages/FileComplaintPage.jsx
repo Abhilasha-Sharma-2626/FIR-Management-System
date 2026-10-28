@@ -180,7 +180,7 @@ export function FileComplaintPage() {
                 {submissionSuccess.status === 'DRAFT' ? 'Complaint Draft Preserved' : 'Complaint Successfully Filed & Lodged'}
               </h1>
               <p className="text-xs sm:text-sm text-secondary max-w-lg mx-auto leading-relaxed">
-                Your dossier has been transmitted to the station triage desk and recorded in the forward-chained audit ledger.
+                Your complaint has been submitted to the police station and officially recorded.
               </p>
             </div>
 
@@ -327,7 +327,7 @@ export function FileComplaintPage() {
                         <select
                           value={stationId}
                           onChange={(e) => setStationId(e.target.value)}
-                          className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-low text-xs text-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer"
+                          className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-low text-xs text-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors cursor-pointer"
                         >
                           {stations.map((st) => (
                             <option key={st.station_id} value={st.station_id}>
@@ -336,7 +336,7 @@ export function FileComplaintPage() {
                           ))}
                         </select>
                         <p className="text-[11px] text-secondary mt-1">
-                          If uncertain, choose the nearest station. Cases outside territory are transferred seamlessly via mandatory Zero FIR protocols.
+                          If uncertain, choose the nearest station. Cases outside territory are transferred automatically via mandatory Zero FIR protocols.
                         </p>
                       </div>
 
@@ -451,7 +451,7 @@ export function FileComplaintPage() {
                           Supporting Documents / Photos / Purchase Receipts (Optional)
                         </label>
                         <p className="text-[11px] text-secondary">
-                          PDF, PNG, JPG files up to 10MB. Files are cryptographically SHA-256 hashed upon upload for legal evidentiary integrity.
+                          PDF, PNG, JPG files up to 10MB. Uploaded files are securely stored with checksum verification for official records.
                         </p>
 
                         <div className="border-2 border-dashed border-outline-variant hover:border-primary/60 rounded-2xl p-8 text-center transition-all bg-surface-container-low/40 group cursor-pointer">
@@ -474,7 +474,7 @@ export function FileComplaintPage() {
                             </div>
                             {selectedFile ? (
                               <div className="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-mono">
-                                Size: {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB • Ready for SHA-256 Hashing
+                                Size: {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB • Ready for upload
                               </div>
                             ) : (
                               <p className="text-[11px] text-secondary">PNG, JPG, PDF documents up to 10MB</p>

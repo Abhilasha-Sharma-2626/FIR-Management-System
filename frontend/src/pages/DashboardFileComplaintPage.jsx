@@ -234,7 +234,7 @@ export function DashboardFileComplaintPage() {
               <div className="space-y-1">
                 <h2 className="text-xl font-black text-slate-900">e-FIR Successfully Lodged</h2>
                 <p className="text-xs text-slate-600 max-w-md mx-auto">
-                  Your formal complaint has been cryptographically signed and registered in the police intake register.
+                  Your formal complaint has been officially registered in the police intake register.
                 </p>
               </div>
 
@@ -498,7 +498,7 @@ export function DashboardFileComplaintPage() {
                       {selectedFile ? selectedFile.name : 'Choose file to attach to dossier'}
                     </div>
                     <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
-                      Files are cryptographically hashed with SHA-256 upon intake and recorded into the evidence chain of custody.
+                      Uploaded files are securely verified and recorded in the evidence custody register.
                     </p>
                     <label className="inline-block px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-blue-900 text-blue-950 font-bold text-xs cursor-pointer shadow-2xs transition-colors">
                       Browse File
@@ -554,7 +554,7 @@ export function DashboardFileComplaintPage() {
                 <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-5">
                   <div className="border-b border-slate-100 pb-3">
                     <h2 className="text-sm font-bold text-slate-900">Review &amp; Statutory Affirmation</h2>
-                    <p className="text-xs text-slate-500">Verify particulars before issuing irreversible cryptographic intake.</p>
+                    <p className="text-xs text-slate-500">Please verify all details carefully before submitting your complaint.</p>
                   </div>
 
                   {/* Potential Duplicate Warning Hint (FR-C4) */}
@@ -611,7 +611,7 @@ export function DashboardFileComplaintPage() {
                       {isSubmitting ? (
                         <>
                           <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin motion-reduce:animate-none"></span>
-                          <span>Cryptographically Signing…</span>
+                          <span>Submitting Complaint…</span>
                         </>
                       ) : (
                         <>

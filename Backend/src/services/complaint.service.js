@@ -4,13 +4,22 @@ const { logAuditEvent } = require('./audit.service');
 
 async function generateTrackingId(client) {
   const currentYear = new Date().getFullYear();
-  const countRes = await client.query(
-    `SELECT COUNT(*) FROM fir WHERE tracking_id LIKE $1`,
-    [`CMP-${currentYear}-%`]
+  const maxRes = await client.query(
+    `SELECT MAX(SUBSTRING(tracking_id FROM '^CMP-${currentYear}-([0-9]{1,6})$')::integer) AS max_seq
+     FROM fir
+     WHERE tracking_id ~ $1`,
+    [`^CMP-${currentYear}-[0-9]{1,6}$`]
   );
-  const nextSeq = parseInt(countRes.rows[0].count, 10) + 1;
-  const padded = String(nextSeq).padStart(6, '0');
-  return `CMP-${currentYear}-${padded}`;
+  let nextSeq = (parseInt(maxRes.rows[0]?.max_seq, 10) || 0) + 1;
+  let candidate = `CMP-${currentYear}-${String(nextSeq).padStart(6, '0')}`;
+
+  while (true) {
+    const existCheck = await client.query('SELECT 1 FROM fir WHERE tracking_id = $1', [candidate]);
+    if (existCheck.rowCount === 0) break;
+    nextSeq++;
+    candidate = `CMP-${currentYear}-${String(nextSeq).padStart(6, '0')}`;
+  }
+  return candidate;
 }
 
 async function createComplaint({ citizenId, userId, data, ipAddress }) {
@@ -520,6 +529,21 @@ async function generateAcknowledgementSlip(firIdentifier, user) {
   );
   const caseInfo = caseRes.rows.length > 0 ? caseRes.rows[0] : null;
 
+  // Fetch Timeline & Status History
+  const historyRes = await pool.query(
+    `SELECT h.history_id, h.from_state, h.to_state, h.note, h.created_at,
+            COALESCE(o.full_name, c.full_name, u.email) AS actor_name,
+            r.code AS actor_role
+     FROM case_status_history h
+     LEFT JOIN users u ON h.actor_id = u.user_id
+     LEFT JOIN roles r ON u.role_id = r.role_id
+     LEFT JOIN officers o ON u.user_id = o.user_id
+     LEFT JOIN citizens c ON u.user_id = c.user_id
+     WHERE h.fir_id = $1
+     ORDER BY h.created_at ASC`,
+    [fir.fir_id]
+  );
+
   // Determine Document Category
   const isRegisteredFir = Boolean(fir.fir_number);
   const documentType = isRegisteredFir ? 'OFFICIAL_FIR_SLIP' : 'COMPLAINT_INTAKE_ACKNOWLEDGEMENT';
@@ -541,10 +565,13 @@ async function generateAcknowledgementSlip(firIdentifier, user) {
     trackingId: fir.tracking_id,
     firNumber: fir.fir_number,
     status: fir.status,
+    rejectionReason: fir.rejection_reason,
     priority: fir.priority === 1 ? 'High' : fir.priority === 2 ? 'Medium' : 'Low',
+    priorityLevel: fir.priority,
     submittedAt: fir.submitted_at,
     registeredAt: fir.registered_at || null,
     createdAt: fir.created_at,
+    timeline: historyRes.rows,
     policeStation: {
       stationId: fir.station_id,
       name: fir.station_name || 'Station Unassigned / Zero FIR',

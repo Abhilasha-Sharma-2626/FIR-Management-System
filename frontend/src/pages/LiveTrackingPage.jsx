@@ -281,7 +281,10 @@ export function LiveTrackingPage() {
                       <span className="text-secondary text-[10px] uppercase font-mono block">Station Jurisdiction</span>
                       <strong className="text-primary font-bold">{caseData.station_name || 'Central Police Station'}</strong>
                       {caseData.station_phone && (
-                        <div className="text-[11px] text-secondary font-mono mt-0.5">📞 {caseData.station_phone}</div>
+                        <div className="text-[11px] text-secondary font-mono mt-0.5 flex items-center gap-1">
+                          <span className="material-symbols-outlined text-xs">call</span>
+                          <span>{caseData.station_phone}</span>
+                        </div>
                       )}
                     </div>
                     <div>
@@ -355,13 +358,16 @@ export function LiveTrackingPage() {
                                 type="button"
                                 key={s}
                                 onClick={() => setRating(s)}
-                                className={`interactive-btn px-3 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                                className={`interactive-btn px-3 py-2 rounded-xl border text-xs font-bold transition-colors cursor-pointer ${
                                   rating >= s
                                     ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-xs'
                                     : 'bg-surface-container-low text-secondary border-outline-variant hover:border-amber-300'
                                 }`}
                               >
-                                ★ {s} Star{s > 1 ? 's' : ''}
+                                <span className="inline-flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-sm align-middle">star</span>
+                                  <span>{s} Star{s > 1 ? 's' : ''}</span>
+                                </span>
                               </button>
                             ))}
                           </div>
@@ -417,8 +423,9 @@ export function LiveTrackingPage() {
                     {caseData.assigned_io.phone && (
                       <div className="pt-2 border-t border-outline-variant/60 flex items-center justify-between text-xs">
                         <span className="text-secondary">Official Contact:</span>
-                        <a href={`tel:${caseData.assigned_io.phone}`} className="font-mono text-primary font-bold hover:underline">
-                          📞 {caseData.assigned_io.phone}
+                        <a href={`tel:${caseData.assigned_io.phone}`} className="font-mono text-primary font-bold hover:underline inline-flex items-center gap-1">
+                          <span className="material-symbols-outlined text-xs">call</span>
+                          <span>{caseData.assigned_io.phone}</span>
                         </a>
                       </div>
                     )}
@@ -446,8 +453,9 @@ export function LiveTrackingPage() {
                   {caseData.station_phone && (
                     <div className="pt-2 border-t border-outline-variant/60 flex items-center justify-between text-xs">
                       <span className="text-secondary">Duty Officer Desk:</span>
-                      <a href={`tel:${caseData.station_phone}`} className="font-mono text-primary font-bold hover:underline">
-                        📞 {caseData.station_phone}
+                      <a href={`tel:${caseData.station_phone}`} className="font-mono text-primary font-bold hover:underline inline-flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">call</span>
+                        <span>{caseData.station_phone}</span>
                       </a>
                     </div>
                   )}

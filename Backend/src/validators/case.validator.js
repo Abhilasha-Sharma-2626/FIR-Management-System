@@ -1,6 +1,7 @@
-function validateAssignInput(data) {
+function validateAssignInput(data = {}) {
   const errors = [];
-  if (!data.officerId || isNaN(parseInt(data.officerId, 10))) {
+  const oId = data.officerId || data.officer_id || data.io_id;
+  if (!oId || isNaN(parseInt(oId, 10))) {
     errors.push('A valid officerId is required for assignment.');
   }
   return { isValid: errors.length === 0, errors };

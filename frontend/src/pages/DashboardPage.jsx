@@ -4,6 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import DashboardSidebar from '../components/layout/DashboardSidebar';
 import { complaintsApi, firApi, notificationsApi } from '../lib/api';
+import {
+  MetricCard,
+  StatusBadge,
+  EmptyState,
+  ErrorState,
+  MetricCardSkeleton,
+  DocketCardSkeleton,
+  Button
+} from '../components/ui';
 
 export function DashboardPage() {
   const { user, isAuthenticated, role, isCitizen, logout } = useAuth();
@@ -12,6 +21,7 @@ export function DashboardPage() {
   // State
   const [dockets, setDockets] = useState([]);
   const [loadingDockets, setLoadingDockets] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [activeTab, setActiveTab] = useState('active'); // 'active' | 'closed' | 'all'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
@@ -37,10 +47,11 @@ export function DashboardPage() {
   const [slipData, setSlipData] = useState(null);
   const [slipLoading, setSlipLoading] = useState(false);
 
-  // Load User's Data
+  // Load User's Data from backend
   const loadDashboardData = useCallback(async () => {
     if (!isAuthenticated) return;
     setLoadingDockets(true);
+    setFetchError(null);
     try {
       if (isCitizen) {
         const res = await complaintsApi.getMyComplaints();
@@ -53,7 +64,7 @@ export function DashboardPage() {
         setDockets(Array.isArray(list) ? list : []);
       }
 
-      // Load Notifications
+      // Load Notifications from actual notification API
       try {
         const [notifsRes, countRes] = await Promise.all([
           notificationsApi.getAll(),
@@ -66,6 +77,7 @@ export function DashboardPage() {
       }
     } catch (err) {
       console.warn('Dashboard data fetch error:', err.message);
+      setFetchError(err.message || 'Unable to connect to CaseSync server. Please verify your connection.');
     } finally {
       setLoadingDockets(false);
     }
@@ -147,7 +159,7 @@ export function DashboardPage() {
   // Filtered Dockets
   const filteredDockets = dockets.filter((d) => {
     const status = d.status || '';
-    const isClosed = ['CLOSED', 'REJECTED', 'DISMISSED', 'CHARGESHEET_FILED'].includes(status);
+    const isClosed = ['CLOSED', 'REJECTED', 'DISMISSED', 'QUASHED', 'CHARGESHEET_FILED', 'CLOSURE_FILED'].includes(status);
     
     let matchesTab = true;
     if (activeTab === 'active') matchesTab = !isClosed;
@@ -165,52 +177,13 @@ export function DashboardPage() {
     return matchesTab && matchesSearch && matchesCategory;
   });
 
-  // Calculate Metrics
+  // Calculate Exact BNSS Complaint Lifecycle Metrics from Actual API Data
   const totalDockets = dockets.length;
-  const activeCount = dockets.filter(d => !['CLOSED', 'REJECTED', 'DISMISSED', 'CHARGESHEET_FILED'].includes(d.status)).length;
-  const registeredCount = dockets.filter(d => ['REGISTERED', 'ASSIGNED', 'UNDER_INVESTIGATION', 'CHARGESHEET_FILED'].includes(d.status)).length;
-  const closedCount = dockets.filter(d => ['CLOSED', 'REJECTED', 'DISMISSED', 'CHARGESHEET_FILED'].includes(d.status)).length;
+  const investigationCount = dockets.filter(d => ['REGISTERED', 'ASSIGNED', 'UNDER_INVESTIGATION', 'PENDING_APPROVAL'].includes(d.status)).length;
+  const clarificationCount = dockets.filter(d => d.status === 'INFO_REQUESTED').length;
+  const closedCount = dockets.filter(d => ['CLOSED', 'REJECTED', 'QUASHED', 'CHARGESHEET_FILED', 'CLOSURE_FILED'].includes(d.status)).length;
+  const activeCount = dockets.filter(d => !['CLOSED', 'REJECTED', 'QUASHED', 'CHARGESHEET_FILED', 'CLOSURE_FILED'].includes(d.status)).length;
 
-  // Status badge config helper
-  const getStatusConfig = (status) => {
-    switch (status) {
-      case 'DRAFT':
-        return { label: 'Draft Saved', bg: 'bg-slate-100 text-slate-800 border-slate-300', dot: 'bg-slate-400' };
-      case 'SUBMITTED':
-        return { label: 'Complaint Intake', bg: 'bg-sky-50 text-sky-800 border-sky-300', dot: 'bg-sky-500 animate-pulse' };
-      case 'UNDER_REVIEW':
-        return { label: 'Under Review', bg: 'bg-indigo-50 text-indigo-800 border-indigo-300', dot: 'bg-indigo-500 animate-pulse' };
-      case 'INFO_REQUESTED':
-        return { label: 'Action Required: Clarification', bg: 'bg-amber-100 text-amber-900 border-amber-400', dot: 'bg-amber-600 animate-ping' };
-      case 'REJECTED':
-        return { label: 'Triage Disposed / Rejected', bg: 'bg-rose-50 text-rose-800 border-rose-300', dot: 'bg-rose-500' };
-      case 'REGISTERED':
-        return { label: 'FIR Registered', bg: 'bg-emerald-50 text-emerald-800 border-emerald-300', dot: 'bg-emerald-500' };
-      case 'ASSIGNED':
-      case 'UNDER_INVESTIGATION':
-        return { label: 'Under Active Investigation', bg: 'bg-teal-50 text-teal-800 border-teal-300', dot: 'bg-teal-500 animate-pulse' };
-      case 'PENDING_APPROVAL':
-        return { label: 'Report Pending SHO Approval', bg: 'bg-purple-50 text-purple-800 border-purple-300', dot: 'bg-purple-500' };
-      case 'CHARGESHEET_FILED':
-        return { label: 'Chargesheet Filed in Court', bg: 'bg-blue-50 text-blue-900 border-blue-300', dot: 'bg-blue-600' };
-      case 'CLOSED':
-        return { label: 'Case Disposed & Closed', bg: 'bg-emerald-50 text-emerald-800 border-emerald-300', dot: 'bg-emerald-600' };
-      default:
-        return { label: status, bg: 'bg-slate-100 text-slate-800 border-slate-300', dot: 'bg-slate-500' };
-    }
-  };
-
-  const getPriorityConfig = (priority) => {
-    switch (priority) {
-      case 1:
-        return { label: 'P1 - High / Urgent', color: 'bg-red-50 text-red-700 border-red-200' };
-      case 2:
-        return { label: 'P2 - Standard Priority', color: 'bg-amber-50 text-amber-700 border-amber-200' };
-      case 3:
-      default:
-        return { label: 'P3 - Routine Inquiry', color: 'bg-slate-50 text-slate-600 border-slate-200' };
-    }
-  };
 
   return (
     <div className="min-h-screen flex bg-ivory text-slate-900 antialiased font-sans selection:bg-blue-100 selection:text-blue-900">
@@ -367,24 +340,48 @@ export function DashboardPage() {
           </section>
 
           {/* Metric KPI Cards */}
-          <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {[
-              { label: 'Total Dossiers', value: totalDockets, icon: 'folder_open', color: 'text-blue-900', bg: 'bg-blue-50 border-blue-200' },
-              { label: 'Active Inquiries', value: activeCount, icon: 'pending_actions', color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
-              { label: 'Registered FIRs', value: registeredCount, icon: 'local_police', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
-              { label: 'Disposed / Closed', value: closedCount, icon: 'task_alt', color: 'text-slate-700', bg: 'bg-slate-100 border-slate-200' }
-            ].map((kpi, idx) => (
-              <div key={idx} className="interactive-card p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:shadow-xs transition-colors space-y-1.5">
-                <div className="flex items-center justify-between text-slate-500">
-                  <span className="text-xs font-semibold text-slate-600">{kpi.label}</span>
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${kpi.bg} border ${kpi.color}`}>
-                    <span className="material-symbols-outlined text-base">{kpi.icon}</span>
-                  </div>
-                </div>
-                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono tracking-tight">{kpi.value}</div>
-              </div>
-            ))}
-          </section>
+          {loadingDockets ? (
+            <MetricCardSkeleton count={4} />
+          ) : (
+            <section className="grid grid-cols-2 sm:grid-cols-4 gap-4" aria-label="Key Performance Indicators">
+              <MetricCard
+                title="Total Dossiers"
+                value={totalDockets}
+                icon="folder_open"
+                variant="navy"
+                description="All submitted records"
+                onClick={() => setActiveTab('all')}
+                isActive={activeTab === 'all'}
+              />
+              <MetricCard
+                title="Under Investigation"
+                value={investigationCount}
+                icon="manage_search"
+                variant="emerald"
+                description="Active IO investigations"
+                onClick={() => setActiveTab('active')}
+                isActive={activeTab === 'active'}
+              />
+              <MetricCard
+                title="Action Required"
+                value={clarificationCount}
+                icon="help_outline"
+                variant="amber"
+                badge={clarificationCount > 0 ? `${clarificationCount} Action` : undefined}
+                description="Desk clarification notices"
+                onClick={() => setActiveTab('active')}
+              />
+              <MetricCard
+                title="Disposed / Closed"
+                value={closedCount}
+                icon="task_alt"
+                variant="slate"
+                description="Concluded cases & disposals"
+                onClick={() => setActiveTab('closed')}
+                isActive={activeTab === 'closed'}
+              />
+            </section>
+          )}
 
           {/* Dockets Controls & Filter */}
           <section className="space-y-4">
@@ -440,29 +437,46 @@ export function DashboardPage() {
 
             {/* Dockets List */}
             {loadingDockets ? (
-              <div className="p-16 text-center text-xs text-slate-500 space-y-3 bg-white rounded-2xl border border-slate-200">
-                <div className="w-7 h-7 border-3 border-blue-900 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                <p className="font-medium">Connecting to Police Docket Ledger &amp; Authenticating Records...</p>
-              </div>
+              <DocketCardSkeleton count={3} />
+            ) : fetchError && dockets.length === 0 ? (
+              <ErrorState
+                title="Police Case Records Temporarily Unavailable"
+                message={fetchError}
+                onRetry={loadDashboardData}
+              />
             ) : filteredDockets.length === 0 ? (
-              <div className="p-12 rounded-2xl bg-white border border-dashed border-slate-300 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mx-auto">
-                  <span className="material-symbols-outlined text-2xl">folder_off</span>
-                </div>
-                <div className="text-sm font-bold text-slate-900">No Matching Dockets Found</div>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  {activeTab === 'active'
-                    ? 'You have no active pending dockets matching your search filter.'
-                    : 'No closed or disposed cases recorded in this view.'}
-                </p>
-                <Link
-                  to="/dashboard/file-fir"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-900 text-white text-xs font-semibold hover:bg-blue-800 transition-colors shadow-2xs mt-2"
-                >
-                  <span className="material-symbols-outlined text-sm">edit_document</span>
-                  <span>Lodge New e-FIR</span>
-                </Link>
-              </div>
+              dockets.length === 0 ? (
+                <EmptyState
+                  icon="folder_open"
+                  title="No Police Dockets on Record"
+                  description="You have not submitted any complaints or e-FIR applications yet. Lodge your first complaint through the secure BNSS 2023 portal or locate your local jurisdiction."
+                  action={{
+                    label: "+ Lodge New e-FIR",
+                    href: "/dashboard/file-fir",
+                    icon: "edit_document"
+                  }}
+                  secondaryAction={{
+                    label: "Locate Police Station",
+                    href: "/dashboard/stations",
+                    icon: "location_on"
+                  }}
+                />
+              ) : (
+                <EmptyState
+                  icon="search_off"
+                  title="No Matching Dockets Found"
+                  description={`No complaints found for tab "${activeTab}" with search "${searchQuery}". Adjust your filters or reset to view all dossiers.`}
+                  action={{
+                    label: "Reset All Filters",
+                    onClick: () => {
+                      setActiveTab('all');
+                      setSearchQuery('');
+                      setSelectedCategory('ALL');
+                    },
+                    icon: "restart_alt"
+                  }}
+                />
+              )
             ) : (
               <div className="space-y-4">
                 {filteredDockets.map((docket) => {
@@ -470,8 +484,6 @@ export function DashboardPage() {
                   const isClarificationNeeded = docket.status === 'INFO_REQUESTED';
                   const isRejected = docket.status === 'REJECTED';
                   const isUnderInvestigation = docket.status === 'UNDER_INVESTIGATION' || docket.status === 'ASSIGNED';
-                  const statusConf = getStatusConfig(docket.status);
-                  const priorityConf = getPriorityConfig(docket.priority);
 
                   const displayDesc = docket.description || docket.incident_description || 'Detailed factual statement recorded under BNSS Section 173.';
                   const displayLoc = docket.location_text || docket.incident_place || 'Central Jurisdictional Division';
@@ -482,20 +494,20 @@ export function DashboardPage() {
                       key={docket.fir_id || docket.tracking_id}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="interactive-card rounded-2xl bg-white border border-slate-200 hover:border-blue-400 transition-colors shadow-2xs overflow-hidden"
+                      className="interactive-card rounded-2xl bg-white border border-slate-200 hover:border-navy/40 transition-colors shadow-subtle overflow-hidden"
                     >
                       {/* Card Header Bar */}
                       <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex flex-wrap items-center justify-between gap-3">
                         <div className="flex flex-wrap items-center gap-2">
                           {/* Docket ID with 1-click Copy */}
                           <div className="flex items-center gap-1.5 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">
-                            <span className="text-xs font-mono font-bold text-blue-950">
+                            <span className="text-xs font-mono font-bold text-navy">
                               {docket.fir_number || docket.tracking_id}
                             </span>
                             <button
                               type="button"
                               onClick={() => handleCopyId(docket.fir_number || docket.tracking_id)}
-                              className="text-slate-400 hover:text-blue-900 transition-colors cursor-pointer"
+                              className="text-slate-400 hover:text-navy transition-colors cursor-pointer"
                               title="Copy ID"
                             >
                               <span className="material-symbols-outlined text-xs">
@@ -504,16 +516,11 @@ export function DashboardPage() {
                             </button>
                           </div>
 
-                          {/* Status Badge */}
-                          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border ${statusConf.bg}`}>
-                            <span className={`w-2 h-2 rounded-full ${statusConf.dot}`}></span>
-                            <span>{statusConf.label}</span>
-                          </div>
+                          {/* Standardized Status Badge */}
+                          <StatusBadge status={docket.status} />
 
-                          {/* Priority Pill */}
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${priorityConf.color}`}>
-                            {priorityConf.label}
-                          </span>
+                          {/* Standardized Priority Badge */}
+                          <StatusBadge priority={docket.priority} />
 
                           {/* Category Tag */}
                           {docket.category_name && (
@@ -670,7 +677,7 @@ export function DashboardPage() {
 
       {/* Clarification Response Modal */}
       {respondingDocket && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -731,7 +738,7 @@ export function DashboardPage() {
 
       {/* Dossier Detail Overview Modal */}
       {detailDocket && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -837,7 +844,7 @@ export function DashboardPage() {
 
       {/* Official Acknowledgement Slip Modal */}
       {slipData && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

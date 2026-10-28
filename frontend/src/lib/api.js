@@ -125,6 +125,10 @@ export const firApi = {
     const res = await api.get('/station/inbox', { params });
     return res.data;
   },
+  getFirDetails: async (id) => {
+    const res = await api.get(`/firs/${id}`);
+    return res.data;
+  },
   getLegalSections: async () => {
     const res = await api.get('/firs/master/legal-sections');
     return res.data;
@@ -134,15 +138,25 @@ export const firApi = {
     return res.data;
   },
   requestInfo: async (id, clarification_notes) => {
-    const res = await api.post(`/firs/${id}/request-info`, { clarification_notes });
+    const res = await api.post(`/firs/${id}/request-info`, {
+      questionText: clarification_notes,
+      clarification_notes
+    });
     return res.data;
   },
   rejectComplaint: async (id, rejection_reason) => {
-    const res = await api.post(`/firs/${id}/reject`, { rejection_reason });
+    const res = await api.post(`/firs/${id}/reject`, {
+      rejectionReason: rejection_reason,
+      rejection_reason
+    });
     return res.data;
   },
-  tagSections: async (id, section_ids) => {
-    const res = await api.post(`/firs/${id}/sections`, { section_ids });
+  tagSections: async (id, section_ids, isCognizable = true) => {
+    const res = await api.post(`/firs/${id}/sections`, {
+      sectionIds: section_ids,
+      section_ids,
+      isCognizable
+    });
     return res.data;
   },
   registerFir: async (id, notes = '') => {
@@ -161,8 +175,12 @@ export const firApi = {
     const res = await api.get('/station/appeals');
     return res.data;
   },
-  reviewAppeal: async (id, decision, decision_notes) => {
-    const res = await api.post(`/firs/${id}/review-appeal`, { decision, decision_notes });
+  reviewAppeal: async (id, decision, reviewNotes, appealId) => {
+    const res = await api.post(`/firs/${id}/review-appeal`, {
+      decision,
+      reviewNotes: reviewNotes || '',
+      appealId: appealId || null
+    });
     return res.data;
   }
 };
@@ -171,12 +189,24 @@ export const firApi = {
 // 4. Investigation & Case Management
 // ----------------------------------------------------------------------
 export const casesApi = {
+  getAssignedCases: async (params = {}) => {
+    const res = await api.get('/cases', { params });
+    return res.data;
+  },
+  getStationOfficers: async () => {
+    const res = await api.get('/cases/station-officers');
+    return res.data;
+  },
   getIoWorkload: async () => {
     const res = await api.get('/cases/workload');
     return res.data;
   },
-  assignIo: async (id, io_id) => {
-    const res = await api.post(`/cases/${id}/assign`, { io_id });
+  assignIo: async (id, io_id, reason = '') => {
+    const res = await api.post(`/cases/${id}/assign`, {
+      officerId: io_id,
+      officer_id: io_id,
+      reason
+    });
     return res.data;
   },
   acceptCase: async (id) => {
@@ -315,24 +345,96 @@ export const notificationsApi = {
 // 8. System Administration & Master Data
 // ----------------------------------------------------------------------
 export const adminApi = {
-  getStations: async () => {
-    const res = await api.get('/admin/stations');
+  getMetrics: async () => {
+    const res = await api.get('/admin/metrics');
     return res.data;
   },
-  getCategories: async () => {
-    const res = await api.get('/admin/categories');
+  getStations: async (params = {}) => {
+    const res = await api.get('/admin/stations', { params });
     return res.data;
   },
-  getLegalSections: async () => {
-    const res = await api.get('/admin/legal-sections');
+  getStationById: async (id) => {
+    const res = await api.get(`/admin/stations/${id}`);
     return res.data;
   },
-  getUsers: async () => {
-    const res = await api.get('/admin/users');
+  createStation: async (data) => {
+    const res = await api.post('/admin/stations', data);
+    return res.data;
+  },
+  updateStation: async (id, data) => {
+    const res = await api.put(`/admin/stations/${id}`, data);
+    return res.data;
+  },
+  toggleStationStatus: async (id, isActive) => {
+    const res = await api.patch(`/admin/stations/${id}/status`, { isActive });
+    return res.data;
+  },
+  getRanks: async (params = {}) => {
+    const res = await api.get('/admin/ranks', { params });
+    return res.data;
+  },
+  createRank: async (data) => {
+    const res = await api.post('/admin/ranks', data);
+    return res.data;
+  },
+  updateRank: async (id, data) => {
+    const res = await api.put(`/admin/ranks/${id}`, data);
+    return res.data;
+  },
+  getCategories: async (params = {}) => {
+    const res = await api.get('/admin/categories', { params });
+    return res.data;
+  },
+  createCategory: async (data) => {
+    const res = await api.post('/admin/categories', data);
+    return res.data;
+  },
+  updateCategory: async (id, data) => {
+    const res = await api.put(`/admin/categories/${id}`, data);
+    return res.data;
+  },
+  getLegalSections: async (params = {}) => {
+    const res = await api.get('/admin/legal-sections', { params });
+    return res.data;
+  },
+  createLegalSection: async (data) => {
+    const res = await api.post('/admin/legal-sections', data);
+    return res.data;
+  },
+  updateLegalSection: async (id, data) => {
+    const res = await api.put(`/admin/legal-sections/${id}`, data);
+    return res.data;
+  },
+  getUsers: async (params = {}) => {
+    const res = await api.get('/admin/users', { params });
+    return res.data;
+  },
+  getUserById: async (id) => {
+    const res = await api.get(`/admin/users/${id}`);
+    return res.data;
+  },
+  updateUserRole: async (id, roleCode) => {
+    const res = await api.patch(`/admin/users/${id}/role`, { roleCode });
+    return res.data;
+  },
+  updateOfficerStation: async (id, stationId) => {
+    const res = await api.patch(`/admin/users/${id}/station`, { stationId });
+    return res.data;
+  },
+  toggleUserStatus: async (id, isActive) => {
+    const res = await api.patch(`/admin/users/${id}/status`, { isActive });
+    return res.data;
+  },
+  unlockUserAccount: async (id) => {
+    const res = await api.post(`/admin/users/${id}/unlock`);
     return res.data;
   },
   getSla: async () => {
     const res = await api.get('/admin/sla');
+    return res.data;
+  },
+  updateSlaConfig: async (key, data) => {
+    const res = await api.put(`/admin/sla/${key}`, data);
     return res.data;
   },
   getSlaBreaches: async () => {
@@ -350,7 +452,130 @@ export const adminApi = {
   getReport: async (reportType, params = {}) => {
     const res = await api.get(`/reports/${reportType}`, { params });
     return res.data;
+  },
+  exportReportCsv: async (reportType, params = {}) => {
+    const res = await api.get(`/reports/${reportType}/export`, {
+      params,
+      responseType: 'blob'
+    });
+    return res.data;
   }
 };
+
+// ----------------------------------------------------------------------
+// 9. Supervisor Oversight & Appellate Authority
+// ----------------------------------------------------------------------
+export const supervisorApi = {
+  getOverviewMetrics: async (params = {}) => {
+    const res = await api.get('/cases', { params: { limit: 1, ...params } });
+    return res.data?.metrics || {};
+  },
+  getDistrictCases: async (params = {}) => {
+    const res = await api.get('/cases', { params });
+    return res.data;
+  },
+  getCaseDetails: async (id) => {
+    const res = await api.get(`/cases/${id}`);
+    return res.data;
+  },
+  getSlaBreaches: async () => {
+    const res = await api.get('/admin/sla/breaches');
+    return res.data;
+  },
+  getSlaConfigs: async () => {
+    const res = await api.get('/admin/sla');
+    return res.data;
+  },
+  getPendingAppeals: async () => {
+    const res = await api.get('/station/appeals');
+    return res.data;
+  },
+  getFirAppeals: async (firId) => {
+    const res = await api.get(`/firs/${firId}/appeals`);
+    return res.data;
+  },
+  reviewAppeal: async (firId, decision, reviewNotes, appealId) => {
+    const res = await api.post(`/firs/${firId}/review-appeal`, {
+      decision,
+      reviewNotes: reviewNotes || '',
+      appealId: appealId || null
+    });
+    return res.data;
+  },
+  reopenCase: async (id, reopen_reason) => {
+    const res = await api.post(`/cases/${id}/reopen`, { reopen_reason });
+    return res.data;
+  },
+  getIncomingTransfers: async () => {
+    const res = await api.get('/station/transfers');
+    return res.data;
+  },
+  getReport: async (reportType, params = {}) => {
+    const res = await api.get(`/reports/${reportType}`, { params });
+    return res.data;
+  },
+  exportReportCsv: async (reportType, params = {}) => {
+    const res = await api.get(`/reports/${reportType}/export`, {
+      params,
+      responseType: 'blob'
+    });
+    return res.data;
+  },
+  verifyAuditChain: async () => {
+    const res = await api.get('/audit/verify');
+    return res.data;
+  },
+  getStations: async () => {
+    const res = await api.get('/admin/stations');
+    return res.data;
+  }
+};
+
+// ----------------------------------------------------------------------
+// 10. Statutory Auditor & Vigilance Portal (Strictly Read-Only)
+// ----------------------------------------------------------------------
+export const auditorApi = {
+  getOverviewMetrics: async () => {
+    const res = await api.get('/audit/metrics');
+    return res.data;
+  },
+  getAuditLogs: async (params = {}) => {
+    const res = await api.get('/audit', { params });
+    return res.data;
+  },
+  getAuditLogById: async (id) => {
+    const res = await api.get(`/audit/${id}`);
+    return res.data;
+  },
+  verifyAuditChain: async () => {
+    const res = await api.get('/audit/verify');
+    return res.data;
+  },
+  getReport: async (reportType, params = {}) => {
+    const res = await api.get(`/reports/${reportType}`, { params });
+    return res.data;
+  },
+  exportReportCsv: async (reportType, params = {}) => {
+    const res = await api.get(`/reports/${reportType}/export`, {
+      params,
+      responseType: 'blob'
+    });
+    return res.data;
+  }
+};
+
+/**
+ * Trigger client-side file download for Blob data
+ */
+export function downloadBlob(blobData, filename) {
+  const url = window.URL.createObjectURL(new Blob([blobData]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  link.parentNode.removeChild(link);
+  window.URL.revokeObjectURL(url);
+}
 
 export default api;

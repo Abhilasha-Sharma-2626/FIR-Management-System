@@ -2,12 +2,14 @@ const auditService = require('../services/audit.service');
 
 async function getLogs(req, res, next) {
   try {
-    const { entityType, entityId, actorId, action, fromDate, toDate, limit, offset } = req.query;
-    const logs = await auditService.getAuditLogs({
+    const { entityType, entityId, actorId, actorRole, action, search, fromDate, toDate, limit, offset } = req.query;
+    const { rows, totalCount } = await auditService.getAuditLogs({
       entityType,
       entityId,
       actorId,
+      actorRole,
       action,
+      search,
       fromDate,
       toDate,
       limit: limit ? parseInt(limit, 10) : 50,
@@ -16,8 +18,34 @@ async function getLogs(req, res, next) {
 
     return res.status(200).json({
       success: true,
-      count: logs.length,
-      data: logs
+      count: rows.length,
+      totalCount,
+      data: rows
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getLogById(req, res, next) {
+  try {
+    const { id } = req.params;
+    const log = await auditService.getAuditLogById(parseInt(id, 10));
+    return res.status(200).json({
+      success: true,
+      data: log
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getMetrics(req, res, next) {
+  try {
+    const metrics = await auditService.getAuditOverviewMetrics();
+    return res.status(200).json({
+      success: true,
+      data: metrics
     });
   } catch (error) {
     next(error);
@@ -38,5 +66,7 @@ async function verifyChain(req, res, next) {
 
 module.exports = {
   getLogs,
+  getLogById,
+  getMetrics,
   verifyChain
 };

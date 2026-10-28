@@ -77,7 +77,7 @@ export function EvidenceVaultPage() {
         id: evidenceId,
         match: res?.valid ?? res?.data?.valid ?? true,
         hash: res?.calculated_hash || res?.data?.calculated_hash || 'SHA256:VERIFIED-INTACT',
-        message: res?.message || 'Cryptographic integrity verified. Evidentiary checksum matches master custody log.'
+        message: res?.message || 'Verification completed: Evidentiary checksum matches master custody log.'
       });
     } catch (err) {
       setVerificationResult({
@@ -151,8 +151,8 @@ export function EvidenceVaultPage() {
 
           <div className="flex items-center gap-2">
             <div className="px-2.5 py-1 rounded-lg bg-surface-container text-primary text-xs font-semibold flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[15px]">lock</span>
-              <span>SHA-256 Chain of Custody</span>
+              <span className="material-symbols-outlined text-[15px]">shield_check</span>
+              <span>Verified Chain of Custody</span>
             </div>
             {isPolicePersonnel && (
               <button
@@ -170,10 +170,10 @@ export function EvidenceVaultPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-primary tracking-tight">
-                Evidentiary Chain of Custody &amp; Malkhana Vault
+                Evidence Management &amp; Malkhana Store
               </h1>
               <p className="text-xs text-secondary">
-                Tamper-evident exhibit registry with cryptographic verification under BNSS Section 105.
+                Official police exhibit register and custody tracking under BNSS Section 105.
               </p>
             </div>
 
@@ -233,7 +233,7 @@ export function EvidenceVaultPage() {
           {loading ? (
             <div className="p-12 text-center text-xs text-secondary">
               <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin motion-reduce:animate-none mx-auto mb-2"></div>
-              Loading exhibit ledger…
+              Loading exhibit records…
             </div>
           ) : evidenceList.length === 0 ? (
             <div className="p-10 rounded-2xl bg-surface-container-lowest border border-dashed border-outline-variant text-center space-y-2">
@@ -272,7 +272,7 @@ export function EvidenceVaultPage() {
                     <div>Storage: <strong className="text-primary">{item.storage_location || item.location_stored || 'Malkhana'}</strong></div>
                     {item.file_sha256 && (
                       <div className="font-mono text-[10px] truncate" title={item.file_sha256}>
-                        SHA256: {item.file_sha256}
+                        Checksum: {item.file_sha256}
                       </div>
                     )}
                   </div>
@@ -289,7 +289,7 @@ export function EvidenceVaultPage() {
                       ) : (
                         <>
                           <span className="material-symbols-outlined text-sm text-emerald-600">verified</span>
-                          <span>Verify SHA-256</span>
+                          <span>Verify File</span>
                         </>
                       )}
                     </button>

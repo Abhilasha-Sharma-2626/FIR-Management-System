@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import PageLoader from './components/ui/PageLoader';
 import { ProtectedRoute, PublicOnlyRoute } from './components/auth/ProtectedRoute';
 
@@ -11,6 +11,12 @@ const ServicesPage = lazy(() => import('./pages/ServicesPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const SignupPage = lazy(() => import('./pages/SignupPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const DeskOfficerDashboardPage = lazy(() => import('./pages/DeskOfficerDashboardPage'));
+const ShoDashboardPage = lazy(() => import('./pages/ShoDashboardPage'));
+const IoDashboardPage = lazy(() => import('./pages/IoDashboardPage'));
+const SupervisorDashboardPage = lazy(() => import('./pages/SupervisorDashboardPage'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
+const AuditorDashboardPage = lazy(() => import('./pages/AuditorDashboardPage'));
 const FileComplaintPage = lazy(() => import('./pages/FileComplaintPage'));
 const LiveTrackingPage = lazy(() => import('./pages/LiveTrackingPage'));
 const JurisdictionPage = lazy(() => import('./pages/JurisdictionPage'));
@@ -27,6 +33,29 @@ const DashboardLiveTrackingPage = lazy(() => import('./pages/DashboardLiveTracki
 const DashboardFileComplaintPage = lazy(() => import('./pages/DashboardFileComplaintPage'));
 const DashboardPrivacyPolicyPage = lazy(() => import('./pages/DashboardPrivacyPolicyPage'));
 const DashboardFirGuidelinesPage = lazy(() => import('./pages/DashboardFirGuidelinesPage'));
+
+function RoleBasedDashboard() {
+  const { role } = useAuth();
+  if (role === 'ADMIN') {
+    return <AdminDashboardPage />;
+  }
+  if (role === 'AUDITOR') {
+    return <AuditorDashboardPage />;
+  }
+  if (role === 'DESK_OFFICER') {
+    return <DeskOfficerDashboardPage />;
+  }
+  if (role === 'SHO') {
+    return <ShoDashboardPage />;
+  }
+  if (role === 'IO') {
+    return <IoDashboardPage />;
+  }
+  if (role === 'SUPERVISOR') {
+    return <SupervisorDashboardPage />;
+  }
+  return <DashboardPage />;
+}
 
 export function App() {
   return (
@@ -66,7 +95,67 @@ export function App() {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <DashboardPage />
+                  <RoleBasedDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Dedicated Desk Officer Portal Route (Role-Restricted to DESK_OFFICER) */}
+            <Route
+              path="/desk"
+              element={
+                <ProtectedRoute allowedRoles={['DESK_OFFICER']}>
+                  <DeskOfficerDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Dedicated Station House Officer (SHO) Portal Route (Role-Restricted to SHO) */}
+            <Route
+              path="/sho"
+              element={
+                <ProtectedRoute allowedRoles={['SHO']}>
+                  <ShoDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Dedicated Investigating Officer (IO) Portal Route (Role-Restricted to IO) */}
+            <Route
+              path="/io"
+              element={
+                <ProtectedRoute allowedRoles={['IO']}>
+                  <IoDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Dedicated District Supervisor Portal Route (Role-Restricted to SUPERVISOR) */}
+            <Route
+              path="/supervisor"
+              element={
+                <ProtectedRoute allowedRoles={['SUPERVISOR']}>
+                  <SupervisorDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Dedicated Central Administration Portal Route (Role-Restricted to ADMIN) */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Dedicated Statutory Auditor Portal Route (Role-Restricted to AUDITOR) */}
+            <Route
+              path="/auditor"
+              element={
+                <ProtectedRoute allowedRoles={['AUDITOR']}>
+                  <AuditorDashboardPage />
                 </ProtectedRoute>
               }
             />

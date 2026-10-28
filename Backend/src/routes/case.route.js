@@ -9,6 +9,10 @@ const upload = require('../middlewares/upload.middleware');
 
 router.use(authenticateToken);
 
+// 0. Assigned Cases Query & Metrics (IO / Station officers)
+router.get('/', requireRoles('IO', 'SHO', 'SUPERVISOR', 'ADMIN'), caseController.getMyAssignedCases);
+router.get('/station-officers', requireRoles('IO', 'SHO', 'SUPERVISOR', 'ADMIN'), caseController.getStationOfficers);
+
 // 1. IO Workload Query (SHO & SUPERVISOR only)
 router.get('/workload', requireRoles('SHO', 'SUPERVISOR'), caseController.getIoWorkload);
 

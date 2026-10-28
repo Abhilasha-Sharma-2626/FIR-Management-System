@@ -207,7 +207,7 @@ export function DashboardFirGuidelinesPage() {
           <section className="p-6 rounded-3xl bg-blue-950 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs shadow-md">
             <div>
               <strong className="text-sm font-bold block">Ready to lodge a First Information Report?</strong>
-              <p className="text-slate-300">File your e-FIR with zero delays and immediate cryptographic tracking ID issuance.</p>
+              <p className="text-slate-300">File your e-FIR with zero delays and receive an official tracking number immediately.</p>
             </div>
             <div className="flex items-center gap-2.5 shrink-0">
               <Link

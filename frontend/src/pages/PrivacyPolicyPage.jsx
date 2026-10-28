@@ -14,21 +14,21 @@ export function PrivacyPolicyPage() {
     },
     {
       id: 'audit-trail',
-      title: '2. Cryptographic SHA-256 Tamper-Evident Audit Trail',
-      icon: 'lock',
-      content: `Every read of sensitive files, status transition, case diary submission, and evidence custody handoff is recorded into an immutable, forward-chained audit ledger. Each audit log row incorporates the SHA-256 hash of its predecessor. Database procedural triggers reject any SQL-level UPDATE or DELETE operations on historical criminal records.`
+      title: '2. Tamper-Resistant Case Audit Trail',
+      icon: 'shield_check',
+      content: `Every read of sensitive files, status transition, case diary submission, and evidence custody handoff is recorded into an append-only audit register. System safeguards protect historical criminal records against unauthorized modification or deletion.`
     },
     {
       id: 'rbac-jurisdiction',
       title: '3. Role-Based Access Control & Station Jurisdictional Scoping',
       icon: 'admin_panel_settings',
-      content: `Access to criminal investigation files is governed by the Principle of Least Privilege across 7 canonical roles (CITIZEN, DESK_OFFICER, IO, SHO, SUPERVISOR, AUDITOR, ADMIN). Non-supervisory police personnel are cryptographically restricted to their assigned police station jurisdiction. Cross-station queries trigger immediate 403 Forbidden events logged to vigilance audit registers.`
+      content: `Access to criminal investigation files is governed by strict authorization across operational roles. Police station personnel are restricted to their assigned territorial police station jurisdiction to preserve case confidentiality.`
     },
     {
       id: 'data-encryption',
       title: '4. Data In-Transit and At-Rest Encryption',
       icon: 'enhanced_encryption',
-      content: `All traffic exchanged with CaseSync endpoints requires TLS 1.3 cipher suites with Strict-Transport-Security (HSTS) headers. Passwords are salted and hashed using bcrypt (work factor 12). Evidentiary digital exhibits uploaded to the Malkhana vault are hashed with SHA-256 upon intake and stored with strict checksum verification.`
+      content: `All traffic exchanged with CaseSync endpoints requires industry-standard encryption protocols. Passwords are securely hashed. Digital exhibits uploaded to the Malkhana evidence store receive verification checksums upon intake to ensure evidentiary integrity.`
     },
     {
       id: 'statutory-rights',

@@ -26,6 +26,10 @@ export function Button({
       'bg-saffron text-ink font-semibold hover:bg-saffron-light focus-visible:ring-saffron shadow-subtle active:bg-saffron-dark',
     ghost:
       'bg-transparent text-slate hover:text-navy hover:bg-black/5 focus-visible:ring-slate',
+    outline:
+      'bg-transparent text-navy border border-navy/30 hover:bg-navy/5 hover:border-navy focus-visible:ring-navy',
+    destructive:
+      'bg-civicRed text-white hover:bg-red-700 focus-visible:ring-civicRed shadow-subtle',
     danger:
       'bg-civicRed text-white hover:bg-red-700 focus-visible:ring-civicRed shadow-subtle',
   };

@@ -66,7 +66,7 @@ const JOURNEY_STAGES = [
     legalNote: 'Every custody transfer and evidence access action is permanently preserved in the audit log.',
     highlights: [
       'Designated Investigating Officer assignment',
-      'Exhibits logged with cryptographic hash verify',
+      'Exhibits logged with verification checksums',
       'Chain of custody transfer tracking between labs and court',
     ],
   },
@@ -357,7 +357,7 @@ function Stage1ReportPreview() {
           <FileText className="w-4 h-4 text-navy" />
           <span>cctv_exterior_hallway.mp4 (14.2 MB)</span>
         </div>
-        <span className="text-[11px] font-bold text-civicGreen">Attached &bull; SHA-256 Hashed</span>
+        <span className="text-[11px] font-bold text-civicGreen">Attached &bull; File Verified</span>
       </div>
 
       <div className="bg-civicGreen/10 border border-civicGreen/20 p-2.5 rounded-lg flex items-center justify-between text-xs text-civicGreen">
@@ -514,7 +514,7 @@ function Stage4InvestigationPreview() {
           <div className="p-2.5 flex justify-between items-center">
             <div>
               <span className="font-medium text-ink block">EX-01: USB Flash (CCTV Video)</span>
-              <span className="text-[10px] font-mono text-slate">SHA-256: 4a9f...e108</span>
+              <span className="text-[10px] font-mono text-slate">Checksum: 4a9f...e108</span>
             </div>
             <span className="text-[11px] font-bold text-civicGreen bg-civicGreen/10 px-2 py-0.5 rounded">
               Forensic Lab Dispatched
@@ -643,7 +643,7 @@ function Stage6ClosurePreview() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-slate">Case File Audit Trail:</span>
-          <span className="font-mono text-civicGreen font-semibold">100% Cryptographically Verified</span>
+          <span className="font-mono text-civicGreen font-semibold">Verified Intact</span>
         </div>
       </div>
 

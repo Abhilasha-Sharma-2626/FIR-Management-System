@@ -54,7 +54,7 @@ export function HowItWorksPage() {
         'Free certified digital copy dispatched to citizen under Sec 173(2)',
         'Designation of primary Investigating Officer (IO)',
       ],
-      securityWatermark: 'Cryptographically Sealed with SHA-256 Checksum on National Crime Grid',
+      securityWatermark: 'Officially Sealed with Verified Checksum under BNSS',
       statusTag: 'Judicial Bench Synchronized',
       actionLabel: 'Track Existing FIR',
       actionLink: '/live-tracking',
@@ -190,8 +190,8 @@ export function HowItWorksPage() {
                     <div className="font-label-sm text-secondary uppercase text-[10px]">Digital Acknowledgment</div>
                   </div>
                   <div className="p-3 bg-surface-container-lowest rounded border border-outline-variant">
-                    <div className="font-headline-sm text-primary font-bold text-lg sm:text-xl">SHA-256</div>
-                    <div className="font-label-sm text-secondary uppercase text-[10px]">Tamper-Proof Dossier</div>
+                    <div className="font-headline-sm text-primary font-bold text-lg sm:text-xl">Verified</div>
+                    <div className="font-label-sm text-secondary uppercase text-[10px]">Protected Dossier</div>
                   </div>
                 </div>
               </div>
@@ -237,8 +237,8 @@ export function HowItWorksPage() {
                   </div>
                   <div className="mt-2.5 pt-2 border-t border-outline-variant/60 flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-xs text-emerald-700">
-                      <span className="material-symbols-outlined text-sm">lock</span>
-                      <span className="text-[11px] font-mono">Cryptographic Token Assigned</span>
+                      <span className="material-symbols-outlined text-sm">verified</span>
+                      <span className="text-[11px] font-mono">Official Tracking ID Assigned</span>
                     </div>
                     <Link to="/live-tracking" className="text-[11px] font-semibold text-primary hover:underline flex items-center gap-0.5">
                       <span>Inspect</span>
@@ -444,7 +444,7 @@ export function HowItWorksPage() {
                 Platform Core Capabilities
               </h2>
               <p className="font-body-md text-xs sm:text-sm text-secondary mt-2">
-                Engineered to satisfy high-reliability police operations, judicial compliance, and effortless accessibility for citizens.
+                Engineered to satisfy high-reliability police operations, judicial compliance, and direct accessibility for citizens.
               </p>
             </div>
 
@@ -469,9 +469,9 @@ export function HowItWorksPage() {
                   tag: 'Free Legal Advisory Link',
                 },
                 {
-                  icon: 'lock_clock',
-                  title: 'Cryptographic Integrity',
-                  desc: 'Digital evidence files hashed at ingestion with SHA-256 ensuring admissibility under Section 65B of Evidence Act.',
+                  icon: 'shield_check',
+                  title: 'Evidence Integrity',
+                  desc: 'Digital evidence files verified with checksums upon ingestion, ensuring admissibility under Section 65B of Evidence Act.',
                   tag: 'Sec. 65B Certified',
                 },
               ].map((cap, i) => (
