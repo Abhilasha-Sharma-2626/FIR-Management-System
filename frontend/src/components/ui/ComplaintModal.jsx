@@ -109,11 +109,11 @@ export function ComplaintModal({ isOpen, onClose, initialCategory = 'Theft / Pro
                 type="button"
                 onClick={() => {
                   handleClose();
-                  navigate(`/live-tracking?id=${encodeURIComponent(result.trackingId)}`);
+                  navigate(isAuthenticated ? `/dashboard/live-tracking?id=${encodeURIComponent(result.trackingId)}` : `/live-tracking?id=${encodeURIComponent(result.trackingId)}`);
                 }}
-                className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary-container"
+                className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary-container whitespace-nowrap cursor-pointer transition-colors"
               >
-                Track Status →
+                Track Status
               </button>
             </div>
           </div>
@@ -167,11 +167,11 @@ export function ComplaintModal({ isOpen, onClose, initialCategory = 'Theft / Pro
                 type="button"
                 onClick={() => {
                   handleClose();
-                  navigate('/file-complaint');
+                  navigate(isAuthenticated ? '/dashboard/file-fir' : '/file-complaint');
                 }}
-                className="text-primary hover:underline text-[11px] font-medium"
+                className="text-primary hover:underline text-[11px] font-medium whitespace-nowrap cursor-pointer"
               >
-                Open Full Guided e-FIR Form →
+                Open Full Guided e-FIR Form
               </button>
               <div className="flex gap-2">
                 <button

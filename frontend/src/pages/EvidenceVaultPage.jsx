@@ -150,14 +150,15 @@ export function EvidenceVaultPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="px-2.5 py-1 rounded-lg bg-surface-container text-primary font-mono text-xs font-semibold">
-              🔒 SHA-256 Chain of Custody
+            <div className="px-2.5 py-1 rounded-lg bg-surface-container text-primary text-xs font-semibold flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[15px]">lock</span>
+              <span>SHA-256 Chain of Custody</span>
             </div>
             {isPolicePersonnel && (
               <button
                 type="button"
                 onClick={() => setShowAddModal(true)}
-                className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-container"
+                className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-container whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
               >
                 + Log Exhibit
               </button>
@@ -182,7 +183,7 @@ export function EvidenceVaultPage() {
               <select
                 value={selectedCaseId}
                 onChange={(e) => setSelectedCaseId(e.target.value)}
-                className="px-3.5 py-2 rounded-xl border border-outline-variant bg-surface-container-lowest text-xs text-primary font-mono font-bold outline-none cursor-pointer focus:border-primary transition-all shadow-xs"
+                className="px-3.5 py-2 rounded-xl border border-outline-variant bg-surface-container-lowest text-xs text-primary font-mono font-bold outline-none cursor-pointer focus:border-primary transition-colors shadow-xs"
               >
                 {cases.length === 0 ? (
                   <option value="">No cases registered</option>
@@ -231,8 +232,8 @@ export function EvidenceVaultPage() {
           {/* Exhibits Grid */}
           {loading ? (
             <div className="p-12 text-center text-xs text-secondary">
-              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-              Loading exhibit ledger...
+              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin motion-reduce:animate-none mx-auto mb-2"></div>
+              Loading exhibit ledger…
             </div>
           ) : evidenceList.length === 0 ? (
             <div className="p-10 rounded-2xl bg-surface-container-lowest border border-dashed border-outline-variant text-center space-y-2">
@@ -247,19 +248,19 @@ export function EvidenceVaultPage() {
               {evidenceList.map((item) => (
                 <div
                   key={item.evidence_id || item.id}
-                  className="interactive-card p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-primary/40 transition-all shadow-xs space-y-3"
+                  className="interactive-card p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-primary/40 transition-colors shadow-xs space-y-3"
                 >
                   <div className="flex items-center justify-between border-b pb-2 border-outline-variant/60">
                     <div>
-                      <span className="text-[10px] font-mono text-secondary uppercase block">
+                      <span className="text-[10px] text-secondary block font-semibold">
                         Exhibit ID
                       </span>
                       <strong className="text-xs font-mono font-bold text-primary">
                         {item.evidence_no || `EVD-${item.evidence_id}`}
                       </strong>
                     </div>
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-surface-container text-primary uppercase">
-                      {item.evidence_type || 'EXHIBIT'}
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-surface-container text-primary">
+                      {item.evidence_type || 'Exhibit'}
                     </span>
                   </div>
 
@@ -281,7 +282,7 @@ export function EvidenceVaultPage() {
                       type="button"
                       disabled={verifyingId === item.evidence_id}
                       onClick={() => handleVerifyHash(item.evidence_id)}
-                      className="interactive-btn px-3 py-1.5 rounded-lg border border-outline-variant text-xs font-semibold text-primary hover:bg-surface-container-low transition-colors flex items-center gap-1 cursor-pointer"
+                      className="interactive-btn px-3 py-1.5 rounded-lg border border-outline-variant text-xs font-semibold text-primary hover:bg-surface-container-low transition-colors flex items-center gap-1 cursor-pointer whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                     >
                       {verifyingId === item.evidence_id ? (
                         <span>Verifying...</span>

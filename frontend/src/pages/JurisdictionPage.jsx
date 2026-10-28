@@ -38,11 +38,11 @@ export function JurisdictionPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-[11px] text-secondary font-mono bg-surface-container-low px-2.5 py-1 rounded border border-outline-variant/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <div className="flex items-center gap-1.5 text-[11px] text-secondary bg-surface-container-low px-2.5 py-1 rounded border border-outline-variant/60">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none"></span>
               <span>GIS Boundary Network: Synchronized with National Police Grid</span>
             </div>
-            <Link to="/file-complaint" className="px-3 py-1 rounded bg-primary-container text-white text-xs font-semibold hover:bg-primary">
+            <Link to="/dashboard/file-fir" className="px-3 py-1 rounded bg-primary-container text-white text-xs font-semibold hover:bg-primary whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none">
               + File e-FIR
             </Link>
           </div>
@@ -53,12 +53,8 @@ export function JurisdictionPage() {
           
           {/* Hero Header with Institutional Notice */}
           <section className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-surface-variant text-on-secondary-fixed-variant rounded border border-outline-variant/70 font-label-sm text-xs uppercase tracking-wider font-semibold">
-              <span className="material-symbols-outlined text-[15px]">corporate_fare</span>
-              Statutory Station Directory
-            </div>
             <h1 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">
-              Find Your Local Police Station &amp; Jurisdiction
+              Statutory Station Directory: Find Your Local Police Station &amp; Jurisdiction
             </h1>
             <p className="font-body-md text-sm text-secondary max-w-4xl leading-relaxed">
               Locate your territorial police jurisdiction, station in-charge contact numbers, supervisory officers, and citizen facilitation desks. Zero-FIR protocol guarantees complaint acceptance at any station.
@@ -79,12 +75,12 @@ export function JurisdictionPage() {
                     value={searchLocation}
                     onChange={(e) => setSearchLocation(e.target.value)}
                     placeholder="Enter street, locality, pincode, landmark, or metro station"
-                    className="w-full pl-11 pr-32 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface placeholder:text-secondary font-body-md text-xs sm:text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all outline-none"
+                    className="w-full pl-11 pr-32 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface placeholder:text-secondary font-body-md text-xs sm:text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-colors outline-none"
                   />
                   <button 
                     type="button"
                     onClick={handleDetectGps}
-                    className="absolute right-2 px-3 py-1 bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-xs rounded border border-outline-variant flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="absolute right-2 px-3 py-1 bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-xs rounded border border-outline-variant flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                   >
                     <span className="material-symbols-outlined text-[16px] text-tertiary-fixed-dim">my_location</span>
                     Detect GPS
@@ -97,10 +93,10 @@ export function JurisdictionPage() {
                 <button 
                   type="button"
                   onClick={() => alert(`Verified jurisdiction for: ${searchLocation}`)}
-                  className="w-full py-2.5 px-5 bg-primary-container hover:bg-primary text-white rounded-lg font-label-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-colors active:scale-[0.99] shadow-sm cursor-pointer"
+                  className="w-full py-2.5 px-5 bg-primary-container hover:bg-primary text-white rounded-lg font-label-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-colors active:scale-[0.99] shadow-sm cursor-pointer whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                 >
                   <span className="material-symbols-outlined text-[18px]">travel_explore</span>
-                  Verify Jurisdiction
+                  <span className="whitespace-nowrap">Verify Jurisdiction</span>
                 </button>
               </div>
             </div>
@@ -108,13 +104,13 @@ export function JurisdictionPage() {
             {/* Filter Dropdowns Row */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-outline-variant/60">
               <div>
-                <label className="block font-label-sm text-[11px] text-secondary uppercase tracking-wider mb-1 font-semibold">
+                <label className="block font-label-sm text-[11px] text-secondary mb-1 font-semibold">
                   Police District / Zone
                 </label>
                 <select 
                   value={district}
                   onChange={(e) => setDistrict(e.target.value)}
-                  className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-2 px-3 text-on-surface font-body-sm text-xs focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none"
+                  className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-2 px-3 text-on-surface font-body-sm text-xs focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <option>South West District</option>
                   <option>New Delhi District</option>
@@ -124,11 +120,11 @@ export function JurisdictionPage() {
               </div>
 
               <div>
-                <label className="block font-label-sm text-[11px] text-secondary uppercase tracking-wider mb-1 font-semibold">
+                <label className="block font-label-sm text-[11px] text-secondary mb-1 font-semibold">
                   Sub-Division (ACP Division)
                 </label>
                 <select 
-                  className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-2 px-3 text-on-surface font-body-sm text-xs focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none"
+                  className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-2 px-3 text-on-surface font-body-sm text-xs focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <option>Vasant Vihar Sub-Division</option>
                   <option>Delhi Cantt Sub-Division</option>
@@ -137,13 +133,13 @@ export function JurisdictionPage() {
               </div>
 
               <div>
-                <label className="block font-label-sm text-[11px] text-secondary uppercase tracking-wider mb-1 font-semibold">
+                <label className="block font-label-sm text-[11px] text-secondary mb-1 font-semibold">
                   Station Type
                 </label>
                 <select 
                   value={stationType}
                   onChange={(e) => setStationType(e.target.value)}
-                  className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-2 px-3 text-on-surface font-body-sm text-xs focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none"
+                  className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-2 px-3 text-on-surface font-body-sm text-xs focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <option value="all">All Stations (General &amp; Specialized)</option>
                   <option value="territorial">Territorial Police Station</option>
@@ -171,7 +167,7 @@ export function JurisdictionPage() {
               </div>
 
               {/* 1. FEATURED ACTIVE STATION CARD */}
-              <article className="bg-surface-container-lowest border-2 border-primary-container rounded-xl shadow-sm overflow-hidden relative transition-all">
+              <article className="bg-surface-container-lowest border-2 border-primary-container rounded-xl shadow-sm overflow-hidden relative transition-colors">
                 {/* Official accent bar */}
                 <div className="h-1.5 bg-primary-container w-full"></div>
 
@@ -180,10 +176,10 @@ export function JurisdictionPage() {
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-outline-variant/60 pb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1.5">
-                        <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-300 rounded font-label-sm text-[11px] uppercase tracking-wider font-semibold">
+                        <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-300 rounded font-label-sm text-[11px] font-semibold">
                           Primary Jurisdiction
                         </span>
-                        <span className="px-2 py-0.5 bg-surface-container text-primary rounded font-label-sm text-xs font-mono">
+                        <span className="px-2 py-0.5 bg-surface-container text-primary rounded font-label-sm text-xs">
                           Station Code: PS-04
                         </span>
                       </div>
@@ -209,7 +205,7 @@ export function JurisdictionPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-surface-container-low/70 p-4 rounded-lg border border-outline-variant/50 text-xs">
                     {/* Station House Officer */}
                     <div className="space-y-1">
-                      <span className="text-secondary font-label-sm text-[11px] uppercase tracking-wider block font-semibold">
+                      <span className="text-secondary font-label-sm text-[11px] block font-semibold">
                         Station House Officer (SHO)
                       </span>
                       <p className="font-title-md text-xs font-bold text-primary flex items-center gap-1.5">
@@ -227,7 +223,7 @@ export function JurisdictionPage() {
 
                     {/* Women Civic Desk */}
                     <div className="space-y-1 md:border-l md:border-outline-variant/60 md:pl-4">
-                      <span className="text-secondary font-label-sm text-[11px] uppercase tracking-wider block font-semibold">
+                      <span className="text-secondary font-label-sm text-[11px] block font-semibold">
                         Women Civic Help Desk Officer
                       </span>
                       <p className="font-title-md text-xs font-bold text-primary flex items-center gap-1.5">
@@ -246,7 +242,7 @@ export function JurisdictionPage() {
 
                   {/* Jurisdiction Boundaries Coverage */}
                   <div>
-                    <span className="text-secondary font-label-sm text-xs uppercase tracking-wider block mb-1.5 font-semibold">
+                    <span className="text-secondary font-label-sm text-xs block mb-1.5 font-semibold">
                       Territorial Jurisdictional Coverage:
                     </span>
                     <div className="flex flex-wrap gap-1.5 text-xs">
@@ -260,7 +256,7 @@ export function JurisdictionPage() {
 
                   {/* Station Facilities Checklist */}
                   <div>
-                    <span className="text-secondary font-label-sm text-xs uppercase tracking-wider block mb-1.5 font-semibold">
+                    <span className="text-secondary font-label-sm text-xs block mb-1.5 font-semibold">
                       Available Civic Amenities &amp; Infrastructure:
                     </span>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-on-surface font-body-sm text-xs">
@@ -286,15 +282,15 @@ export function JurisdictionPage() {
                   {/* Station Action Buttons */}
                   <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-outline-variant/60">
                     <Link 
-                      to="/file-complaint"
-                      className="px-5 py-2.5 bg-primary-container text-white rounded font-label-lg text-xs font-semibold hover:bg-primary transition-colors flex items-center gap-1.5 shadow-sm active:scale-[0.99]"
+                      to="/dashboard/file-fir"
+                      className="px-5 py-2.5 bg-primary-container text-white rounded font-label-lg text-xs font-semibold hover:bg-primary transition-colors flex items-center gap-1.5 shadow-sm active:scale-[0.99] whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                     >
                       <span className="material-symbols-outlined text-[18px]">post_add</span>
                       File e-FIR for this Station
                     </Link>
                     <a 
                       href="tel:+911126154100"
-                      className="px-4 py-2.5 bg-surface-container-lowest text-primary border border-outline-variant rounded font-label-lg text-xs font-semibold hover:bg-surface-container-low transition-colors flex items-center gap-1.5"
+                      className="px-4 py-2.5 bg-surface-container-lowest text-primary border border-outline-variant rounded font-label-lg text-xs font-semibold hover:bg-surface-container-low transition-colors flex items-center gap-1.5 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                     >
                       <span className="material-symbols-outlined text-[18px]">call</span>
                       Call Station
@@ -302,24 +298,24 @@ export function JurisdictionPage() {
                     <button 
                       type="button"
                       onClick={() => alert('GPS Navigation initiated: Route to Vasant Vihar PS (0.8 km via Poorvi Marg).')}
-                      className="px-4 py-2.5 bg-surface-container-lowest text-secondary hover:text-primary border border-outline-variant rounded font-label-lg text-xs font-medium hover:bg-surface-container-low transition-colors flex items-center gap-1.5 cursor-pointer"
+                      className="px-4 py-2.5 bg-surface-container-lowest text-secondary hover:text-primary border border-outline-variant rounded font-label-lg text-xs font-medium hover:bg-surface-container-low transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                     >
                       <span className="material-symbols-outlined text-[18px]">directions</span>
-                      Get Directions
+                      <span className="whitespace-nowrap">Get Directions</span>
                     </button>
                   </div>
                 </div>
               </article>
 
               {/* 2. NEARBY ALTERNATE STATION CARD */}
-              <article className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 hover:border-primary-container/60 transition-all shadow-sm">
+              <article className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 hover:border-primary-container/60 transition-colors shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 bg-surface-container text-secondary rounded font-label-sm text-xs font-semibold uppercase">
+                      <span className="px-2 py-0.5 bg-surface-container text-secondary rounded font-label-sm text-xs font-semibold">
                         Contiguous Jurisdiction
                       </span>
-                      <span className="text-secondary font-label-sm text-xs font-mono">Code: PS-05</span>
+                      <span className="text-secondary font-label-sm text-xs">Code: PS-05</span>
                     </div>
                     <h3 className="font-headline-sm text-base font-bold text-primary">
                       R.K. Puram Police Station
@@ -342,13 +338,13 @@ export function JurisdictionPage() {
                     <button 
                       type="button" 
                       onClick={() => alert('Viewing Sector 1-6 beat boundaries.')}
-                      className="px-3 py-1.5 bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-xs rounded border border-outline-variant cursor-pointer"
+                      className="px-3 py-1.5 bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-xs rounded border border-outline-variant cursor-pointer whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                     >
                       View Territorial Map
                     </button>
                     <Link 
-                      to="/file-complaint"
-                      className="px-3 py-1.5 bg-primary-container text-white font-label-md text-xs rounded hover:bg-primary font-semibold"
+                      to="/dashboard/file-fir"
+                      className="px-3 py-1.5 bg-primary-container text-white font-label-md text-xs rounded hover:bg-primary font-semibold whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                     >
                       Select Station
                     </Link>
@@ -357,14 +353,14 @@ export function JurisdictionPage() {
               </article>
 
               {/* 3. SPECIALIZED POLICE STATION CARD */}
-              <article className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 hover:border-primary-container/60 transition-all shadow-sm">
+              <article className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 hover:border-primary-container/60 transition-colors shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-300 rounded font-label-sm text-xs font-semibold uppercase">
+                      <span className="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-300 rounded font-label-sm text-xs font-semibold">
                         Specialized Unit
                       </span>
-                      <span className="text-secondary font-label-sm text-xs font-mono">Code: PS-CYB-SW</span>
+                      <span className="text-secondary font-label-sm text-xs">Code: PS-CYB-SW</span>
                     </div>
                     <h3 className="font-headline-sm text-base font-bold text-primary">
                       District Cyber Crime Police Station (South West)
@@ -392,27 +388,26 @@ export function JurisdictionPage() {
                     <span className="material-symbols-outlined text-primary text-xl">map</span>
                     <h3 className="font-title-md text-sm font-bold text-primary">Territorial Beat Map</h3>
                   </div>
-                  <span className="text-xs font-mono bg-surface-container px-2 py-0.5 rounded text-primary font-bold">BEAT-03</span>
+                  <span className="text-xs bg-surface-container px-2 py-0.5 rounded text-primary font-bold">BEAT-03</span>
                 </div>
 
                 {/* Map Graphic Preview */}
-                <div className="w-full h-56 bg-surface-container-high rounded-lg border border-outline-variant relative overflow-hidden flex flex-col justify-between p-3">
-                  <div className="absolute inset-0 opacity-40 bg-[radial-gradient(#14213d_1px,transparent_1px)] [background-size:10px_10px]"></div>
+                <div className="w-full h-56 bg-surface-container rounded-lg border border-outline-variant relative overflow-hidden flex flex-col justify-between p-3">
                   
-                  {/* Mock Beat Pins */}
+                  {/* Beat Pins */}
                   <div className="relative z-10 flex justify-between">
-                    <span className="px-2 py-1 rounded bg-surface-container-lowest/90 text-primary font-mono text-[10px] font-bold shadow-xs">
+                    <span className="px-2 py-1 rounded bg-surface-container-lowest text-primary text-[10px] font-bold shadow-xs border border-outline-variant/40">
                       Sector-C Gate 1
                     </span>
-                    <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold shadow-xs">
+                    <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold shadow-xs">
                       ● Active Patrol
                     </span>
                   </div>
 
-                  <div className="relative z-10 bg-surface-container-lowest/95 backdrop-blur-sm p-2.5 rounded border border-outline-variant/60 shadow-sm text-xs">
+                  <div className="relative z-10 bg-surface-container-lowest p-2.5 rounded border border-outline-variant shadow-sm text-xs">
                     <div className="flex items-center justify-between text-[11px] font-semibold text-primary">
                       <span>Beat Officer: HC Manoj Kumar</span>
-                      <span className="font-mono text-emerald-700">On Duty</span>
+                      <span className="text-emerald-700">On Duty</span>
                     </div>
                     <p className="text-[10px] text-secondary mt-0.5">Mobile Patrol Van SW-14 • Contact: +91 98110 44291</p>
                   </div>

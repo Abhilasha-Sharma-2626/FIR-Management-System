@@ -56,11 +56,11 @@ export function ProfilePage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-[11px] text-secondary font-mono bg-surface-container-low px-2.5 py-1 rounded border border-outline-variant/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <div className="flex items-center gap-1.5 text-[11px] text-secondary bg-surface-container-low px-2.5 py-1 rounded border border-outline-variant/60">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none"></span>
               <span>Statutory Verification Active (UIDAI Section 4)</span>
             </div>
-            <Link to="/file-complaint" className="px-3 py-1 rounded bg-primary-container text-white text-xs font-semibold hover:bg-primary">
+            <Link to="/dashboard/file-fir" className="px-3 py-1 rounded bg-primary-container text-white text-xs font-semibold hover:bg-primary whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none">
               + File e-FIR
             </Link>
           </div>
@@ -85,9 +85,9 @@ export function ProfilePage() {
               
               {/* Settings Nav Card */}
               <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
-                <div className="px-5 py-3.5 border-b border-outline-variant bg-[#FAF9F5] flex items-center justify-between">
+                <div className="px-5 py-3.5 border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
                   <h2 className="font-title-md text-xs font-bold text-primary tracking-tight">Citizen Settings</h2>
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-surface-container font-mono text-secondary font-semibold">
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-surface-container text-secondary font-semibold">
                     PRO-AUTH
                   </span>
                 </div>
@@ -96,7 +96,7 @@ export function ProfilePage() {
                   <button 
                     type="button"
                     onClick={() => setActiveSection('personal')}
-                    className={`w-full flex items-start gap-2.5 p-2.5 rounded-lg text-left transition-all cursor-pointer ${
+                    className={`w-full flex items-start gap-2.5 p-2.5 rounded-lg text-left transition-colors cursor-pointer ${
                       activeSection === 'personal'
                         ? 'bg-primary-container text-white shadow-sm'
                         : 'text-secondary hover:text-primary hover:bg-surface-container-low'
@@ -105,7 +105,7 @@ export function ProfilePage() {
                     <span className="material-symbols-outlined text-lg mt-0.5">badge</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="font-label-lg text-xs font-semibold">Personal Information &amp; KYC</span>
+                        <span className="font-label-lg text-xs font-semibold whitespace-nowrap">Personal Information &amp; KYC</span>
                         {activeSection === 'personal' && <span className="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span>}
                       </div>
                       <p className="text-[11px] opacity-80 truncate">Demographics, contacts &amp; address</p>
@@ -115,7 +115,7 @@ export function ProfilePage() {
                   <button 
                     type="button"
                     onClick={() => setActiveSection('identity')}
-                    className={`w-full flex items-start gap-2.5 p-2.5 rounded-lg text-left transition-all cursor-pointer ${
+                    className={`w-full flex items-start gap-2.5 p-2.5 rounded-lg text-left transition-colors cursor-pointer ${
                       activeSection === 'identity'
                         ? 'bg-primary-container text-white shadow-sm'
                         : 'text-secondary hover:text-primary hover:bg-surface-container-low'
@@ -124,7 +124,7 @@ export function ProfilePage() {
                     <span className="material-symbols-outlined text-lg mt-0.5">verified_user</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="font-label-lg text-xs font-semibold">Statutory Identity &amp; DigiLocker</span>
+                        <span className="font-label-lg text-xs font-semibold whitespace-nowrap">Statutory Identity &amp; DigiLocker</span>
                         <span className="text-[10px] bg-emerald-50 text-emerald-800 font-semibold px-1.5 py-0.5 rounded border border-emerald-200">Linked</span>
                       </div>
                       <p className="text-[11px] opacity-80 truncate">Aadhaar, EPIC token, Gov locker</p>
@@ -134,7 +134,7 @@ export function ProfilePage() {
                   <button 
                     type="button"
                     onClick={() => setActiveSection('summons')}
-                    className={`w-full flex items-start gap-2.5 p-2.5 rounded-lg text-left transition-all cursor-pointer ${
+                    className={`w-full flex items-start gap-2.5 p-2.5 rounded-lg text-left transition-colors cursor-pointer ${
                       activeSection === 'summons'
                         ? 'bg-primary-container text-white shadow-sm'
                         : 'text-secondary hover:text-primary hover:bg-surface-container-low'
@@ -142,7 +142,7 @@ export function ProfilePage() {
                   >
                     <span className="material-symbols-outlined text-lg mt-0.5">gavel</span>
                     <div className="flex-1 min-w-0">
-                      <span className="font-label-lg text-xs font-semibold block">Notification &amp; Summons</span>
+                      <span className="font-label-lg text-xs font-semibold block whitespace-nowrap">Notification &amp; Summons</span>
                       <p className="text-[11px] opacity-80 truncate">BNSS Sec 64 digital service</p>
                     </div>
                   </button>
@@ -150,7 +150,7 @@ export function ProfilePage() {
                   <button 
                     type="button"
                     onClick={() => setActiveSection('security')}
-                    className={`w-full flex items-start gap-2.5 p-2.5 rounded-lg text-left transition-all cursor-pointer ${
+                    className={`w-full flex items-start gap-2.5 p-2.5 rounded-lg text-left transition-colors cursor-pointer ${
                       activeSection === 'security'
                         ? 'bg-primary-container text-white shadow-sm'
                         : 'text-secondary hover:text-primary hover:bg-surface-container-low'
@@ -159,8 +159,8 @@ export function ProfilePage() {
                     <span className="material-symbols-outlined text-lg mt-0.5">shield_lock</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="font-label-lg text-xs font-semibold">Security, 2FA &amp; PIN</span>
-                        <span className="text-[10px] opacity-80 font-mono">Active</span>
+                        <span className="font-label-lg text-xs font-semibold whitespace-nowrap">Security, 2FA &amp; PIN</span>
+                        <span className="text-[10px] opacity-80">Active</span>
                       </div>
                       <p className="text-[11px] opacity-80 truncate">Session control &amp; authentication</p>
                     </div>
@@ -177,7 +177,7 @@ export function ProfilePage() {
                 <p className="text-xs text-secondary leading-relaxed">
                   Pursuant to the Bharatiya Nagarik Suraksha Sanhita (BNSS) and Section 4 of the Aadhaar Act, updates to legal identity attributes mandate biometric or statutory OTP re-attestation.
                 </p>
-                <div className="p-2.5 bg-surface-container-low rounded border border-outline-variant/50 text-[11px] text-secondary font-mono space-y-1">
+                <div className="p-2.5 bg-surface-container-low rounded border border-outline-variant/50 text-[11px] text-secondary space-y-1">
                   <div className="flex justify-between"><span>Registrar:</span> <strong className="text-on-surface">UIDAI &amp; NPS</strong></div>
                   <div className="flex justify-between"><span>Audit:</span> <strong className="text-on-surface">SHA-256 Validated</strong></div>
                 </div>
@@ -186,17 +186,17 @@ export function ProfilePage() {
               {/* Station Jurisdiction Anchor */}
               <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 shadow-sm space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-secondary">Local Police Station</span>
+                  <span className="text-[11px] font-semibold text-secondary">Local Police Station</span>
                   <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 text-[10px] font-bold rounded">Assigned</span>
                 </div>
                 <div className="text-xs">
                   <p className="font-bold text-primary">Vasant Vihar Police Station</p>
                   <p className="text-secondary mt-0.5">South West District, New Delhi - 110057</p>
-                  <p className="text-secondary mt-1 font-mono">SHO In-Charge: Insp. Rajesh K. Sharma</p>
+                  <p className="text-secondary mt-1">SHO In-Charge: Insp. Rajesh K. Sharma</p>
                 </div>
                 <Link 
                   to="/dashboard/jurisdiction"
-                  className="w-full block text-center py-1.5 px-3 border border-outline-variant hover:bg-surface-container-low rounded text-xs font-semibold text-primary transition-colors"
+                  className="w-full block text-center py-1.5 px-3 border border-outline-variant hover:bg-surface-container-low rounded text-xs font-semibold text-primary transition-colors whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                 >
                   View Station Details
                 </Link>
@@ -251,7 +251,7 @@ export function ProfilePage() {
                     <button 
                       type="button"
                       onClick={() => window.print()}
-                      className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-3.5 py-2 bg-surface-container-low hover:bg-surface-container text-primary border border-outline-variant rounded font-label-md text-xs font-semibold transition-colors shadow-sm cursor-pointer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-3.5 py-2 bg-surface-container-low hover:bg-surface-container text-primary border border-outline-variant rounded font-label-md text-xs font-semibold transition-colors shadow-sm cursor-pointer whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                     >
                       <span className="material-symbols-outlined text-sm">download</span>
                       <span>Civic Verification Slip</span>
@@ -260,21 +260,21 @@ export function ProfilePage() {
 
                   {/* Quick Identity Metric Chips */}
                   <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                    <div className="p-2.5 bg-[#FAF9F5] rounded border border-outline-variant/40">
+                    <div className="p-2.5 bg-surface-container-low rounded border border-outline-variant/40">
                       <span className="text-secondary block font-medium">Identity Status</span>
                       <span className="text-emerald-700 font-bold flex items-center gap-1 mt-0.5">
                         <span className="material-symbols-outlined text-sm">check_circle</span> Statutory Level 3
                       </span>
                     </div>
-                    <div className="p-2.5 bg-[#FAF9F5] rounded border border-outline-variant/40">
+                    <div className="p-2.5 bg-surface-container-low rounded border border-outline-variant/40">
                       <span className="text-secondary block font-medium">Linked Cases</span>
                       <span className="text-primary font-bold mt-0.5 block">1 Active / 3 Disposed</span>
                     </div>
-                    <div className="p-2.5 bg-[#FAF9F5] rounded border border-outline-variant/40">
+                    <div className="p-2.5 bg-surface-container-low rounded border border-outline-variant/40">
                       <span className="text-secondary block font-medium">E-Summons Delivery</span>
                       <span className="text-primary font-bold mt-0.5 block">Secured SMS/WhatsApp</span>
                     </div>
-                    <div className="p-2.5 bg-[#FAF9F5] rounded border border-outline-variant/40">
+                    <div className="p-2.5 bg-surface-container-low rounded border border-outline-variant/40">
                       <span className="text-secondary block font-medium">Account Integrity</span>
                       <span className="text-primary font-bold mt-0.5 block">100% Complete</span>
                     </div>
@@ -284,7 +284,7 @@ export function ProfilePage() {
 
               {/* Personal Particulars Form */}
               <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-outline-variant bg-[#FAF9F5] flex flex-wrap items-center justify-between gap-4">
+                <div className="px-6 py-4 border-b border-outline-variant bg-surface-container-low flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <h2 className="font-title-md text-sm font-bold text-primary tracking-tight">Personal Particulars &amp; Verified Demographics</h2>
                     <p className="font-body-sm text-xs text-secondary mt-0.5">Official citizen information recorded in the National Case Registry ledger.</p>
@@ -293,7 +293,7 @@ export function ProfilePage() {
                     <button 
                       type="button" 
                       onClick={handleSave}
-                      className="inline-flex items-center space-x-1.5 px-4 py-1.5 bg-primary hover:bg-primary-container text-white rounded text-xs font-semibold transition-colors shadow-sm cursor-pointer"
+                      className="inline-flex items-center space-x-1.5 px-4 py-1.5 bg-primary hover:bg-primary-container text-white rounded text-xs font-semibold transition-colors shadow-sm cursor-pointer whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                     >
                       <span className="material-symbols-outlined text-sm">save</span>
                       <span>Save Changes</span>
@@ -316,7 +316,7 @@ export function ProfilePage() {
                         type="text"
                         disabled
                         value={displayName}
-                        className="w-full bg-[#F3F4F6] text-secondary font-medium rounded border border-outline-variant/60 px-3 py-2 cursor-not-allowed outline-none"
+                        className="w-full bg-surface-container-high text-secondary font-medium rounded border border-outline-variant/60 px-3 py-2 cursor-not-allowed outline-none"
                       />
                       <p className="text-[10px] text-secondary">Requires statutory gazette affidavit to alter legal nomenclature.</p>
                     </div>
@@ -324,8 +324,8 @@ export function ProfilePage() {
                     <div className="space-y-1">
                       <label className="font-semibold text-primary block">Date of Birth &amp; Gender</label>
                       <div className="grid grid-cols-2 gap-2">
-                        <input type="text" readOnly value="18/06/1982" className="w-full bg-[#FAF9F5] text-on-surface rounded border border-outline-variant px-3 py-2 font-mono" />
-                        <input type="text" readOnly value="Male" className="w-full bg-[#FAF9F5] text-on-surface rounded border border-outline-variant px-3 py-2" />
+                        <input type="text" readOnly value="18/06/1982" className="w-full bg-surface-container-low text-on-surface rounded border border-outline-variant px-3 py-2 font-mono" />
+                        <input type="text" readOnly value="Male" className="w-full bg-surface-container-low text-on-surface rounded border border-outline-variant px-3 py-2" />
                       </div>
                       <p className="text-[10px] text-secondary">Age: 42 Years • Verified against National Electoral Ledger</p>
                     </div>
@@ -336,14 +336,14 @@ export function ProfilePage() {
                     <div className="space-y-1">
                       <label className="font-semibold text-primary block">Primary Mobile Number</label>
                       <div className="relative flex rounded">
-                        <span className="inline-flex items-center px-3 rounded-l border border-r-0 border-outline-variant bg-[#FAF9F5] text-secondary font-mono text-xs">
+                        <span className="inline-flex items-center px-3 rounded-l border border-r-0 border-outline-variant bg-surface-container-low text-secondary font-mono text-xs">
                           IN +91
                         </span>
                         <input 
                           type="tel"
                           value={mobile}
                           onChange={(e) => setMobile(e.target.value)}
-                          className="w-full rounded-none rounded-r border border-outline-variant px-3 py-2 font-mono focus:border-primary outline-none"
+                          className="w-full rounded-none rounded-r border border-outline-variant px-3 py-2 font-mono focus:border-primary outline-none focus-visible:ring-1 focus-visible:ring-primary"
                         />
                       </div>
                       <p className="text-[10px] text-secondary">Primary vector for mandatory legal SMS summons and case status dispatches.</p>
@@ -355,7 +355,7 @@ export function ProfilePage() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full rounded border border-outline-variant px-3 py-2 focus:border-primary outline-none"
+                        className="w-full rounded border border-outline-variant px-3 py-2 focus:border-primary outline-none focus-visible:ring-1 focus-visible:ring-primary"
                       />
                       <p className="text-[10px] text-secondary">Digital copies of registered e-FIRs and certified charge sheets are transmitted here.</p>
                     </div>
@@ -368,7 +368,7 @@ export function ProfilePage() {
                       rows={2}
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      className="w-full rounded border border-outline-variant px-3 py-2 focus:border-primary outline-none leading-relaxed"
+                      className="w-full rounded border border-outline-variant px-3 py-2 focus:border-primary outline-none leading-relaxed focus-visible:ring-1 focus-visible:ring-primary"
                     />
                     <div className="flex justify-between text-[11px] text-secondary">
                       <span>Jurisdiction: South West District • Beat Zone #03</span>
@@ -389,7 +389,7 @@ export function ProfilePage() {
                           type="text"
                           value={emergencyName}
                           onChange={(e) => setEmergencyName(e.target.value)}
-                          className="w-full rounded border border-outline-variant px-3 py-2 font-medium"
+                          className="w-full rounded border border-outline-variant px-3 py-2 font-medium focus-visible:ring-1 focus-visible:ring-primary"
                         />
                       </div>
                       <div>
@@ -398,7 +398,7 @@ export function ProfilePage() {
                           type="tel"
                           value={emergencyPhone}
                           onChange={(e) => setEmergencyPhone(e.target.value)}
-                          className="w-full rounded border border-outline-variant px-3 py-2 font-mono font-medium"
+                          className="w-full rounded border border-outline-variant px-3 py-2 font-mono font-medium focus-visible:ring-1 focus-visible:ring-primary"
                         />
                       </div>
                     </div>
@@ -445,7 +445,7 @@ export function ProfilePage() {
                   <div className="pt-3 border-t border-outline-variant flex justify-end">
                     <button 
                       type="submit"
-                      className="px-6 py-2.5 bg-primary text-white font-semibold rounded hover:bg-primary-container transition-colors shadow-sm cursor-pointer"
+                      className="px-6 py-2.5 bg-primary text-white font-semibold rounded hover:bg-primary-container transition-colors shadow-sm cursor-pointer whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
                     >
                       Save Profile &amp; Preferences
                     </button>

@@ -93,12 +93,12 @@ export function SupervisoryGrievancePage() {
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 text-[11px] text-secondary font-mono bg-surface-container-low px-2.5 py-1 rounded border border-outline-variant/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none"></span>
               <span>BNSS Sec. 173(4) Statutory Oversight Active</span>
             </div>
             <button
               onClick={() => setActiveTab('file')}
-              className="px-3.5 py-1 rounded bg-error text-white text-xs font-semibold hover:bg-error/90 transition-colors flex items-center gap-1.5 shadow-sm"
+              className="px-3.5 py-1 rounded bg-error text-white text-xs font-semibold hover:bg-error/90 transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap cursor-pointer"
             >
               <span className="material-symbols-outlined text-sm">flag</span>
               <span>+ Lodge Supervisory Grievance</span>
@@ -123,14 +123,16 @@ export function SupervisoryGrievancePage() {
           {/* Header Banner */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-surface-variant text-on-secondary-fixed-variant rounded border border-outline-variant/70 font-label-sm text-xs uppercase tracking-wider font-semibold mb-2">
-                <span className="material-symbols-outlined text-[15px]">security</span>
-                Independent Police Accountability
+              <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
+                <h1 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">
+                  Supervisory Grievance (ACP / DCP Oversight)
+                </h1>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-surface-variant text-on-secondary-fixed-variant rounded border border-outline-variant/70 text-xs font-semibold">
+                  <span className="material-symbols-outlined text-[15px]">security</span>
+                  <span>Independent Police Accountability</span>
+                </span>
               </div>
-              <h1 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">
-                Supervisory Grievance (ACP / DCP Oversight)
-              </h1>
-              <p className="font-body-md text-xs sm:text-sm text-secondary max-w-3xl mt-1">
+              <p className="font-body-md text-xs sm:text-sm text-secondary max-w-3xl">
                 Statutory escalation mechanism under Section 173(4) of the Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023. Directly petition the Assistant Commissioner of Police (ACP) or District Deputy Commissioner (DCP) for investigation delays or station house non-compliance.
               </p>
             </div>
@@ -138,10 +140,10 @@ export function SupervisoryGrievancePage() {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setActiveTab('file')}
-                className="px-4 py-2.5 bg-error text-white font-title-md text-xs rounded-lg hover:bg-error/90 transition-colors flex items-center gap-2 shadow-sm font-semibold"
+                className="px-4 py-2.5 bg-error text-white font-title-md text-xs rounded-lg hover:bg-error/90 transition-colors flex items-center gap-2 shadow-sm font-semibold whitespace-nowrap cursor-pointer active:scale-98"
               >
                 <span className="material-symbols-outlined text-base">report_problem</span>
-                Lodge Section 173(4) Petition
+                <span>Lodge Section 173(4) Petition</span>
               </button>
             </div>
           </div>
@@ -150,7 +152,7 @@ export function SupervisoryGrievancePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Active Escalations</span>
+                <span className="text-[11px] font-bold">Active Escalations</span>
                 <span className="material-symbols-outlined text-lg text-amber-600">pending_actions</span>
               </div>
               <p className="font-headline-md text-2xl font-bold text-primary mt-1">{grievances.length} Active</p>
@@ -159,7 +161,7 @@ export function SupervisoryGrievancePage() {
 
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Statutory SLA</span>
+                <span className="text-[11px] font-bold">Statutory SLA</span>
                 <span className="material-symbols-outlined text-lg text-primary">timer</span>
               </div>
               <p className="font-headline-md text-2xl font-bold text-primary mt-1">72 Hours</p>
@@ -168,7 +170,7 @@ export function SupervisoryGrievancePage() {
 
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Supervisory Bench</span>
+                <span className="text-[11px] font-bold">Supervisory Bench</span>
                 <span className="material-symbols-outlined text-lg text-primary">corporate_fare</span>
               </div>
               <p className="font-headline-md text-base font-bold text-primary mt-1 truncate">ACP Vasant Vihar</p>
@@ -177,7 +179,7 @@ export function SupervisoryGrievancePage() {
 
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Historical Disposals</span>
+                <span className="text-[11px] font-bold">Historical Disposals</span>
                 <span className="material-symbols-outlined text-lg text-emerald-600">task_alt</span>
               </div>
               <p className="font-headline-md text-2xl font-bold text-emerald-700 mt-1">02 Resolved</p>
@@ -269,14 +271,14 @@ export function SupervisoryGrievancePage() {
                       <span className="font-mono text-secondary">{g.tier}</span>
                     </div>
                     <p className="font-semibold text-primary">{g.authority}</p>
-                    <p className="text-secondary leading-relaxed bg-[#f8f7f3] p-3 rounded border border-outline-variant/50">
+                    <p className="text-secondary leading-relaxed bg-surface-container-lowest p-3 rounded border border-outline-variant/50">
                       "{g.actionNote}"
                     </p>
                   </div>
 
                   {/* Audit Trail Timeline */}
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider font-bold text-secondary mb-2 flex items-center gap-1.5 font-label-sm">
+                    <p className="text-[10px] font-bold text-secondary mb-2 flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-xs text-primary">timeline</span>
                       Supervisory Action Log ({g.timeline.length} Milestones)
                     </p>
@@ -321,7 +323,7 @@ export function SupervisoryGrievancePage() {
               <div className="border-b border-outline-variant pb-4 mb-6">
                 <div className="flex items-center gap-2 text-error mb-1">
                   <span className="material-symbols-outlined">warning</span>
-                  <span className="text-xs font-bold uppercase tracking-wider font-mono">Statutory Vigilance Mechanism</span>
+                  <span className="text-xs font-bold">Statutory Vigilance Mechanism</span>
                 </div>
                 <h3 className="font-headline-sm text-lg font-bold text-primary">
                   Petition to Assistant Commissioner of Police (ACP) / DCP
@@ -334,7 +336,7 @@ export function SupervisoryGrievancePage() {
               <form onSubmit={handleSubmitGrievance} className="space-y-5">
                 {/* 1. Supervisory Tier */}
                 <div>
-                  <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                  <label className="block text-xs font-bold text-primary mb-1.5">
                     1. Select Supervisory Authority Tier *
                   </label>
                   <select
@@ -342,15 +344,15 @@ export function SupervisoryGrievancePage() {
                     onChange={(e) => setSupervisoryTier(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-xs font-medium focus:ring-1 focus:ring-primary outline-none"
                   >
-                    <option value="acp">Tier 1 • Assistant Commissioner of Police (ACP) - Vasant Vihar Sub-Division</option>
-                    <option value="dcp">Tier 2 • Deputy Commissioner of Police (DCP) - South West District HQ</option>
-                    <option value="pca">Tier 3 • Police Complaints Authority (PCA) &amp; Joint CP Vigilance</option>
+                    <option value="acp">Tier 1: Assistant Commissioner of Police (ACP) - Vasant Vihar Sub-Division</option>
+                    <option value="dcp">Tier 2: Deputy Commissioner of Police (DCP) - South West District HQ</option>
+                    <option value="pca">Tier 3: Police Complaints Authority (PCA) &amp; Joint CP Vigilance</option>
                   </select>
                 </div>
 
                 {/* 2. Target Police Station */}
                 <div>
-                  <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                  <label className="block text-xs font-bold text-primary mb-1.5">
                     2. Police Station Under Supervisory Review *
                   </label>
                   <select
@@ -366,7 +368,7 @@ export function SupervisoryGrievancePage() {
 
                 {/* 3. Grounds */}
                 <div>
-                  <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                  <label className="block text-xs font-bold text-primary mb-1.5">
                     3. Specific Statutory Grounds for Escalation *
                   </label>
                   <div className="space-y-2">
@@ -401,7 +403,7 @@ export function SupervisoryGrievancePage() {
 
                 {/* 4. Linked Case */}
                 <div>
-                  <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                  <label className="block text-xs font-bold text-primary mb-1.5">
                     4. Associated Case / Complaint Reference Number
                   </label>
                   <input
@@ -415,7 +417,7 @@ export function SupervisoryGrievancePage() {
 
                 {/* 5. Statement */}
                 <div>
-                  <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                  <label className="block text-xs font-bold text-primary mb-1.5">
                     5. Detailed Factual Statement for ACP Inquest *
                   </label>
                   <textarea
@@ -430,7 +432,7 @@ export function SupervisoryGrievancePage() {
 
                 {/* 6. Remedy Demanded */}
                 <div>
-                  <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                  <label className="block text-xs font-bold text-primary mb-1.5">
                     6. Relief / Statutory Order Demanded
                   </label>
                   <input
@@ -443,7 +445,7 @@ export function SupervisoryGrievancePage() {
                 </div>
 
                 {/* Affirmation */}
-                <div className="flex items-start gap-2 bg-[#f8f7f3] p-3.5 rounded-xl border border-outline-variant/60">
+                <div className="flex items-start gap-2 bg-surface-container-low p-3.5 rounded-xl border border-outline-variant/60">
                   <input
                     type="checkbox"
                     id="aff-grv"
@@ -529,29 +531,29 @@ export function SupervisoryGrievancePage() {
 
       {/* ACP ORDER MODAL */}
       {showOrderModal && (
-        <div className="fixed inset-0 z-50 bg-[#000a24]/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-surface-container-lowest w-full max-w-xl rounded-2xl border border-outline-variant shadow-2xl overflow-hidden animate-fade-in">
-            <div className="bg-[#000a24] text-white p-5 border-b border-[#172342] flex items-center justify-between">
+            <div className="bg-primary text-white p-5 border-b border-primary/40 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-tertiary-fixed/20 text-tertiary-fixed flex items-center justify-center">
                   <span className="material-symbols-outlined text-lg">shield</span>
                 </div>
                 <div>
                   <h3 className="font-headline-sm text-sm font-bold text-white">Office of Assistant Commissioner of Police</h3>
-                  <p className="text-[10px] text-slate-300 font-mono">Sub-Division Vasant Vihar • Official Direction Memo</p>
+                  <p className="text-[10px] text-slate-300">Sub-Division Vasant Vihar • Official Direction Memo</p>
                 </div>
               </div>
-              <button onClick={() => setShowOrderModal(false)} className="text-slate-400 hover:text-white">✕</button>
+              <button onClick={() => setShowOrderModal(false)} className="text-slate-400 hover:text-white cursor-pointer p-1">✕</button>
             </div>
 
             <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
-              <div className="border border-outline-variant p-3.5 rounded-xl bg-surface-container-low font-mono space-y-1">
-                <p><strong>MEMO NO:</strong> ACP/VV/VIG/2025/1104</p>
+              <div className="border border-outline-variant p-3.5 rounded-xl bg-surface-container-low space-y-1">
+                <p><strong>MEMO NO:</strong> <span className="font-mono">ACP/VV/VIG/2025/1104</span></p>
                 <p><strong>TO:</strong> Station House Officer, PS Vasant Vihar</p>
-                <p><strong>RE:</strong> Supervisory Grievance GRV-MHA-2025-7819</p>
+                <p><strong>RE:</strong> Supervisory Grievance <span className="font-mono">GRV-MHA-2025-7819</span></p>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#f8f7f3] border border-outline-variant text-secondary leading-relaxed space-y-2">
+              <div className="p-4 rounded-xl bg-surface-container-low border border-outline-variant text-secondary leading-relaxed space-y-2">
                 <p className="font-bold text-primary">DIRECTION OF ACP ALOK KUMAR VERMA, IPS:</p>
                 <p>
                   "Perusal of the grievance docket demonstrates that citizen Ramesh Kumar Sundaram was not supplied with the certified copy of FIR #FIR-DL-2025-4401 in compliance with Section 173(2) BNSS.
@@ -561,7 +563,7 @@ export function SupervisoryGrievancePage() {
                 </p>
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-outline-variant font-mono text-[11px]">
+              <div className="flex items-center justify-between pt-2 border-t border-outline-variant text-[11px]">
                 <span>Status: EXECUTED ON GRID</span>
                 <span className="text-emerald-700 font-bold">✓ Digitally Signed &amp; Dispatched</span>
               </div>
@@ -570,13 +572,13 @@ export function SupervisoryGrievancePage() {
             <div className="p-3 bg-surface-container-low border-t border-outline-variant flex justify-end gap-2">
               <button
                 onClick={() => setShowOrderModal(false)}
-                className="px-4 py-2 rounded-lg border border-outline-variant text-xs font-semibold hover:bg-surface-container"
+                className="px-4 py-2 rounded-lg border border-outline-variant text-xs font-semibold hover:bg-surface-container cursor-pointer whitespace-nowrap"
               >
                 Close
               </button>
               <button
                 onClick={() => alert('Downloading official stamped ACP Order PDF...')}
-                className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-container"
+                className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-container cursor-pointer whitespace-nowrap"
               >
                 Download Stamped Order (PDF)
               </button>

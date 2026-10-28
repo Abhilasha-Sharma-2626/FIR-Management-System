@@ -22,6 +22,12 @@ const SupervisoryGrievancePage = lazy(() => import('./pages/SupervisoryGrievance
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
+// Dedicated in-dashboard pages (seamless navigation with DashboardSidebar)
+const DashboardLiveTrackingPage = lazy(() => import('./pages/DashboardLiveTrackingPage'));
+const DashboardFileComplaintPage = lazy(() => import('./pages/DashboardFileComplaintPage'));
+const DashboardPrivacyPolicyPage = lazy(() => import('./pages/DashboardPrivacyPolicyPage'));
+const DashboardFirGuidelinesPage = lazy(() => import('./pages/DashboardFirGuidelinesPage'));
+
 export function App() {
   return (
     <AuthProvider>
@@ -35,7 +41,6 @@ export function App() {
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/live-tracking" element={<LiveTrackingPage />} />
             <Route path="/track" element={<LiveTrackingPage />} />
-            <Route path="/dashboard/live-tracking" element={<LiveTrackingPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
 
             {/* Guest-Only Authentication Routes (Redirect to /dashboard if logged in) */}
@@ -56,23 +61,7 @@ export function App() {
               }
             />
 
-            {/* Protected Routes (Restricted with Sign In / Sign Up) */}
-            <Route
-              path="/file-complaint"
-              element={
-                <ProtectedRoute>
-                  <FileComplaintPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/file-fir"
-              element={
-                <ProtectedRoute>
-                  <FileComplaintPage />
-                </ProtectedRoute>
-              }
-            />
+            {/* Protected Routes (Authenticated Citizen / Personnel) */}
             <Route
               path="/dashboard"
               element={
@@ -81,35 +70,21 @@ export function App() {
                 </ProtectedRoute>
               }
             />
+            
+            {/* In-Dashboard Routes (Guaranteed to stay within portal with sidebar) */}
             <Route
-              path="/dashboard/jurisdiction"
+              path="/dashboard/live-tracking"
               element={
                 <ProtectedRoute>
-                  <JurisdictionPage />
+                  <DashboardLiveTrackingPage />
                 </ProtectedRoute>
               }
             />
             <Route
-              path="/jurisdiction"
+              path="/dashboard/file-fir"
               element={
                 <ProtectedRoute>
-                  <JurisdictionPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/profile"
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
+                  <DashboardFileComplaintPage />
                 </ProtectedRoute>
               }
             />
@@ -122,23 +97,7 @@ export function App() {
               }
             />
             <Route
-              path="/evidence"
-              element={
-                <ProtectedRoute>
-                  <EvidenceVaultPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path="/dashboard/court-notices"
-              element={
-                <ProtectedRoute>
-                  <CourtNoticesPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/court-notices"
               element={
                 <ProtectedRoute>
                   <CourtNoticesPage />
@@ -162,14 +121,6 @@ export function App() {
               }
             />
             <Route
-              path="/appointments"
-              element={
-                <ProtectedRoute>
-                  <DeskAppointmentsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path="/dashboard/grievance"
               element={
                 <ProtectedRoute>
@@ -178,10 +129,100 @@ export function App() {
               }
             />
             <Route
+              path="/dashboard/jurisdiction"
+              element={
+                <ProtectedRoute>
+                  <JurisdictionPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/privacy"
+              element={
+                <ProtectedRoute>
+                  <DashboardPrivacyPolicyPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/guidelines"
+              element={
+                <ProtectedRoute>
+                  <DashboardFirGuidelinesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Standalone Route Aliases (Protected) */}
+            <Route
+              path="/file-complaint"
+              element={
+                <ProtectedRoute>
+                  <DashboardFileComplaintPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/file-fir"
+              element={
+                <ProtectedRoute>
+                  <DashboardFileComplaintPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/evidence"
+              element={
+                <ProtectedRoute>
+                  <EvidenceVaultPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/court-notices"
+              element={
+                <ProtectedRoute>
+                  <CourtNoticesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/appointments"
+              element={
+                <ProtectedRoute>
+                  <DeskAppointmentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/grievance"
               element={
                 <ProtectedRoute>
                   <SupervisoryGrievancePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/jurisdiction"
+              element={
+                <ProtectedRoute>
+                  <JurisdictionPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
                 </ProtectedRoute>
               }
             />

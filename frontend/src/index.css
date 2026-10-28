@@ -54,6 +54,8 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Plus Jakarta Sans', 'Manrope', system-ui, sans-serif;
     letter-spacing: -0.02em;
+    text-wrap: balance;
+    text-rendering: optimizeLegibility;
   }
 }
 
@@ -133,6 +135,10 @@
     width: max-content;
     animation: marquee 35s linear infinite;
     will-change: transform;
+  }
+  .animate-marquee:hover,
+  .animate-marquee:focus-within {
+    animation-play-state: paused;
   }
 
   .animate-marquee-paused {

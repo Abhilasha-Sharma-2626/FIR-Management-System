@@ -83,12 +83,12 @@ export function DeskAppointmentsPage() {
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 text-[11px] text-secondary font-mono bg-surface-container-low px-2.5 py-1 rounded border border-outline-variant/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none"></span>
               <span>Fast-Track QR Entry Kiosk Enabled</span>
             </div>
             <button
               onClick={() => setActiveTab('book')}
-              className="px-3.5 py-1 rounded bg-primary text-white text-xs font-semibold hover:bg-primary-container transition-colors flex items-center gap-1.5 shadow-sm"
+              className="px-3.5 py-1 rounded bg-primary text-white text-xs font-semibold hover:bg-primary-container transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap cursor-pointer active:scale-95"
             >
               <span className="material-symbols-outlined text-sm">add_circle</span>
               <span>+ Book Station Desk</span>
@@ -103,7 +103,7 @@ export function DeskAppointmentsPage() {
               <span className="material-symbols-outlined text-emerald-400">check_circle</span>
               <span><strong>Station Appointment Booked!</strong> QR Entry Pass generated. Present at station gate for zero-wait clearance.</span>
             </div>
-            <button onClick={() => setBookSuccessToast(false)} className="text-emerald-400 hover:text-white">✕</button>
+            <button onClick={() => setBookSuccessToast(false)} className="text-emerald-400 hover:text-white cursor-pointer p-1">✕</button>
           </div>
         )}
 
@@ -113,14 +113,16 @@ export function DeskAppointmentsPage() {
           {/* Header Banner */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-surface-variant text-on-secondary-fixed-variant rounded border border-outline-variant/70 font-label-sm text-xs uppercase tracking-wider font-semibold mb-2">
-                <span className="material-symbols-outlined text-[15px]">event_available</span>
-                Citizen Facilitation Counter (CFC)
+              <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
+                <h1 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">
+                  Police Station Desk Appointments
+                </h1>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-surface-variant text-on-secondary-fixed-variant rounded border border-outline-variant/70 text-xs font-semibold">
+                  <span className="material-symbols-outlined text-[15px]">event_available</span>
+                  <span>Citizen Facilitation Counter (CFC)</span>
+                </span>
               </div>
-              <h1 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">
-                Police Station Desk Appointments
-              </h1>
-              <p className="font-body-md text-xs sm:text-sm text-secondary max-w-3xl mt-1">
+              <p className="font-body-md text-xs sm:text-sm text-secondary max-w-3xl">
                 Skip queues with pre-scheduled visits to your territorial police station for statement depositions, case officer consultations, and stolen property claim inspections.
               </p>
             </div>
@@ -128,10 +130,10 @@ export function DeskAppointmentsPage() {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setActiveTab('book')}
-                className="px-4 py-2.5 bg-primary text-white font-title-md text-xs rounded-lg hover:bg-primary-container transition-colors flex items-center gap-2 shadow-sm font-semibold"
+                className="px-4 py-2.5 bg-primary text-white font-title-md text-xs rounded-lg hover:bg-primary-container transition-colors flex items-center gap-2 shadow-sm font-semibold whitespace-nowrap cursor-pointer active:scale-95"
               >
                 <span className="material-symbols-outlined text-base">calendar_add_on</span>
-                Schedule New Visit
+                <span>Schedule New Visit</span>
               </button>
             </div>
           </div>
@@ -140,7 +142,7 @@ export function DeskAppointmentsPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Upcoming Visits</span>
+                <span className="text-[11px] font-bold">Upcoming Visits</span>
                 <span className="material-symbols-outlined text-lg text-primary">event_upcoming</span>
               </div>
               <p className="font-headline-md text-2xl font-bold text-primary mt-1">{appointments.length} Confirmed</p>
@@ -149,7 +151,7 @@ export function DeskAppointmentsPage() {
 
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Next Slot</span>
+                <span className="text-[11px] font-bold">Next Slot</span>
                 <span className="material-symbols-outlined text-lg text-primary">schedule</span>
               </div>
               <p className="font-headline-md text-xl font-bold text-primary mt-1 font-mono">Tomorrow 03:30 PM</p>
@@ -158,7 +160,7 @@ export function DeskAppointmentsPage() {
 
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Desk Clearance SLA</span>
+                <span className="text-[11px] font-bold">Desk Clearance SLA</span>
                 <span className="material-symbols-outlined text-lg text-emerald-600">bolt</span>
               </div>
               <p className="font-headline-md text-2xl font-bold text-emerald-700 mt-1">&lt; 8 Mins</p>
@@ -167,7 +169,7 @@ export function DeskAppointmentsPage() {
 
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Completed Visits</span>
+                <span className="text-[11px] font-bold">Completed Visits</span>
                 <span className="material-symbols-outlined text-lg text-primary">history</span>
               </div>
               <p className="font-headline-md text-2xl font-bold text-primary mt-1">03 Disposed</p>
@@ -218,7 +220,7 @@ export function DeskAppointmentsPage() {
               {appointments.map((apt) => (
                 <div
                   key={apt.id}
-                  className="bg-surface-container-lowest rounded-2xl border border-outline-variant/80 shadow-sm p-6 space-y-5 hover:border-primary/50 transition-all"
+                  className="bg-surface-container-lowest rounded-2xl border border-outline-variant/80 shadow-sm p-6 space-y-5 hover:border-primary/50 transition-colors"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-start gap-3.5">
@@ -324,7 +326,7 @@ export function DeskAppointmentsPage() {
               <form onSubmit={handleBookSubmit} className="space-y-5">
                 {/* 1. Target Station */}
                 <div>
-                  <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                  <label className="block text-xs font-bold text-primary mb-1.5">
                     1. Territorial Police Station Jurisdiction *
                   </label>
                   <select
@@ -332,8 +334,8 @@ export function DeskAppointmentsPage() {
                     onChange={(e) => setSelectedStation(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-xs font-medium focus:ring-1 focus:ring-primary outline-none"
                   >
-                    <option value="PS-SW-04">Vasant Vihar Police Station (PS-DL-SW-04) • Primary Station (0.8 km)</option>
-                    <option value="PS-SW-05">R.K. Puram Police Station (PS-DL-SW-05) • Contiguous Station (2.3 km)</option>
+                    <option value="PS-SW-04">Vasant Vihar Police Station (PS-DL-SW-04) - Primary Station (0.8 km)</option>
+                    <option value="PS-SW-05">R.K. Puram Police Station (PS-DL-SW-05) - Contiguous Station (2.3 km)</option>
                     <option value="CYBER-SW">District Cyber Crime Cell, South West District (Sector-19 Dwarka)</option>
                     <option value="CAW-SW">Crime Against Women (CAW) Special Cell (Nanak Pura)</option>
                   </select>
@@ -341,7 +343,7 @@ export function DeskAppointmentsPage() {
 
                 {/* 2. Visit Purpose */}
                 <div>
-                  <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                  <label className="block text-xs font-bold text-primary mb-1.5">
                     2. Statutory Purpose of Visit *
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -378,7 +380,7 @@ export function DeskAppointmentsPage() {
 
                 {/* 3. Linked Case Reference */}
                 <div>
-                  <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                  <label className="block text-xs font-bold text-primary mb-1.5">
                     3. Associated Crime Docket / FIR Reference
                   </label>
                   <select
@@ -386,8 +388,8 @@ export function DeskAppointmentsPage() {
                     onChange={(e) => setLinkedCase(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-xs font-mono font-medium outline-none"
                   >
-                    <option value="FIR-DL-2025-4401">#FIR-DL-2025-4401 • Theft &amp; Housebreaking</option>
-                    <option value="CR-2025-0982">#CR-2025-0982 • Phishing Cyber Fraud</option>
+                    <option value="FIR-DL-2025-4401">#FIR-DL-2025-4401: Theft &amp; Housebreaking</option>
+                    <option value="CR-2025-0982">#CR-2025-0982: Phishing Cyber Fraud</option>
                     <option value="NONE">General Citizen Consultation (No Prior Case)</option>
                   </select>
                 </div>
@@ -395,7 +397,7 @@ export function DeskAppointmentsPage() {
                 {/* 4. Date & Time Selection */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                    <label className="block text-xs font-bold text-primary mb-1.5">
                       4. Preferred Date *
                     </label>
                     <input
@@ -408,7 +410,7 @@ export function DeskAppointmentsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1.5">
+                    <label className="block text-xs font-bold text-primary mb-1.5">
                       5. Time Slot *
                     </label>
                     <select
@@ -426,7 +428,7 @@ export function DeskAppointmentsPage() {
                 </div>
 
                 {/* Companion details */}
-                <div className="space-y-2 bg-[#f8f7f3] p-3.5 rounded-xl border border-outline-variant/60">
+                <div className="space-y-2 bg-surface-container-low p-3.5 rounded-xl border border-outline-variant/60">
                   <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
@@ -521,19 +523,19 @@ export function DeskAppointmentsPage() {
 
       {/* QR PASS MODAL */}
       {showPassModal && (
-        <div className="fixed inset-0 z-50 bg-[#000a24]/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-surface-container-lowest w-full max-w-sm rounded-2xl border border-outline-variant shadow-2xl overflow-hidden animate-fade-in text-center">
-            <div className="bg-[#000a24] text-white p-4">
+            <div className="bg-primary text-white p-4">
               <h3 className="font-bold text-sm">Station Visitor Digital Fast-Pass</h3>
-              <p className="text-[10px] text-slate-300 font-mono">Vasant Vihar Police Station (Gate Kiosk)</p>
+              <p className="text-[10px] text-slate-300">Vasant Vihar Police Station (Gate Kiosk)</p>
             </div>
             <div className="p-5 space-y-3">
-              <div className="w-36 h-36 mx-auto bg-surface-container border-2 border-dashed border-primary flex items-center justify-center rounded-xl font-mono text-xs">
-                [GATE QR CODE]
+              <div className="w-36 h-36 mx-auto bg-surface-container border-2 border-dashed border-primary flex items-center justify-center rounded-xl text-xs text-secondary">
+                [Gate QR Code]
               </div>
               <div>
                 <p className="font-bold text-primary text-sm">Ramesh Kumar Sundaram</p>
-                <p className="text-xs text-secondary font-mono">Booking Ref: APT-SW-2025-0814</p>
+                <p className="text-xs text-secondary">Booking Ref: <span className="font-mono">APT-SW-2025-0814</span></p>
                 <p className="text-xs font-bold text-emerald-700 mt-1">Tomorrow 03:30 PM • Desk #03</p>
               </div>
               <p className="text-[10px] text-secondary bg-surface-container-low p-2 rounded">
@@ -543,7 +545,7 @@ export function DeskAppointmentsPage() {
             <div className="p-3 bg-surface-container-low border-t border-outline-variant">
               <button
                 onClick={() => setShowPassModal(false)}
-                className="w-full py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-container"
+                className="w-full py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-container cursor-pointer whitespace-nowrap"
               >
                 Close Pass
               </button>

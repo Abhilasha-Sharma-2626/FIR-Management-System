@@ -48,12 +48,12 @@ export function CourtNoticesPage() {
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 text-[11px] text-secondary font-mono bg-surface-container-low px-2.5 py-1 rounded border border-outline-variant/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse motion-reduce:animate-none"></span>
               <span>Inter-Operable Criminal Justice System (ICJS) Live Relay</span>
             </div>
             <Link
               to="/dashboard/live-tracking"
-              className="px-3.5 py-1 rounded bg-primary text-white text-xs font-semibold hover:bg-primary-container transition-colors flex items-center gap-1.5 shadow-sm"
+              className="px-3.5 py-1 rounded bg-primary text-white text-xs font-semibold hover:bg-primary-container transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap"
             >
               <span className="material-symbols-outlined text-sm">timeline</span>
               <span>Track Linked FIR</span>
@@ -67,14 +67,16 @@ export function CourtNoticesPage() {
           {/* Header Banner */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-surface-variant text-on-secondary-fixed-variant rounded border border-outline-variant/70 font-label-sm text-xs uppercase tracking-wider font-semibold mb-2">
-                <span className="material-symbols-outlined text-[15px]">gavel</span>
-                Statutory Judicial Summons Registry
+              <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
+                <h1 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">
+                  Court &amp; Legal Notices
+                </h1>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-surface-variant text-on-secondary-fixed-variant rounded border border-outline-variant/70 text-xs font-semibold">
+                  <span className="material-symbols-outlined text-[15px]">gavel</span>
+                  <span>Statutory Judicial Summons Registry</span>
+                </span>
               </div>
-              <h1 className="font-headline-lg text-2xl sm:text-3xl font-bold text-primary tracking-tight">
-                Court &amp; Legal Notices
-              </h1>
-              <p className="font-body-md text-xs sm:text-sm text-secondary max-w-3xl mt-1">
+              <p className="font-body-md text-xs sm:text-sm text-secondary max-w-3xl">
                 Official summons, witness appearance warrants, and investigative enquiry notices issued under Section 64 &amp; Section 193 of the Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023.
               </p>
             </div>
@@ -82,10 +84,10 @@ export function CourtNoticesPage() {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setShowPassModal(true)}
-                className="px-4 py-2.5 bg-surface-container-lowest border border-outline-variant text-primary font-title-md text-xs rounded-lg hover:bg-surface-container transition-colors flex items-center gap-2 shadow-sm font-semibold"
+                className="px-4 py-2.5 bg-surface-container-lowest border border-outline-variant text-primary font-title-md text-xs rounded-lg hover:bg-surface-container focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-hidden transition-colors flex items-center gap-2 shadow-sm font-semibold whitespace-nowrap cursor-pointer active:bg-surface-container-low"
               >
                 <span className="material-symbols-outlined text-base text-primary">badge</span>
-                Generate Digital Court Entry Pass
+                <span>Generate Digital Court Entry Pass</span>
               </button>
             </div>
           </div>
@@ -95,7 +97,7 @@ export function CourtNoticesPage() {
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-error/40 shadow-sm relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-error"></div>
               <div className="flex items-center justify-between text-secondary pl-1">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold text-error">Mandatory Summons</span>
+                <span className="text-[11px] font-bold text-error">Mandatory Summons</span>
                 <span className="material-symbols-outlined text-lg text-error">notification_important</span>
               </div>
               <p className="font-headline-md text-2xl font-bold text-error mt-1 pl-1">01 Action Due</p>
@@ -104,7 +106,7 @@ export function CourtNoticesPage() {
 
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Upcoming Hearing</span>
+                <span className="text-[11px] font-bold">Upcoming Hearing</span>
                 <span className="material-symbols-outlined text-lg text-primary">event</span>
               </div>
               <p className="font-headline-md text-xl font-bold text-primary mt-1 font-mono">28 May 2025</p>
@@ -113,7 +115,7 @@ export function CourtNoticesPage() {
 
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Service Status</span>
+                <span className="text-[11px] font-bold">Service Status</span>
                 <span className="material-symbols-outlined text-lg text-emerald-600">verified</span>
               </div>
               <p className="font-headline-md text-2xl font-bold text-emerald-700 mt-1">
@@ -124,7 +126,7 @@ export function CourtNoticesPage() {
 
             <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/80 shadow-sm">
               <div className="flex items-center justify-between text-secondary">
-                <span className="font-label-sm text-[11px] uppercase tracking-wider font-bold">Legal Aid Entitlement</span>
+                <span className="text-[11px] font-bold">Legal Aid Entitlement</span>
                 <span className="material-symbols-outlined text-lg text-primary">balance</span>
               </div>
               <p className="font-headline-md text-2xl font-bold text-primary mt-1">Free DLSA Aid</p>
@@ -177,18 +179,18 @@ export function CourtNoticesPage() {
               {/* Mandatory Notice Primary Card */}
               <div className="bg-surface-container-lowest rounded-2xl border-2 border-primary/20 shadow-md overflow-hidden">
                 {/* Notice Top Banner */}
-                <div className="bg-[#000a24] text-white p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="bg-primary text-white p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-error/90 flex items-center justify-center text-white shrink-0 shadow">
                       <span className="material-symbols-outlined text-2xl">gavel</span>
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded bg-error/80 text-white font-mono">
-                          MANDATORY WITNESS SUMMONS
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-error/80 text-white">
+                          Mandatory Witness Summons
                         </span>
-                        <span className="text-[11px] font-mono text-tertiary-fixed">
-                          FORM NO. 1 (SECOND SCHEDULE BNSS)
+                        <span className="text-[11px] text-tertiary-fixed">
+                          Form No. 1 (Second Schedule BNSS)
                         </span>
                       </div>
                       <h2 className="font-headline-sm text-lg font-bold text-white mt-0.5">
@@ -197,8 +199,8 @@ export function CourtNoticesPage() {
                     </div>
                   </div>
 
-                  <div className="text-right font-mono text-xs text-slate-300">
-                    <p className="text-white font-bold">Summons ID: SUM-2025-MM04-0988</p>
+                  <div className="text-right text-xs text-slate-300">
+                    <p className="text-white font-bold">Summons ID: <span className="font-mono">SUM-2025-MM04-0988</span></p>
                     <p className="text-[11px] text-slate-400">Issued: 21 May 2025</p>
                   </div>
                 </div>
@@ -229,7 +231,7 @@ export function CourtNoticesPage() {
                   {/* Legal Text / Purpose */}
                   <div className="space-y-2 text-xs text-on-surface leading-relaxed">
                     <h4 className="font-title-md text-sm font-bold text-primary">Purpose of Summons:</h4>
-                    <p className="p-4 rounded-lg bg-[#f8f7f3] border border-outline-variant/60 font-body-md text-secondary">
+                    <p className="p-4 rounded-lg bg-surface-container-low border border-outline-variant/60 font-body-md text-secondary">
                       "Whereas complaint has been made before this Court that the offenses punishable under Section 380 / 457 BNS have been committed; and it appears to this Court that you are likely to give material evidence for the Prosecution and produce physical custody logs of stolen property. You are hereby required to appear before this Court at Patiala House District Courts on 28th Day of May, 2025 at 11:00 AM to testify what you know concerning the said offense."
                     </p>
                   </div>
@@ -246,7 +248,7 @@ export function CourtNoticesPage() {
                         <p className="font-title-md text-xs font-bold text-primary">
                           {acknowledged ? 'Summons Service Formally Acknowledged' : 'Formal Acknowledgment of Service Pending'}
                         </p>
-                        <p className="text-[11px] text-secondary font-mono">
+                        <p className="text-[11px] text-secondary">
                           {acknowledged
                             ? 'Timestamped digitally under Section 64 BNSS on 22 May 2025. Judicial Bench notified.'
                             : 'Click "Acknowledge Service" below to digitally sign legal receipt.'}
@@ -257,13 +259,13 @@ export function CourtNoticesPage() {
                     {!acknowledged ? (
                       <button
                         onClick={handleAcknowledge}
-                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 shadow-sm shrink-0"
+                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 shadow-sm shrink-0 whitespace-nowrap cursor-pointer"
                       >
                         <span className="material-symbols-outlined text-sm">draw</span>
                         <span>Acknowledge Service (e-Sign)</span>
                       </button>
                     ) : (
-                      <span className="px-3 py-1 bg-emerald-950/80 text-emerald-300 border border-emerald-600/60 rounded text-xs font-mono font-bold">
+                      <span className="px-3 py-1 bg-emerald-950/80 text-emerald-300 border border-emerald-600/60 rounded text-xs font-bold whitespace-nowrap">
                         LEGAL RECEIPT CONFIRMED
                       </span>
                     )}
@@ -395,7 +397,7 @@ export function CourtNoticesPage() {
                 <p className="text-xs text-secondary leading-relaxed">
                   If you require an advocate or legal representation before the Metropolitan Magistrate and cannot afford private counsel, the Delhi State Legal Services Authority (DLSA) provides experienced state counsels free of charge.
                 </p>
-                <div className="p-4 rounded-xl bg-[#000a24] text-white space-y-2">
+                <div className="p-4 rounded-xl bg-primary text-white space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-tertiary-fixed">DLSA Helpline (24×7)</span>
                     <span className="font-mono text-sm font-bold text-white">1516</span>
@@ -406,7 +408,7 @@ export function CourtNoticesPage() {
                 </div>
                 <button
                   onClick={() => alert('Opening DLSA Free Legal Aid application portal...')}
-                  className="w-full py-2.5 rounded-lg border border-primary text-primary font-semibold text-xs hover:bg-surface-container transition-colors"
+                  className="w-full py-2.5 rounded-lg border border-primary text-primary font-semibold text-xs hover:bg-surface-container transition-colors whitespace-nowrap cursor-pointer"
                 >
                   Request DLSA Court Advocate Appointment
                 </button>
@@ -421,24 +423,24 @@ export function CourtNoticesPage() {
       {/* COURT PASS MODAL                                                          */}
       {/* ========================================================================= */}
       {showPassModal && (
-        <div className="fixed inset-0 z-50 bg-[#000a24]/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-surface-container-lowest w-full max-w-lg rounded-2xl border border-outline-variant shadow-2xl overflow-hidden animate-fade-in">
-            <div className="bg-[#000a24] text-white p-5 border-b border-[#172342] flex items-center justify-between">
+            <div className="bg-primary text-white p-5 border-b border-primary/40 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-tertiary-fixed/20 text-tertiary-fixed flex items-center justify-center">
                   <span className="material-symbols-outlined text-lg">badge</span>
                 </div>
                 <div>
                   <h3 className="font-headline-sm text-sm font-bold text-white">Digital Court Security Entry Slip</h3>
-                  <p className="text-[10px] text-slate-300 font-mono">Patiala House Courts Complex Gate #2</p>
+                  <p className="text-[10px] text-slate-300">Patiala House Courts Complex Gate #2</p>
                 </div>
               </div>
-              <button onClick={() => setShowPassModal(false)} className="text-slate-400 hover:text-white">✕</button>
+              <button onClick={() => setShowPassModal(false)} className="text-slate-400 hover:text-white cursor-pointer p-1">✕</button>
             </div>
 
             <div className="p-6 text-center space-y-4">
-              <div className="w-36 h-36 mx-auto bg-surface-container border-2 border-dashed border-outline-variant flex items-center justify-center rounded-xl font-mono text-xs text-secondary">
-                [QR PASS SCANNER CODE]
+              <div className="w-36 h-36 mx-auto bg-surface-container border-2 border-dashed border-outline-variant flex items-center justify-center rounded-xl text-xs text-secondary">
+                [QR Pass Scanner Code]
               </div>
               <div className="space-y-1">
                 <p className="font-bold text-primary text-sm">Ramesh Kumar Sundaram (CIT-DEL-984210)</p>
@@ -453,13 +455,13 @@ export function CourtNoticesPage() {
             <div className="p-4 bg-surface-container-low border-t border-outline-variant flex justify-end gap-2">
               <button
                 onClick={() => setShowPassModal(false)}
-                className="px-4 py-2 rounded-lg border border-outline-variant text-xs font-semibold hover:bg-surface-container"
+                className="px-4 py-2 rounded-lg border border-outline-variant text-xs font-semibold hover:bg-surface-container cursor-pointer whitespace-nowrap"
               >
                 Close
               </button>
               <button
                 onClick={() => alert('Downloading Court Entry Pass PDF...')}
-                className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-container"
+                className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-container cursor-pointer whitespace-nowrap"
               >
                 Download PDF
               </button>
@@ -472,24 +474,24 @@ export function CourtNoticesPage() {
       {/* VIRTUAL COURT VC REQUEST MODAL                                            */}
       {/* ========================================================================= */}
       {showVcModal && (
-        <div className="fixed inset-0 z-50 bg-[#000a24]/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-surface-container-lowest w-full max-w-md rounded-2xl border border-outline-variant shadow-2xl overflow-hidden animate-fade-in">
-            <div className="bg-[#000a24] text-white p-5 border-b border-[#172342] flex items-center justify-between">
+            <div className="bg-primary text-white p-5 border-b border-primary/40 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-primary-container text-tertiary-fixed flex items-center justify-center">
                   <span className="material-symbols-outlined text-lg">videocam</span>
                 </div>
                 <div>
                   <h3 className="font-headline-sm text-sm font-bold text-white">Apply for Remote VC Appearance</h3>
-                  <p className="text-[10px] text-slate-300 font-mono">High Court of Delhi Video-Conferencing Rules</p>
+                  <p className="text-[10px] text-slate-300">High Court of Delhi Video-Conferencing Rules</p>
                 </div>
               </div>
-              <button onClick={() => setShowVcModal(false)} className="text-slate-400 hover:text-white">✕</button>
+              <button onClick={() => setShowVcModal(false)} className="text-slate-400 hover:text-white cursor-pointer p-1">✕</button>
             </div>
 
             <form onSubmit={handleVcSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1">
+                <label className="block text-xs font-bold text-primary mb-1">
                   Reason for Remote Appearance
                 </label>
                 <select className="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-xs font-medium outline-none">
@@ -501,7 +503,7 @@ export function CourtNoticesPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-primary uppercase font-label-sm mb-1">
+                <label className="block text-xs font-bold text-primary mb-1">
                   Secure Video Calling Device IP / Email
                 </label>
                 <input
@@ -519,13 +521,13 @@ export function CourtNoticesPage() {
                 <button
                   type="button"
                   onClick={() => setShowVcModal(false)}
-                  className="px-4 py-2 rounded-lg border border-outline-variant text-xs font-semibold hover:bg-surface-container"
+                  className="px-4 py-2 rounded-lg border border-outline-variant text-xs font-semibold hover:bg-surface-container cursor-pointer whitespace-nowrap"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-container"
+                  className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-container cursor-pointer whitespace-nowrap"
                 >
                   Submit VC Application
                 </button>
