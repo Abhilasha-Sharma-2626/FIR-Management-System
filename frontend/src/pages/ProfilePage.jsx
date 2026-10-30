@@ -73,7 +73,7 @@ export function ProfilePage() {
           {saveSuccess && (
             <div className="bg-emerald-50 text-emerald-800 border border-emerald-300 p-3 rounded-lg text-xs font-semibold flex items-center gap-2 animate-fadeIn">
               <span className="material-symbols-outlined text-base text-emerald-600">check_circle</span>
-              <span>Profile preferences updated and cryptographically sealed with the Civic Registry ledger.</span>
+              <span>Profile preferences updated and saved successfully.</span>
             </div>
           )}
 
@@ -179,7 +179,7 @@ export function ProfilePage() {
                 </p>
                 <div className="p-2.5 bg-surface-container-low rounded border border-outline-variant/50 text-[11px] text-secondary space-y-1">
                   <div className="flex justify-between"><span>Registrar:</span> <strong className="text-on-surface">UIDAI &amp; NPS</strong></div>
-                  <div className="flex justify-between"><span>Audit:</span> <strong className="text-on-surface">SHA-256 Validated</strong></div>
+                  <div className="flex justify-between"><span>Record Status:</span> <strong className="text-on-surface">Verified</strong></div>
                 </div>
               </div>
 

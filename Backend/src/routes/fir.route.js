@@ -11,6 +11,9 @@ router.use(authenticateToken);
 // Legal Sections Master Data (Available to all logged in officers)
 router.get('/master/legal-sections', firController.listLegalSections);
 
+// Officer Complaint Docket Details
+router.get('/:id', requireRoles('DESK_OFFICER', 'SHO', 'IO', 'SUPERVISOR', 'ADMIN'), firController.getFirDetails);
+
 // Desk Officer / SHO Review Endpoints
 router.post('/:id/review', requireRoles('DESK_OFFICER', 'SHO'), firController.startReview);
 router.post('/:id/request-info', requireRoles('DESK_OFFICER', 'SHO'), firController.requestInfo);

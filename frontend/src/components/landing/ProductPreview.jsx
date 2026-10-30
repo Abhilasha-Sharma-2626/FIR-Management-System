@@ -264,7 +264,7 @@ export function ProductPreview() {
                       <tr>
                         <th className="py-2.5 px-3">Exhibit ID</th>
                         <th className="py-2.5 px-3">Description</th>
-                        <th className="py-2.5 px-3">Cryptographic Hash</th>
+                        <th className="py-2.5 px-3">Verification Checksum</th>
                         <th className="py-2.5 px-3">Current Custody</th>
                       </tr>
                     </thead>

@@ -167,7 +167,7 @@ export function SignupPage() {
                 Citizen Registration &amp; Identity Verification
               </h1>
               <p className="font-body-md text-body-md text-secondary max-w-2xl mt-1">
-                Create an authenticated, cryptographically verifiable citizen docket to report incidents, track e-FIR status, and receive lawful court summons securely.
+                Create an official citizen account to report incidents, track e-FIR status, and receive lawful summons securely.
               </p>
             </div>
 
@@ -376,7 +376,7 @@ export function SignupPage() {
                         <span className="w-5 h-5 rounded-full bg-primary-container text-on-primary text-[11px] font-bold flex items-center justify-center">2</span>
                         Security PIN &amp; ID Proof Verification
                       </span>
-                      <span className="font-label-sm text-label-sm text-secondary">256-Bit Cryptographic Vault</span>
+                      <span className="font-label-sm text-label-sm text-secondary">Secure Digital Verification</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -641,7 +641,7 @@ export function SignupPage() {
                   <div>
                     <h3 className="font-title-md text-title-md text-primary font-bold">Civic Charter &amp; Non-Emergency Assurance</h3>
                     <p className="font-body-sm text-body-sm text-secondary mt-1">
-                      Empowering every citizen with statutory transparency. No physical queue required for non-heinous loss reports, theft complaints, and identity certificates.
+                      Providing every citizen with statutory transparency. No physical queue required for non-heinous loss reports, theft complaints, and identity certificates.
                     </p>
                   </div>
                 </div>
@@ -712,14 +712,14 @@ export function SignupPage() {
               </div>
             </div>
 
-            {/* Investigation Officer Designation Sign-off Sample */}
+            {/* Citizen Assistance Information */}
             <div className="bg-surface-container-low border border-dashed border-outline rounded-xl p-4 text-secondary font-body-sm text-body-sm space-y-2">
               <div className="flex items-center justify-between font-label-sm text-label-sm uppercase tracking-wider text-primary">
-                <span>Identity Node: CN-9842</span>
-                <span className="text-emerald-800 font-bold">• System Online</span>
+                <span>Citizen Assistance</span>
+                <span className="text-emerald-800 font-bold">• Active Service</span>
               </div>
               <p className="text-[12px] leading-relaxed">
-                Statutory records registered through this terminal are logged on tamper-evident immutable ledgers per National Cyber Crime Reporting Standards (NCRP).
+                Official records registered through this portal are handled under statutory standards of the Bharatiya Nagarik Suraksha Sanhita (BNSS).
               </p>
             </div>
 

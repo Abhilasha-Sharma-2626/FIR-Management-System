@@ -22,24 +22,24 @@ export function DashboardPrivacyPolicyPage() {
     },
     {
       id: 'audit-chain',
-      title: '2. Cryptographic SHA-256 Tamper-Evident Ledger',
-      icon: 'lock',
+      title: '2. Tamper-Resistant Case Audit Trail',
+      icon: 'shield_check',
       color: 'text-indigo-900 bg-indigo-50 border-indigo-200',
-      description: 'Every read of sensitive files, status transition, officer assignment, and evidence custody handoff is recorded into an append-only audit trail. Each row incorporates the SHA-256 hash of its immediate predecessor. Procedural database triggers reject any SQL-level UPDATE or DELETE on historical criminal records.'
+      description: 'Every read of sensitive files, status transition, officer assignment, and evidence custody handoff is recorded into an append-only audit trail. System rules protect historical criminal records against unauthorized modification or deletion.'
     },
     {
       id: 'rbac-scoping',
       title: '3. Role-Based Access Control & Station Jurisdictional Scoping',
       icon: 'admin_panel_settings',
       color: 'text-emerald-900 bg-emerald-50 border-emerald-200',
-      description: 'Access to investigative files is strictly governed by Least Privilege across 7 canonical roles. Station staff are restricted to their territorial station code. Any attempt by an officer to inspect cross-station dockets without supervisory delegation triggers an immediate 403 Forbidden audit security alert.'
+      description: 'Access to investigative files is strictly governed by least-privilege principles across police ranks. Station personnel are restricted to their territorial station jurisdiction to protect informant and investigation confidentiality.'
     },
     {
       id: 'evidence-integrity',
-      title: '4. Evidence Malkhana Vault Cryptographic Checksum',
-      icon: 'lock_clock',
+      title: '4. Evidence Malkhana Vault Checksum Verification',
+      icon: 'verified',
       color: 'text-amber-900 bg-amber-50 border-amber-200',
-      description: 'Digital exhibits, CCTV clips, and CDR forensic reports uploaded to the evidence repository are hashed with SHA-256 upon intake. During custody handoffs to forensic labs or court production, the file hash is recomputed to certify that evidence has not been modified.'
+      description: 'Digital exhibits, CCTV clips, and forensic reports uploaded to the evidence repository receive an integrity checksum upon intake. During custody handoffs to forensic labs or court production, the checksum is verified to ensure evidence has not been altered.'
     },
     {
       id: 'statutory-recourse',

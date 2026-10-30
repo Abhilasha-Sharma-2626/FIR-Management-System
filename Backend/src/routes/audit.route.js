@@ -20,4 +20,20 @@ router.get(
   auditController.verifyChain
 );
 
+// High-level audit metrics and volume breakdown
+router.get(
+  '/metrics',
+  authenticate,
+  requireRole(['SUPERVISOR', 'AUDITOR', 'ADMIN']),
+  auditController.getMetrics
+);
+
+// Read-only individual audit event detail by ID
+router.get(
+  '/:id',
+  authenticate,
+  requireRole(['SUPERVISOR', 'AUDITOR', 'ADMIN']),
+  auditController.getLogById
+);
+
 module.exports = router;

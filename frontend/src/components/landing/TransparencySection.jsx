@@ -20,11 +20,11 @@ export function TransparencySection() {
       icon: <Lock className="w-5 h-5 text-saffron" />,
       title: 'Chain-of-Custody Integrity',
       description:
-        'Physical and digital exhibits are indexed with cryptographic hashes. Physical handoffs between malkhana, forensic labs, and magistrate courts are verified step-by-step.',
+        'Physical and digital exhibits are indexed with verification checksums. Physical handoffs between malkhana, forensic labs, and magistrate courts are verified step-by-step.',
     },
     {
       icon: <Database className="w-5 h-5 text-saffron" />,
-      title: 'ACID State Machine Enforcement',
+      title: 'Statutory Workflow Enforcement',
       description:
         'Case status progressions are strictly validated at the database layer. Illegal status leaps or unauthorized reversions are rejected automatically.',
     },
@@ -102,11 +102,11 @@ export function TransparencySection() {
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-civicGreen animate-pulse" />
                   <span className="font-mono text-xs font-bold uppercase tracking-wider text-navy">
-                    Audit Verification Pass
+                    Verification Completed
                   </span>
                 </div>
                 <p className="text-[11px] text-slate leading-snug">
-                  1,480 audit log entries validated. Cryptographic hash chain verified untampered.
+                  1,480 audit log entries validated. No discrepancies found across official records.
                 </p>
               </div>
 

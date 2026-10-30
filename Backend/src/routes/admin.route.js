@@ -19,6 +19,12 @@ const {
 router.use(authenticate);
 
 // ===================================================================
+// 0. Admin Command Center Overview Metrics
+// Allowed: ADMIN only
+// ===================================================================
+router.get('/metrics', requireRole(['ADMIN']), adminController.getMetrics);
+
+// ===================================================================
 // 1. Police Stations Administration (FR-AD1)
 // Allowed: ADMIN (manage), SUPERVISOR (read)
 // ===================================================================
@@ -70,5 +76,13 @@ router.post('/users/:id/unlock', requireRole(['ADMIN']), adminController.unlockU
 router.get('/sla', requireRole(['ADMIN', 'SUPERVISOR']), adminController.getSlaConfigs);
 router.put('/sla/:key', requireRole(['ADMIN']), validateSlaConfigUpdate, adminController.updateSlaConfig);
 router.get('/sla/breaches', requireRole(['ADMIN', 'SUPERVISOR']), adminController.getSlaBreaches);
+
+// ===================================================================
+// 7. Cryptographic Ledger & Audit Logs (FR-AD4)
+// Allowed: ADMIN
+// ===================================================================
+const auditController = require('../controllers/audit.controller');
+router.get('/audit', requireRole(['ADMIN']), auditController.getLogs);
+router.get('/audit/verify', requireRole(['ADMIN']), auditController.verifyChain);
 
 module.exports = router;

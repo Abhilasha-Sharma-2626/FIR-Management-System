@@ -56,14 +56,14 @@ const FAQ_ITEMS = [
     content: (
       <div className="space-y-2">
         <p>
-          CaseSync enforces strict <strong>Role-Based Access Control (RBAC)</strong> backed by database integrity constraints:
+          CaseSync enforces strict <strong>role-based access permissions</strong> backed by database integrity constraints:
         </p>
         <ul className="list-disc pl-5 space-y-1">
           <li><strong>Citizens:</strong> Can only view their own filed complaints and public-facing milestones.</li>
           <li><strong>Station Duty Staff:</strong> Can verify incoming intake reports within their police station's jurisdiction.</li>
           <li><strong>Investigating Officers (IO):</strong> Can view and update assigned cases, log evidence, and record witness statements.</li>
           <li><strong>Station House Officers (SHO):</strong> Approve FIR registration, assign IOs, and review final closure reports.</li>
-          <li><strong>System Administrators:</strong> Manage station jurisdictions and officer accounts; cannot tamper with immutable audit logs.</li>
+          <li><strong>System Administrators:</strong> Manage station jurisdictions and officer accounts; cannot alter official audit records.</li>
         </ul>
       </div>
     ),

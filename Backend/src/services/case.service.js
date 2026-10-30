@@ -637,22 +637,288 @@ async function reopenCase({ firId, stationId, userRole, userId, reason, ipAddres
 }
 
 /**
- * 9. View Case Detail (including Updates, Persons, Assignments)
+/**
+ * 8.5 Get Active Station Officers for Custody Handover / Transfer
  */
-async function getCaseDetails(firId, user) {
+async function getStationOfficers(stationId) {
+  const result = await pool.query(
+    `SELECT o.officer_id, o.badge_no, o.full_name, o.rank, r.code AS role_code
+     FROM officers o
+     JOIN users u ON o.user_id = u.user_id
+     JOIN roles r ON u.role_id = r.role_id
+     WHERE o.station_id = $1 AND u.is_active = TRUE
+     ORDER BY o.full_name ASC`,
+    [stationId]
+  );
+  return result.rows;
+}
+
+/**
+ * 8.6 Get Assigned Cases with Search, Filter, Pagination & Metrics (IO / Station inbox)
+ */
+async function getAssignedCases({
+  officerId,
+  stationId,
+  userRole,
+  status,
+  search,
+  priority,
+  page = 1,
+  limit = 20
+}) {
+  const offset = (Math.max(1, parseInt(page, 10)) - 1) * Math.max(1, parseInt(limit, 10));
+  const safeLimit = Math.min(100, Math.max(1, parseInt(limit, 10)));
+
+  const conditions = [];
+  const params = [];
+
+  // Scoping: IO sees strictly their assigned cases
+  if (userRole === 'IO') {
+    if (!officerId) {
+      const err = new Error('Officer profile not linked to user account.');
+      err.statusCode = 403;
+      throw err;
+    }
+    params.push(officerId);
+    conditions.push(`c.current_io_id = $${params.length}`);
+  } else if (userRole === 'SHO' || userRole === 'DESK_OFFICER') {
+    if (!stationId) {
+      const err = new Error('User is not assigned to a police station.');
+      err.statusCode = 403;
+      throw err;
+    }
+    params.push(stationId);
+    conditions.push(`f.station_id = $${params.length}`);
+  } else if (['SUPERVISOR', 'ADMIN'].includes(userRole) && stationId) {
+    const sId = parseInt(stationId, 10);
+    if (!isNaN(sId) && sId > 0) {
+      params.push(sId);
+      conditions.push(`f.station_id = $${params.length}`);
+    }
+  }
+
+  // Status filtering
+  if (status && status !== 'ALL') {
+    if (status === 'ACTIVE') {
+      conditions.push(`f.status IN ('ASSIGNED', 'UNDER_INVESTIGATION', 'PENDING_APPROVAL', 'REOPENED')`);
+    } else if (status === 'CONCLUDED') {
+      conditions.push(`f.status IN ('CHARGESHEET_FILED', 'CLOSED')`);
+    } else {
+      params.push(status.toUpperCase());
+      conditions.push(`f.status = $${params.length}`);
+    }
+  }
+
+  // Priority filtering
+  if (priority && priority !== 'ALL') {
+    const prioVal = parseInt(priority, 10);
+    if (!isNaN(prioVal)) {
+      params.push(prioVal);
+      conditions.push(`f.priority = $${params.length}`);
+    }
+  }
+
+  // Search query (FIR number, tracking ID, complainant name, crime category, description)
+  if (search && search.trim()) {
+    params.push(`%${search.trim()}%`);
+    const sIdx = params.length;
+    conditions.push(`(
+      f.fir_number ILIKE $${sIdx} OR
+      f.tracking_id ILIKE $${sIdx} OR
+      cit.full_name ILIKE $${sIdx} OR
+      cc.name ILIKE $${sIdx} OR
+      f.description ILIKE $${sIdx}
+    )`);
+  }
+
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  const query = `
+    SELECT 
+      c.case_id,
+      c.fir_id,
+      c.investigation_started_at,
+      c.report_type,
+      c.outcome,
+      c.closed_at,
+      c.created_at AS assigned_at,
+      f.fir_number,
+      f.tracking_id,
+      f.status,
+      f.priority,
+      f.incident_dt,
+      f.location_text,
+      f.description,
+      f.station_id,
+      ps.name AS station_name,
+      ps.code AS station_code,
+      cc.name AS category_name,
+      NULL AS category_code,
+      cit.citizen_id,
+      cit.full_name AS complainant_name,
+      u_cit.phone AS complainant_phone,
+      io.officer_id AS current_io_id,
+      io.full_name AS io_name,
+      io.badge_no AS io_badge,
+      io.rank AS io_rank,
+      (SELECT COUNT(*)::int FROM case_updates cu WHERE cu.case_id = c.case_id) AS updates_count,
+      (SELECT MAX(created_at) FROM case_updates cu WHERE cu.case_id = c.case_id) AS last_update_at,
+      (SELECT update_type FROM case_updates cu WHERE cu.case_id = c.case_id ORDER BY created_at DESC LIMIT 1) AS last_update_type,
+      (SELECT COUNT(*)::int FROM evidence e WHERE e.case_id = c.case_id) AS evidence_count,
+      (SELECT COUNT(*)::int FROM evidence e WHERE e.case_id = c.case_id AND e.current_holder_id = c.current_io_id) AS evidence_in_custody_count,
+      (SELECT COUNT(*)::int FROM fir_persons fp WHERE fp.fir_id = f.fir_id) AS persons_count,
+      (SELECT COUNT(*)::int FROM fir_persons fp WHERE fp.fir_id = f.fir_id AND fp.person_role = 'ACCUSED') AS accused_count
+    FROM cases c
+    JOIN fir f ON c.fir_id = f.fir_id
+    LEFT JOIN police_stations ps ON f.station_id = ps.station_id
+    LEFT JOIN crime_categories cc ON f.category_id = cc.category_id
+    LEFT JOIN citizens cit ON f.complainant_id = cit.citizen_id
+    LEFT JOIN users u_cit ON cit.user_id = u_cit.user_id
+    LEFT JOIN officers io ON c.current_io_id = io.officer_id
+    ${whereClause}
+    ORDER BY 
+      CASE WHEN f.status = 'ASSIGNED' THEN 1
+           WHEN f.status = 'UNDER_INVESTIGATION' THEN 2
+           WHEN f.status = 'PENDING_APPROVAL' THEN 3
+           WHEN f.status = 'REOPENED' THEN 4
+           ELSE 5 END ASC,
+      f.priority ASC,
+      c.created_at DESC
+    LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+  `;
+
+  const countQuery = `
+    SELECT COUNT(c.case_id)::int AS total
+    FROM cases c
+    JOIN fir f ON c.fir_id = f.fir_id
+    LEFT JOIN crime_categories cc ON f.category_id = cc.category_id
+    LEFT JOIN citizens cit ON f.complainant_id = cit.citizen_id
+    ${whereClause}
+  `;
+
+  const [listRes, countRes] = await Promise.all([
+    pool.query(query, [...params, safeLimit, offset]),
+    pool.query(countQuery, params)
+  ]);
+
+  const total = parseInt(countRes.rows[0]?.total || 0, 10);
+
+  // Compute authentic metrics for the IO
+  let metrics = null;
+  if (userRole === 'IO' && officerId) {
+    const metricsRes = await pool.query(`
+      SELECT 
+        COUNT(c.case_id) FILTER (WHERE f.status IN ('ASSIGNED', 'UNDER_INVESTIGATION', 'PENDING_APPROVAL', 'REOPENED'))::int AS total_active_cases,
+        COUNT(c.case_id) FILTER (WHERE f.status = 'ASSIGNED')::int AS pending_acceptance,
+        COUNT(c.case_id) FILTER (WHERE f.status = 'UNDER_INVESTIGATION')::int AS under_investigation,
+        COUNT(c.case_id) FILTER (WHERE f.status = 'PENDING_APPROVAL')::int AS pending_approval,
+        COUNT(c.case_id) FILTER (WHERE f.status IN ('CHARGESHEET_FILED', 'CLOSED'))::int AS concluded_cases,
+        COUNT(c.case_id) FILTER (
+          WHERE f.status = 'UNDER_INVESTIGATION' 
+          AND (
+            (SELECT COUNT(*) FROM case_updates cu WHERE cu.case_id = c.case_id) = 0
+            OR (SELECT MAX(created_at) FROM case_updates cu WHERE cu.case_id = c.case_id) < NOW() - INTERVAL '7 days'
+          )
+        )::int AS awaiting_updates,
+        COUNT(c.case_id) FILTER (
+          WHERE (SELECT MAX(created_at) FROM case_updates cu WHERE cu.case_id = c.case_id) >= NOW() - INTERVAL '7 days'
+        )::int AS recent_activity,
+        COUNT(c.case_id) FILTER (
+          WHERE f.status = 'UNDER_INVESTIGATION' 
+          AND (SELECT COUNT(*) FROM case_updates cu WHERE cu.case_id = c.case_id) >= 1
+        )::int AS ready_for_report
+      FROM cases c
+      JOIN fir f ON c.fir_id = f.fir_id
+      WHERE c.current_io_id = $1
+    `, [officerId]);
+
+    const evCustodyRes = await pool.query(`
+      SELECT COUNT(*)::int AS count
+      FROM evidence e
+      WHERE e.current_holder_id = $1 AND e.status IN ('COLLECTED', 'IN_STORAGE')
+    `, [officerId]);
+
+    metrics = {
+      ...metricsRes.rows[0],
+      evidence_in_custody: evCustodyRes.rows[0]?.count || 0
+    };
+  } else if (userRole === 'SUPERVISOR' || userRole === 'ADMIN') {
+    const sId = query.stationId ? parseInt(query.stationId, 10) : null;
+    const filterClause = sId ? 'WHERE f.station_id = $1' : '';
+    const filterParams = sId ? [sId] : [];
+
+    const metricsRes = await pool.query(`
+      SELECT 
+        COUNT(c.case_id) FILTER (WHERE f.status IN ('ASSIGNED', 'UNDER_INVESTIGATION', 'PENDING_APPROVAL', 'REOPENED'))::int AS total_active_cases,
+        COUNT(c.case_id) FILTER (WHERE f.status = 'UNDER_INVESTIGATION')::int AS under_investigation,
+        COUNT(c.case_id) FILTER (WHERE f.status = 'PENDING_APPROVAL')::int AS pending_approval,
+        COUNT(c.case_id) FILTER (WHERE f.status = 'REOPENED')::int AS reopened_cases,
+        COUNT(c.case_id) FILTER (WHERE f.status IN ('CHARGESHEET_FILED', 'CLOSED'))::int AS concluded_cases
+      FROM cases c
+      JOIN fir f ON c.fir_id = f.fir_id
+      ${filterClause}
+    `, filterParams);
+
+    const appealsRes = await pool.query(`
+      SELECT COUNT(*)::int AS pending_appeals
+      FROM fir_appeals fa
+      JOIN fir f ON fa.fir_id = f.fir_id
+      WHERE fa.status = 'PENDING' ${sId ? 'AND f.station_id = $1' : ''}
+    `, filterParams);
+
+    const transfersRes = await pool.query(`
+      SELECT COUNT(*)::int AS pending_transfers
+      FROM case_transfers ct
+      WHERE ct.status = 'PENDING' ${sId ? 'AND (ct.to_station_id = $1 OR ct.from_station_id = $1)' : ''}
+    `, filterParams);
+
+    metrics = {
+      ...metricsRes.rows[0],
+      pending_appeals: appealsRes.rows[0]?.pending_appeals || 0,
+      pending_transfers: transfersRes.rows[0]?.pending_transfers || 0
+    };
+  }
+
+  return {
+    cases: listRes.rows,
+    pagination: {
+      total,
+      page: parseInt(page, 10),
+      limit: safeLimit,
+      totalPages: Math.ceil(total / safeLimit) || 1
+    },
+    metrics
+  };
+}
+
+/**
+ * 9. View Case Detail (including Updates, Persons, Assignments, Sections, Evidence)
+ */
+async function getCaseDetails(caseOrFirId, user) {
+  const isNumeric = !isNaN(parseInt(caseOrFirId, 10));
+  if (!isNumeric) return null;
+  const idNum = parseInt(caseOrFirId, 10);
+
   const caseRes = await pool.query(
-    `SELECT c.case_id, c.investigation_started_at, c.report_type, c.outcome, c.closed_at,
+    `SELECT c.case_id, c.investigation_started_at, c.report_type, c.outcome, c.closed_at, c.created_at AS case_created_at,
             f.fir_id, f.fir_number, f.tracking_id, f.status, f.priority, f.incident_dt,
-            f.location_text, f.description, f.station_id, ps.name AS station_name,
-            io.officer_id AS current_io_id, io.full_name AS current_io_name, io.badge_no AS current_io_badge,
-            cit.citizen_id, cit.full_name AS complainant_name
+            f.location_text, f.description, f.station_id, f.rejection_reason,
+            ps.name AS station_name, ps.code AS station_code,
+            cc.name AS category_name, NULL AS category_code,
+            io.officer_id AS current_io_id, io.full_name AS current_io_name, io.badge_no AS current_io_badge, io.rank AS current_io_rank,
+            cit.citizen_id, cit.full_name AS complainant_name, cit.address AS complainant_address,
+            u_cit.phone AS complainant_phone, u_cit.email AS complainant_email
      FROM cases c
      JOIN fir f ON c.fir_id = f.fir_id
      LEFT JOIN police_stations ps ON f.station_id = ps.station_id
+     LEFT JOIN crime_categories cc ON f.category_id = cc.category_id
      LEFT JOIN officers io ON c.current_io_id = io.officer_id
      LEFT JOIN citizens cit ON f.complainant_id = cit.citizen_id
-     WHERE f.fir_id = $1`,
-    [firId]
+     LEFT JOIN users u_cit ON cit.user_id = u_cit.user_id
+     WHERE f.fir_id = $1 OR c.case_id = $1
+     ORDER BY (f.fir_id = $1) DESC
+     LIMIT 1`,
+    [idNum]
   );
 
   if (caseRes.rows.length === 0) {
@@ -661,9 +927,24 @@ async function getCaseDetails(firId, user) {
 
   const caseData = caseRes.rows[0];
 
-  // Scoping checks: Citizens only view if owner, IOs view assigned, SHO views station
+  // Scoping checks:
+  // - Citizens only view if owner
   if (user.role === 'CITIZEN' && user.citizenId !== caseData.citizen_id) {
     const err = new Error('Forbidden: You can only view your own cases.');
+    err.statusCode = 403;
+    throw err;
+  }
+
+  // - IOs view only cases assigned to them
+  if (user.role === 'IO' && caseData.current_io_id !== user.officerId) {
+    const err = new Error('Forbidden: You can only view cases assigned to your investigation docket.');
+    err.statusCode = 403;
+    throw err;
+  }
+
+  // - Station officers (SHO, Desk Officer) view only within station
+  if (['SHO', 'DESK_OFFICER'].includes(user.role) && user.stationId && caseData.station_id !== user.stationId) {
+    const err = new Error('Forbidden: You can only access cases within your police station jurisdiction.');
     err.statusCode = 403;
     throw err;
   }
@@ -671,7 +952,7 @@ async function getCaseDetails(firId, user) {
   // Fetch Updates: Citizens only see visible_to_citizen = TRUE
   let updatesQuery = `
     SELECT u.update_id, u.update_type, u.body, u.visible_to_citizen, u.created_at,
-           o.full_name AS officer_name, o.badge_no
+           o.full_name AS officer_name, o.badge_no, o.rank AS officer_rank
     FROM case_updates u
     JOIN officers o ON u.officer_id = o.officer_id
     WHERE u.case_id = $1
@@ -682,10 +963,36 @@ async function getCaseDetails(firId, user) {
   updatesQuery += ` ORDER BY u.created_at DESC`;
   const updatesRes = await pool.query(updatesQuery, [caseData.case_id]);
 
-  // Fetch Persons
+  // Fetch Persons Involved
   const personsRes = await pool.query(
-    `SELECT * FROM fir_persons WHERE fir_id = $1 ORDER BY created_at ASC`,
-    [firId]
+    `SELECT person_id, fir_id, person_role, full_name, contact, address, notes, created_at
+     FROM fir_persons
+     WHERE fir_id = $1
+     ORDER BY created_at ASC`,
+    [caseData.fir_id]
+  );
+
+  // Fetch Legal Sections
+  const sectionsRes = await pool.query(
+    `SELECT ls.section_id, ls.act, ls.section_no, ls.title, ls.is_cognizable, ls.is_bailable, ls.description
+     FROM fir_sections fs
+     JOIN legal_sections ls ON fs.section_id = ls.section_id
+     WHERE fs.fir_id = $1
+     ORDER BY ls.act, ls.section_no`,
+    [caseData.fir_id]
+  );
+
+  // Fetch Evidence Register
+  const evidenceRes = await pool.query(
+    `SELECT e.*,
+            cb.full_name AS collected_by_name, cb.badge_no AS collected_by_badge,
+            ch.full_name AS current_holder_name, ch.badge_no AS current_holder_badge
+     FROM evidence e
+     LEFT JOIN officers cb ON e.collected_by = cb.officer_id
+     LEFT JOIN officers ch ON e.current_holder_id = ch.officer_id
+     WHERE e.case_id = $1
+     ORDER BY e.created_at ASC`,
+    [caseData.case_id]
   );
 
   // Fetch Assignment History (Officers & Admins only)
@@ -693,7 +1000,7 @@ async function getCaseDetails(firId, user) {
   if (user.role !== 'CITIZEN') {
     const assignRes = await pool.query(
       `SELECT ca.assignment_id, ca.from_ts, ca.to_ts, ca.reason,
-              o.full_name AS officer_name, o.badge_no,
+              o.full_name AS officer_name, o.badge_no, o.rank AS officer_rank,
               u.email AS assigned_by_user
        FROM case_assignments ca
        JOIN officers o ON ca.officer_id = o.officer_id
@@ -709,6 +1016,8 @@ async function getCaseDetails(firId, user) {
     ...caseData,
     updates: updatesRes.rows,
     persons: personsRes.rows,
+    sections: sectionsRes.rows,
+    evidence: evidenceRes.rows,
     assignments
   };
 }
@@ -956,6 +1265,8 @@ module.exports = {
   submitFinalReport,
   reviewFinalReport,
   reopenCase,
+  getAssignedCases,
+  getStationOfficers,
   getCaseDetails,
   recordCourtOutcome,
   getCourtOutcome

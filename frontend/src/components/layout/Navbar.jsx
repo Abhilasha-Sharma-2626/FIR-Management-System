@@ -53,7 +53,7 @@ export function Navbar({ onOpenFileComplaint }) {
   return (
     <>
       {/* STICKY MAIN NAVBAR */}
-      <header className="top-0 sticky z-50 bg-surface-container-lowest/95 backdrop-blur-md border-b border-outline-variant/60 shadow-xs transition-all duration-200">
+      <header className="top-0 sticky z-50 bg-surface-container-lowest/95 backdrop-blur-md border-b border-outline-variant/60 shadow-xs transition-colors duration-200">
         <div className="w-full px-6 lg:px-12 py-3 flex items-center justify-between mx-auto max-w-7xl">
           
           {/* Brand Logo */}

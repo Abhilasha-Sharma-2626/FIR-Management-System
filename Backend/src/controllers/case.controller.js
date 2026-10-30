@@ -35,12 +35,13 @@ async function assignIo(req, res, next) {
     const { isValid, errors } = validateAssignInput(req.body);
     if (!isValid) return res.status(400).json({ success: false, errors });
 
+    const officerId = parseInt(req.body.officerId || req.body.officer_id || req.body.io_id, 10);
     const result = await caseService.assignCaseIo({
       firId: req.params.id,
-      officerId: req.body.officerId,
+      officerId,
       assignerUserId: req.user.userId,
       stationId: req.user.stationId,
-      reason: req.body.reason,
+      reason: req.body.reason || req.body.assignmentReason || null,
       ipAddress: req.ip
     });
 
@@ -286,6 +287,55 @@ async function getCourtOutcome(req, res, next) {
   }
 }
 
+/**
+ * GET /api/cases
+ * Query assigned cases for authenticated IO / Station officers
+ */
+async function getMyAssignedCases(req, res, next) {
+  try {
+    const result = await caseService.getAssignedCases({
+      officerId: req.user.officerId,
+      stationId: req.user.stationId,
+      userRole: req.user.role,
+      status: req.query.status,
+      search: req.query.search,
+      priority: req.query.priority,
+      page: req.query.page,
+      limit: req.query.limit
+    });
+
+    res.status(200).json({
+      success: true,
+      data: result.cases,
+      pagination: result.pagination,
+      metrics: result.metrics
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * GET /api/cases/station-officers
+ * Query active officers in user's station for custody transfer / handover
+ */
+async function getStationOfficers(req, res, next) {
+  try {
+    const stationId = req.user.stationId;
+    if (!stationId) {
+      return res.status(400).json({ success: false, message: 'User is not linked to a police station.' });
+    }
+
+    const officers = await caseService.getStationOfficers(stationId);
+    res.status(200).json({
+      success: true,
+      data: officers
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getIoWorkload,
   assignIo,
@@ -295,6 +345,8 @@ module.exports = {
   submitReport,
   reviewReport,
   reopenCase,
+  getMyAssignedCases,
+  getStationOfficers,
   getCaseDetails,
   recordCourtOutcome,
   getCourtOutcome

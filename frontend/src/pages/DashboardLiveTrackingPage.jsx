@@ -389,7 +389,7 @@ export function DashboardLiveTrackingPage() {
 
                   <div className="space-y-3 text-xs">
                     <p className="text-slate-600 leading-relaxed text-[11px]">
-                      Digital and physical exhibits seized during investigation are sealed with immutable cryptographic SHA-256 hashes and logged to the Malkhana chain of custody.
+                      Digital and physical exhibits collected during investigation are officially logged to the Malkhana chain of custody.
                     </p>
                     <Link
                       to="/dashboard/evidence"
@@ -450,7 +450,7 @@ export function DashboardLiveTrackingPage() {
                   {feedbackSubmitted ? (
                     <div className="p-4 rounded-xl bg-white border border-emerald-300 text-xs text-emerald-800 font-semibold flex items-center gap-2">
                       <span className="material-symbols-outlined text-emerald-600">check_circle</span>
-                      <span>Thank you. Your statutory feedback has been recorded in the vigilance service ledger.</span>
+                      <span>Thank you. Your feedback has been recorded in the police vigilance register.</span>
                     </div>
                   ) : (
                     <form onSubmit={handleFeedbackSubmit} className="space-y-3">

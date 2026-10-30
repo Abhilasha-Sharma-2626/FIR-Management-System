@@ -61,7 +61,7 @@ export function HomePage() {
       num: '04',
       title: 'Investigation & Case Diaries',
       badge: 'Evidence Vault',
-      desc: 'Assigned IO logs field diary entries, profiles accused/witnesses, and submits exhibits with SHA-256 custody tracking.',
+      desc: 'Assigned IO logs field diary entries, profiles accused/witnesses, and submits exhibits with verified custody tracking.',
       icon: 'manage_search',
       sla: 'Continuous Malkhana Logging',
       statute: 'BNSS Sec. 105 Digital Exhibits',
@@ -86,7 +86,7 @@ export function HomePage() {
   const metrics = [
     { label: 'Registered e-FIRs & Dockets', value: '18,450+', icon: 'local_police', sub: 'Across 14 Metropolitan Stations' },
     { label: 'Average Preliminary Triage SLA', value: '< 2.8 Hrs', icon: 'timer', sub: 'BNSS 24h Mandate Adherence' },
-    { label: 'Cryptographically Sealed Exhibits', value: '54,200+', icon: 'lock_clock', sub: 'SHA-256 Malkhana Fingerprints' },
+    { label: 'Evidence Exhibits Logged', value: '54,200+', icon: 'verified', sub: 'Verified Chain of Custody' },
     { label: 'Zero FIR Cross-Station Transfers', value: '2,140+', icon: 'sync_alt', sub: 'Seamless Inter-Territorial Routing' }
   ];
 
@@ -137,9 +137,9 @@ export function HomePage() {
 
   const pillarCards = [
     {
-      icon: 'lock_clock',
-      title: 'Cryptographic SHA-256 Ledger',
-      desc: 'Every state transition, diary entry, and custody handoff is cryptographically forward-chained. Mathematical immutability prevents unauthorized record alteration.'
+      icon: 'shield_check',
+      title: 'Tamper-Resistant Case Records',
+      desc: 'Every state transition, diary entry, and custody handoff is permanently recorded in the official audit trail, preventing unauthorized record alteration.'
     },
     {
       icon: 'shield_person',
@@ -165,7 +165,7 @@ export function HomePage() {
     },
     {
       q: 'Is an electronic FIR filed on CaseSync legally valid in judicial court proceedings?',
-      a: 'Yes. e-FIRs generated through CaseSync carry a cryptographically timestamped electronic seal and SHA-256 hash certificate compliant with Section 63/65B of the Indian Evidence Act, eliminating the requirement of immediate paper deposition.'
+      a: 'Yes. e-FIRs generated through CaseSync carry an official electronic seal and timestamp compliant with Section 63/65B of the Indian Evidence Act (BSA), recognized for judicial proceedings.'
     },
     {
       q: 'How does CaseSync protect my Aadhaar number and contact information?',
@@ -177,7 +177,7 @@ export function HomePage() {
     },
     {
       q: 'Are digital evidence photos and invoices safe from tampering?',
-      a: 'All files uploaded into the CaseSync Malkhana Evidence Vault are hashed using mathematical SHA-256 algorithms upon receipt. Database procedural triggers prohibit SQL-level updates or deletion, guaranteeing court-ready non-repudiation.'
+      a: 'All files uploaded into the CaseSync Malkhana Evidence Store receive an integrity checksum upon receipt. Strict system safeguards prevent updates or deletion, guaranteeing court-ready evidence continuity.'
     }
   ];
 
@@ -275,8 +275,8 @@ export function HomePage() {
                 <img
                   src={heroOfficerImg}
                   alt="Station House Officer Law Enforcement"
-                  className="w-full h-84 sm:h-[420px] object-cover object-top transition-transform duration-500 hover:scale-105"
-                  loading="lazy"
+                  className="w-full h-84 sm:h-[420px] object-cover object-top"
+                  fetchPriority="high"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/35 to-transparent flex flex-col justify-end p-7 text-white space-y-1.5">
                   <div className="text-[10px] font-mono uppercase tracking-widest text-tertiary-fixed font-bold">
@@ -286,7 +286,7 @@ export function HomePage() {
                     State Police Department &amp; Criminal Justice Records
                   </div>
                   <p className="text-xs text-surface-variant/90 font-normal">
-                    Cryptographic SHA-256 hash chain verified. Zero tampering tolerance.
+                    Official digital policing records under the Bharatiya Nagarik Suraksha Sanhita (BNSS).
                   </p>
                 </div>
               </div>
@@ -330,13 +330,13 @@ export function HomePage() {
             <div className="space-y-1.5 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-mono uppercase font-bold tracking-widest">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Active State Machine Pipeline</span>
+                <span>Statutory Case Pipeline</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight">
                 Strictly Enforced Criminal Investigation Pipeline
               </h2>
               <p className="text-xs sm:text-sm text-secondary">
-                Complaints progress through an immutable state machine guarded by database-level procedural triggers.
+                Complaints progress through a structured statutory workflow with verified audit logging at every step.
               </p>
             </div>
 
@@ -588,23 +588,23 @@ export function HomePage() {
             <div className="lg:col-span-6 space-y-5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white text-primary text-xs font-semibold font-mono tracking-wider border border-outline-variant/60 shadow-xs">
                 <span className="material-symbols-outlined text-sm text-emerald-600">verified</span>
-                <span>BNSS SECTION 105 TAMPER-EVIDENCE</span>
+                <span>BNSS SECTION 105 EVIDENCE INTEGRITY</span>
               </div>
 
               <h2 className="text-2xl sm:text-4xl font-extrabold text-primary tracking-tight leading-tight">
-                Cryptographic Malkhana &amp; Digital Exhibit Custody
+                Police Evidence Store &amp; Exhibit Custody
               </h2>
 
               <p className="text-xs sm:text-sm text-secondary leading-relaxed">
-                Eliminating paper diary tampering and evidence contamination. Every physical exhibit receipt, forensic photo, surveillance clip, and medical report is hashed with mathematical SHA-256 upon intake.
+                Eliminating paper diary tampering and evidence contamination. Every physical exhibit receipt, forensic photo, surveillance clip, and medical report is verified and securely logged upon intake.
               </p>
 
               <div className="space-y-3 text-xs pt-1">
                 <div className="flex items-start gap-3 p-3 rounded-2xl bg-surface-container-lowest border border-outline-variant/60">
-                  <span className="material-symbols-outlined text-primary text-lg mt-0.5">fingerprint</span>
+                  <span className="material-symbols-outlined text-primary text-lg mt-0.5">verified</span>
                   <div>
-                    <strong className="text-primary font-bold block">Client-Side SHA-256 Checksums</strong>
-                    <span className="text-secondary text-[11px]">Evidentiary files are fingerprinted in the browser prior to transmission, guaranteeing absolute non-repudiation.</span>
+                    <strong className="text-primary font-bold block">Integrity Checksum Verification</strong>
+                    <span className="text-secondary text-[11px]">Evidentiary files receive an integrity checksum upon upload, protecting against alteration.</span>
                   </div>
                 </div>
 
@@ -612,7 +612,7 @@ export function HomePage() {
                   <span className="material-symbols-outlined text-primary text-lg mt-0.5">gavel</span>
                   <div>
                     <strong className="text-primary font-bold block">Section 65B Electronic Admissibility</strong>
-                    <span className="text-secondary text-[11px]">One-click export of court-certified electronic records with verifying officer cryptographic signatures.</span>
+                    <span className="text-secondary text-[11px]">One-click export of court-certified electronic records with verifying officer credentials.</span>
                   </div>
                 </div>
               </div>
@@ -636,12 +636,12 @@ export function HomePage() {
                   className="w-full h-80 sm:h-96 object-cover object-center"
                   loading="lazy"
                 />
-                <div className="p-4 bg-primary text-white flex items-center justify-between text-xs font-mono">
+                <div className="p-4 bg-primary text-white flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Forward-Chained Custody Active</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span>Official Evidence Custody Register</span>
                   </div>
-                  <span className="text-[10px] opacity-80">TLS 1.3 Strict</span>
+                  <span className="text-[11px] opacity-90 font-medium">BNSS Compliant</span>
                 </div>
               </div>
             </div>

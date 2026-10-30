@@ -322,7 +322,22 @@ async function getSlaBreaches(req, res, next) {
   }
 }
 
+async function getMetrics(req, res, next) {
+  try {
+    const metrics = await adminService.getAdminOverviewMetrics();
+    res.status(200).json({
+      success: true,
+      data: metrics
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
+  // Overview Metrics
+  getMetrics,
+
   // Stations
   getStations,
   getStationById,

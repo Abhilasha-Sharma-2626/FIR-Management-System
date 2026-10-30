@@ -107,7 +107,7 @@ export function ServicesPage() {
       icon: 'verified_user',
       title: 'Evidence Vault & 65B Certificates',
       code: 'BSA SEC. 65B',
-      desc: 'Forensically secure CCTV footage, financial transaction receipts, audio depositions, and scene photos with SHA-256 cryptographic non-repudiation hashes.',
+      desc: 'Forensically secure CCTV footage, financial transaction receipts, audio depositions, and scene photos with verified checksums.',
       badge: 'Court Admissible',
       link: '/dashboard/evidence',
       btnText: 'Open Evidence Vault',
@@ -174,9 +174,9 @@ export function ServicesPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { icon: 'bolt', title: 'Zero-Friction E-Filing', sub: 'Instant preliminary tokens 24×7' },
-                { icon: 'timeline', title: 'Verifiable Audit Trail', sub: 'Timestamped SHA-256 ledger' },
+                { icon: 'timeline', title: 'Official Audit Trail', sub: 'Timestamped activity records' },
                 { icon: 'balance', title: 'Citizen Rights & Guidance', sub: 'Free DLSA legal aid links' },
-                { icon: 'lock', title: 'Cryptographic Integrity', sub: 'Sec. 65B BSA court certified' },
+                { icon: 'shield_check', title: 'Record Integrity', sub: 'Sec. 65B BSA court certified' },
               ].map((c, i) => (
                 <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-surface border border-outline-variant/70 shadow-sm">
                   <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
@@ -329,10 +329,10 @@ export function ServicesPage() {
                 {/* Digital Sign-off Stamp */}
                 <div className="p-3 bg-surface-container-low rounded-lg border border-dashed border-outline flex flex-wrap items-center justify-between text-xs text-secondary gap-2 font-mono">
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm text-primary">encrypted</span>
-                    <span>Electronic Audit Hash: <strong className="text-primary">{activeResult.hash}</strong></span>
+                    <span className="material-symbols-outlined text-sm text-primary">verified</span>
+                    <span>Official Record Reference: <strong className="text-primary">{activeResult.hash}</strong></span>
                   </div>
-                  <span className="text-[11px]">National Case Registry Node: Verified</span>
+                  <span className="text-[11px]">Official Case Record: Verified</span>
                 </div>
 
               </div>
@@ -355,7 +355,7 @@ export function ServicesPage() {
                 Public Safety &amp; Statutory Legal Services
               </h2>
               <p className="font-body-md text-xs sm:text-sm text-secondary mt-2 leading-relaxed">
-                Empowering citizens with direct digital access to police processes, evidence safekeeping, court notice management, and supervisory oversight without intermediation.
+                Providing citizens with direct digital access to police processes, evidence safekeeping, court notice management, and supervisory oversight without intermediation.
               </p>
             </div>
 
@@ -421,7 +421,7 @@ export function ServicesPage() {
                   Designed for public trust. Built on statutory transparency.
                 </h2>
                 <p className="font-body-lg text-sm sm:text-base text-secondary leading-relaxed">
-                  Modern policing requires an open civic contract. Citizen Service Centers operate with real-time electronic queue monitors, eliminating backroom ambiguity and empowering every individual with certified records.
+                  Modern policing requires an open civic contract. Citizen Service Centers operate with real-time electronic queue monitors, eliminating backroom ambiguity and providing every individual with certified records.
                 </p>
 
                 <div className="space-y-4 pt-2">

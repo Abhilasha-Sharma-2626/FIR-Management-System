@@ -149,9 +149,108 @@ async function verifyAuditChain() {
 }
 
 /**
+ * Sanitize sensitive fields before returning to Auditor
+ */
+function sanitizeData(data) {
+  if (!data || typeof data !== 'object') return data;
+  if (Array.isArray(data)) return data.map(sanitizeData);
+  const copy = { ...data };
+  const sensitiveKeys = ['password', 'password_hash', 'token', 'secret', 'jwt'];
+  for (const key of Object.keys(copy)) {
+    if (sensitiveKeys.some(s => key.toLowerCase().includes(s))) {
+      copy[key] = '[REDACTED_BY_SECURITY_POLICY]';
+    } else if (typeof copy[key] === 'object') {
+      copy[key] = sanitizeData(copy[key]);
+    }
+  }
+  return copy;
+}
+
+/**
+ * Fetch high-level audit metrics and volume aggregations
+ */
+async function getAuditOverviewMetrics() {
+  const totalRes = await pool.query('SELECT COUNT(*)::int AS total FROM audit_log');
+  const totalEvents = totalRes.rows[0]?.total || 0;
+
+  const recent24hRes = await pool.query(
+    "SELECT COUNT(*)::int AS count FROM audit_log WHERE ts >= now() - INTERVAL '24 hours'"
+  );
+  const recent24h = recent24hRes.rows[0]?.count || 0;
+
+  const recent7dRes = await pool.query(
+    "SELECT COUNT(*)::int AS count FROM audit_log WHERE ts >= now() - INTERVAL '7 days'"
+  );
+  const recent7d = recent7dRes.rows[0]?.count || 0;
+
+  const actionsRes = await pool.query(`
+    SELECT action, COUNT(*)::int AS count
+    FROM audit_log
+    GROUP BY action
+    ORDER BY count DESC
+    LIMIT 10
+  `);
+
+  const entitiesRes = await pool.query(`
+    SELECT entity_type, COUNT(*)::int AS count
+    FROM audit_log
+    GROUP BY entity_type
+    ORDER BY count DESC
+    LIMIT 10
+  `);
+
+  const rolesRes = await pool.query(`
+    SELECT COALESCE(actor_role, 'SYSTEM') AS actor_role, COUNT(*)::int AS count
+    FROM audit_log
+    GROUP BY actor_role
+    ORDER BY count DESC
+  `);
+
+  const latestRes = await pool.query(`
+    SELECT audit_id, ts, actor_id, actor_role, action, entity_type, entity_id, row_hash
+    FROM audit_log
+    ORDER BY audit_id DESC
+    LIMIT 5
+  `);
+
+  return {
+    totalEvents,
+    recent24h,
+    recent7d,
+    actionBreakdown: actionsRes.rows,
+    entityBreakdown: entitiesRes.rows,
+    roleBreakdown: rolesRes.rows,
+    recentEvents: latestRes.rows,
+    serverTimestamp: new Date().toISOString()
+  };
+}
+
+/**
+ * Fetch a single audit log event by ID with sanitized details
+ */
+async function getAuditLogById(auditId) {
+  const query = `
+    SELECT audit_id, ts, actor_id, actor_role, action, entity_type, entity_id,
+           old_data, new_data, ip_address, prev_hash, row_hash
+    FROM audit_log
+    WHERE audit_id = $1
+  `;
+  const res = await pool.query(query, [auditId]);
+  if (res.rows.length === 0) {
+    const error = new Error(`Audit record #${auditId} not found`);
+    error.statusCode = 404;
+    throw error;
+  }
+  const row = res.rows[0];
+  row.old_data = sanitizeData(row.old_data);
+  row.new_data = sanitizeData(row.new_data);
+  return row;
+}
+
+/**
  * Query audit logs with role/scope filtering (PROJECT_CONTEXT.md §9.2 & §12.2)
  */
-async function getAuditLogs({ entityType, entityId, actorId, action, fromDate, toDate, limit = 50, offset = 0 }) {
+async function getAuditLogs({ entityType, entityId, actorId, actorRole, action, search, fromDate, toDate, limit = 50, offset = 0 }) {
   const conditions = [];
   const params = [];
   let paramIndex = 1;
@@ -168,6 +267,10 @@ async function getAuditLogs({ entityType, entityId, actorId, action, fromDate, t
     conditions.push(`actor_id = $${paramIndex++}`);
     params.push(actorId);
   }
+  if (actorRole) {
+    conditions.push(`actor_role = $${paramIndex++}`);
+    params.push(actorRole.toUpperCase());
+  }
   if (action) {
     conditions.push(`action = $${paramIndex++}`);
     params.push(action);
@@ -180,8 +283,19 @@ async function getAuditLogs({ entityType, entityId, actorId, action, fromDate, t
     conditions.push(`ts <= $${paramIndex++}`);
     params.push(new Date(toDate));
   }
+  if (search) {
+    conditions.push(`(action ILIKE $${paramIndex} OR entity_type ILIKE $${paramIndex} OR actor_role ILIKE $${paramIndex} OR CAST(entity_id AS TEXT) ILIKE $${paramIndex})`);
+    params.push(`%${search}%`);
+    paramIndex++;
+  }
 
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  // Calculate total matching records
+  const countQuery = `SELECT COUNT(*)::int AS total FROM audit_log ${whereClause}`;
+  const countRes = await pool.query(countQuery, params);
+  const totalCount = countRes.rows[0]?.total || 0;
+
   const query = `
     SELECT audit_id, ts, actor_id, actor_role, action, entity_type, entity_id,
            old_data, new_data, ip_address, prev_hash, row_hash
@@ -193,12 +307,24 @@ async function getAuditLogs({ entityType, entityId, actorId, action, fromDate, t
   params.push(parseInt(limit, 10), parseInt(offset, 10));
 
   const result = await pool.query(query, params);
-  return result.rows;
+  const rows = result.rows.map(r => ({
+    ...r,
+    old_data: sanitizeData(r.old_data),
+    new_data: sanitizeData(r.new_data)
+  }));
+
+  return {
+    rows,
+    totalCount
+  };
 }
 
 module.exports = {
   logAuditEvent,
   verifyAuditChain,
   getAuditLogs,
-  canonicalJson
+  getAuditLogById,
+  getAuditOverviewMetrics,
+  canonicalJson,
+  sanitizeData
 };
